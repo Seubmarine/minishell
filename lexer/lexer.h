@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:03:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/08/14 18:41:33 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/08/15 00:45:32 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,20 @@
 
 enum e_token_type
 {
-	TOKEN_TYPE_STRING,
-	TOKEN_TYPE_PIPE,
-	TOKEN_TYPE_OR,
-	TOKEN_TYPE_ASTERISK,
-	TOKEN_TYPE_END,
-	TOKEN_TYPE_UNKNOW,
+	TOKEN_STRING,
+	TOKEN_PIPE,
+	TOKEN_OR,
+	TOKEN_AND,
+	TOKEN_ASTERISK,
+	TOKEN_REDIRECT_INPUT,
+	TOKEN_REDIRECT_OUTPUT,
+	TOKEN_REDIRECT_OUTPUT_APPEND,
+	TOKEN_HERE_DOCUMENT,
+	TOKEN_DOLLAR,
+	TOKEN_SINGLE_QUOTE,
+	TOKEN_DOUBLE_QUOTE,
+	TOKEN_END,
+	TOKEN_UNKNOW,
 };
 
 typedef struct s_span

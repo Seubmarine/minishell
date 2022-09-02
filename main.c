@@ -5,14 +5,23 @@
 int main(int argc, char const *argv[])
 {
     const char *lex_token[] = {
-        "TOKEN_TYPE_STRING",
-	    "TOKEN_TYPE_PIPE",
-	    "TOKEN_TYPE_OR",
-	    "TOKEN_TYPE_ASTERISK",
-	    "TOKEN_TYPE_END",
-	    "TOKEN_TYPE_UNKNOW"
+        "TOKEN_STRING",
+        "TOKEN_PIPE",
+        "TOKEN_OR",
+        "TOKEN_AND",
+        "TOKEN_ASTERISK",
+        "TOKEN_REDIRECT_INPUT",
+        "TOKEN_REDIRECT_OUTPUT",
+        "TOKEN_REDIRECT_OUTPUT_APPEND",
+        "TOKEN_HERE_DOC",
+        "TOKEN_DOLLAR",
+        "TOKEN_SINGLE_QUOTE",
+	    "TOKEN_DOUBLE_QUOTE",
+        "TOKEN_END",
+        "TOKEN_TYPE_UNKNOW",
     };
-    const char *str = " Hello WOrld *|*||";
+    // const char *str = "echo -n HI";
+    const char *str = argv[1];
     t_vec v = lexer(str);
     size_t i = 0;
     while (i < v.len)
