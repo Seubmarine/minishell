@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/08/15 00:46:44 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/04 18:01:55 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ t_vec	lexer(char const *str)
 {
 	t_vec			v;
 	size_t			i;
-	static size_t	j = 0;
 
 	v = vec_new(sizeof(t_token), 16, NULL);
 	i = 0;

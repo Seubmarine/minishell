@@ -4,6 +4,8 @@
 
 int main(int argc, char const *argv[])
 {
+    if (argc < 1)
+        exit(EXIT_FAILURE);
     const char *lex_token[] = {
         "TOKEN_STRING",
         "TOKEN_PIPE",
