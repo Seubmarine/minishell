@@ -1,0 +1,87 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/04 19:39:24 by tbousque          #+#    #+#             */
+/*   Updated: 2022/09/11 23:29:27 by tbousque         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ast.h"
+
+t_ast_command ast_command_init(void)
+{
+	t_ast_command command;
+
+	command.args = vec_new(sizeof(t_token), 2, NULL);
+	command.redirection = vec_new(sizeof(t_ast_redirection), 2, NULL);
+	return (command);
+}
+
+t_ast_redirection	redirection_init(t_token type, t_token rhs)
+{
+	t_ast_redirection	redirection;
+
+	redirection.token = type;
+	redirection.rhs = rhs;
+	return (redirection);
+}
+
+void	ast_push(t_ast *ast, t_token *tok)
+{
+	size_t	i;
+	t_ast_command *command;
+
+	i = 0;
+	while (tok[i].type != TOKEN_END)
+	{
+		if (tok[i].type == TOKEN_REDIRECT_INPUT || tok[i].type == TOKEN_REDIRECT_OUTPUT)
+		{
+			t_ast_redirection new_redirection = redirection_init(tok[i], tok[i + 1]);
+			command = vec_get(&ast->pipeline, ast->pipeline.len - 1);
+			vec_append(&command->redirection, &new_redirection);
+			i += 2;
+		}
+		else if (tok[i].type == TOKEN_STRING)
+		{
+			command = vec_get(&ast->pipeline, ast->pipeline.len - 1);
+			vec_append(&command->args, &tok[i]);
+			i++;
+		}
+	}
+}
+
+void	ast_command_free(t_ast_command *command)
+{
+	vec_free(&command->args);
+	vec_free(&command->redirection);
+}
+
+void	ast_free(t_ast *ast)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < ast->pipeline.len)
+	{
+		t_ast_command *command = vec_get(&ast->pipeline, i);
+		ast_command_free(command);
+		i++;
+	}
+	vec_free(&ast->pipeline);
+	free(ast);
+}
+
+t_ast	*ast_init(t_token *tok, size_t tok_size)
+{
+	(void) tok_size;
+	t_ast *ast = malloc(sizeof(*ast));
+	ast->pipeline = vec_new(sizeof(t_ast_command), 2, NULL);
+	t_ast_command command = ast_command_init();
+	vec_append(&ast->pipeline, &command);
+	ast_push(ast, tok);
+	return (ast);
+}

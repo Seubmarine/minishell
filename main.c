@@ -1,6 +1,8 @@
 #include "lexer.h"
 #include "vector.h"
 #include <stdio.h>
+#include "ast.h"
+#include "command.h"
 
 int main(int argc, char const *argv[])
 {
@@ -56,7 +58,11 @@ int main(int argc, char const *argv[])
             *c = '>';
         i++;
     }
+    vec_append(&space, "\0");
     printf("%s\n", (char *)space.data);
+    t_ast *ast = ast_init(v.data, v.len);
+    ast_run_command(ast, str);
+    ast_free(ast);
     vec_free(&space);
     vec_free(&v);
     return 0;
