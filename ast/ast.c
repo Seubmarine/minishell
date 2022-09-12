@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 19:39:24 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/11 23:29:27 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/12 00:25:46 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,19 @@ void	ast_push(t_ast *ast, t_token *tok)
 			t_ast_redirection new_redirection = redirection_init(tok[i], tok[i + 1]);
 			command = vec_get(&ast->pipeline, ast->pipeline.len - 1);
 			vec_append(&command->redirection, &new_redirection);
-			i += 2;
+			i += 1;
 		}
 		else if (tok[i].type == TOKEN_STRING)
 		{
 			command = vec_get(&ast->pipeline, ast->pipeline.len - 1);
 			vec_append(&command->args, &tok[i]);
-			i++;
 		}
+		else if (tok[i].type == TOKEN_PIPE)
+		{
+			t_ast_command command = ast_command_init();
+			vec_append(&ast->pipeline, &command);
+		}
+		i++;
 	}
 }
 
