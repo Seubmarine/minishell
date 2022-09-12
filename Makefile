@@ -32,7 +32,7 @@ $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME)
 
 clean:
-	-rm -f $(OBJS)
+	-rm -f $(OBJ)
 
 fclean: clean
 	-rm -f $(NAME)
