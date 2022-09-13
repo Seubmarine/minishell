@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/12 02:33:37 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/13 13:01:35 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void command_set_redirection(const char *src_token, t_command *command, t_ast_re
 		if (redirection[i].token.type == TOKEN_REDIRECT_OUTPUT)
 		{
 			char *filename = token_to_str(src_token, redirection->rhs);
+			if (command->stdout != STDOUT_FILENO) //if a redirection existed before close the previous file, not sure if it's the correct behavior
+				close(command->stdout);
 			command->stdout = open(filename, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
 			free(filename);
 		}
