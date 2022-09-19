@@ -23,13 +23,14 @@ OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-INCLUDE = -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE)
+INCLUDE = -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(TERMINAL_INCLUDE)
+LDFLAGS = -L/usr/lib -lreadline
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $< 
+	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
 
 $(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME) $(LDFLAGS)
 
 clean:
 	-rm -f $(OBJ)
