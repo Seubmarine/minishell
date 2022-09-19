@@ -6,12 +6,24 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:19:00 by tbousque          #+#    #+#             */
-/*   Updated: 2022/08/14 03:37:28 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/19 09:11:26 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vector.h"
 
+/*
+A vector structure that is generic with (void *) but you miss the type hint
+look at vector_test.c for more information
+
+a dynamic array that will realloc when necessary to contains a given type
+*/
+
+/*
+create a vector and need the size of the type it will contains 
+if your vector contains a type that need to free some ressource
+you can pass a function in free_elem that will be executed to every elements in the vector
+*/
 t_vec	vec_new(size_t element_size, size_t capacity, void (*free_elem)(void *))
 {
 	t_vec	v;
@@ -28,6 +40,7 @@ t_vec	vec_new(size_t element_size, size_t capacity, void (*free_elem)(void *))
 	return (v);
 }
 
+//helper fonction that will multiply by two the size of the vector 
 void	vec_grow(t_vec	*v)
 {
 	void	*tmp_data;
@@ -44,6 +57,11 @@ void	vec_grow(t_vec	*v)
 	v->capacity *= 2;
 }
 
+/*
+add an element at the end of the vector
+element is a pointer to the value you want to put in the vector
+will grow the vector if neccesary
+*/
 void	vec_append(t_vec *v, void *element)
 {
 	if ((v->len + 1) > v->capacity)
@@ -56,11 +74,17 @@ void	vec_append(t_vec *v, void *element)
 	v->len += 1;
 }
 
+/*
+Get a pointer to your elements at the given index
+*/
 void	*vec_get(t_vec *v, size_t index)
 {
 	return (v->data + index * v->elem_size);
 }
 
+/*
+Free the vector and all of it's elements with the free_elem function
+*/
 void	vec_free(t_vec *v)
 {
 	size_t	i;
@@ -70,7 +94,7 @@ void	vec_free(t_vec *v)
 		i = 0;
 		while (i < v->len)
 		{
-			v->free_elem(*(void **)(v->data + v->elem_size * i));
+			v->free_elem(v->data + v->elem_size * i);
 			i++;
 		}
 	}
