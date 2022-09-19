@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 19:39:24 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/12 00:25:46 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/18 22:22:12 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,15 @@ void	ast_free(t_ast *ast)
 	vec_free(&ast->pipeline);
 	free(ast);
 }
-
+/*
+Create an array of token by placing them in a command and their redirection
+for example : "echo hello world | wc > out"
+		command[0].args = tok[0] tok[1] tok[3]
+		detect a pipe so create a new command
+		command[1].args = tok[4]
+		detect a tok of redirection so create a redirection
+		command[1].redirection = [.type = tok[5], .name = tok[6]]
+*/
 t_ast	*ast_init(t_token *tok, size_t tok_size)
 {
 	(void) tok_size;

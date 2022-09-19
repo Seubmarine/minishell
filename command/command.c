@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/13 13:01:35 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/18 20:26:20 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,15 @@ char *token_to_str(const char *src, t_token token)
 	
 	return (str);
 }
+
+/*
+first we create all the command and connect them with pipe one after an other
+the command 'ls -R .. > file_out' is represented as:
+command.arguments = ["ls", "-R", ".."];
+command.path = arguments[0];
+command.stdin = STDIN_FILENO;
+command.stdout = open("file_out");
+*/
 
 t_command	command_init(const char *src_token, t_token *tokens, size_t token_size)
 {
@@ -43,6 +52,8 @@ t_command	command_init(const char *src_token, t_token *tokens, size_t token_size
 	return (cmd);
 }
 
+
+//set the redirection of a command accordingly to the the redirection array in order and it's size
 #include <fcntl.h>
 void command_set_redirection(const char *src_token, t_command *command, t_ast_redirection *redirection, size_t redirection_size)
 {
@@ -63,6 +74,12 @@ void command_set_redirection(const char *src_token, t_command *command, t_ast_re
 	}
 }
 
+
+/*
+Create the commands from the ast tree and pipes them, then set the redirection, fork the program
+open the filedescriptor in command.stdin and command.stdout and replace the real stdin and stout by them
+in the forked process then execve.
+*/
 void	ast_run_command(t_ast *ast, const char *src_token)
 {
 	size_t			i;
