@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/18 20:26:20 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/19 09:54:22 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,20 @@ t_command	command_init(const char *src_token, t_token *tokens, size_t token_size
 	return (cmd);
 }
 
+void command_free(t_command *command)
+{
+	size_t i = 0;
+	while (command->arguments[i])
+	{
+		free(command->arguments[i]);
+		if (command->stdin != STDIN_FILENO)
+			close(command->stdin);
+		if (command->stdout != STDOUT_FILENO)
+			close(command->stdout);
+		i++;
+	}
+	free(command->arguments);
+}
 
 //set the redirection of a command accordingly to the the redirection array in order and it's size
 #include <fcntl.h>
@@ -133,7 +147,14 @@ void	ast_run_command(t_ast *ast, const char *src_token)
 			char *const envp_child[1] = {NULL};
 			execve(child_command.path, child_command.arguments, envp_child);
 			perror("execve");
-			exit(EXIT_FAILURE);
+			i = 0;
+			while (i < ast->pipeline.len)
+			{
+				command_free(&commands[i]);
+				i++;
+			}
+			free(commands);
+			return ;
 		}
 		if (child_command.stdout != STDOUT_FILENO)
 			close(child_command.stdout);
