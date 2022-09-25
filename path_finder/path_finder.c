@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 00:15:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/25 01:34:06 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/25 09:04:44 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,56 +14,45 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
-char *exec_is_in_path(char *exec_name, char *path)
+#include <sys/stat.h>
+
+char *path_concat(char *path, size_t path_len, char *exec_name)
 {
-	DIR *d;
-	struct dirent *dir;
-	char *exec_path = NULL;
-
-	d = opendir(path); //TODO: check error
-	if (d)
-	{
-		while (1)
-		{
-			dir = readdir(d);
-			if (dir == NULL)
-				break;
-			if (strcmp(exec_name, dir->d_name) == 0)
-			{
-				exec_path = malloc(strlen(exec_name) + strlen(path) + 2);
-				memcpy(exec_path, path, strlen(path));
-				exec_path[strlen(path)] = '/';
-				memcpy(exec_path + strlen(path) + 1, exec_name, strlen(exec_name));
-				exec_path[strlen(exec_name) + strlen(path) + 1] = '\0';
-				closedir(d); //TODO: check error
-				return (exec_path);
-			}
-		}
-		closedir(d);
-	}
-	return (NULL);
+	char *concat = malloc(path_len + strlen(exec_name) + 2);
+	if (concat == NULL)
+		return (NULL);
+	memcpy(concat, path, path_len);
+	concat[path_len] = '/';
+	memcpy(concat + path_len + 1, exec_name, strlen(exec_name));
+	concat[path_len + 1 + strlen(exec_name)] = '\0';
+	return (concat);
 }
-
 
 //return the path to the executable given in a formated PATH string if it exist
 //return NULL if the executable doesn't exist in the PATH
 char *find_exec(char *exec_name, char *path_array)
 {
 	char	*current_path;
-	char	*chr_result = path_array;
+	size_t	path_len;
 	char	*executable_path = NULL;
-
-	while (1)
+	struct stat file_info;
+	
+	while (*path_array)
 	{
-		if (chr_result == NULL)
-			break;
-		chr_result = strchr(path_array, ':');
-		current_path = strndup(path_array, chr_result - path_array);
-		executable_path = exec_is_in_path(exec_name, current_path);
+		path_len = 0;
+		while (path_array[path_len] && path_array[path_len] != ':')
+			path_len++;
+		current_path = path_concat(path_array, path_len, exec_name);
+		if (current_path == NULL)
+			return (NULL);
+		if (stat(current_path, &file_info) == 0)
+			return (current_path);
 		free(current_path);
 		if (executable_path)
 			return (executable_path);
-		path_array = chr_result + 1;
+		path_array += path_len;
+		if (*path_array == ':')
+			path_array += 1;
 	}
 	return (NULL);
 }
@@ -74,7 +63,7 @@ int main(int argc, char const *argv[])
 	printf("%s\n", path_array);
 	if (!path_array)
 		return (EXIT_FAILURE);
-	char *exec_path = find_exec("sol", path_array);
+	char *exec_path = find_exec("ls", path_array);
 	if (exec_path)
 	{
 		printf("%s\n", exec_path);
