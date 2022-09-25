@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/18 20:09:29 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/25 17:25:18 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,6 @@ Token: (type: TOKEN_END) Span : (begin: 24, end: 24)
 It helps to see if an input is valid and ease the program job for later
 */
 
-int	ft_isalpha(char c)
-{
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
-}
-
-// ft_isatoken(char c)
-// {
-// 	return (c == '<' || c == '>' || c == ' ' || c == '*' || c == ''
-// 	|| c == '&' ||)
-// }
-
 void	put_token(t_vec *v, enum e_token_type type,
 			size_t *current, size_t token_size)
 {
@@ -62,56 +51,68 @@ void	put_token(t_vec *v, enum e_token_type type,
 	vec_append(v, (void *)&token);
 }
 
+typedef struct token_parse_helper
+{
+	char				*value;
+	enum e_token_type	type;
+}	t_token_parse_helper;
+
+#include <ctype.h>
+t_token_parse_helper is_token(char const *str, size_t str_index)
+{
+	static const t_token_parse_helper parse_helper[] = {
+		{.value = ">>", .type = TOKEN_REDIRECT_OUTPUT_APPEND},
+		{.value = ">", .type = TOKEN_REDIRECT_OUTPUT},
+		{.value = "<<", .type = TOKEN_HERE_DOCUMENT},
+		{.value = "<", .type = TOKEN_REDIRECT_INPUT},
+		{.value = "$", .type = TOKEN_DOLLAR},
+		{.value = "|", .type = TOKEN_PIPE},
+	};
+	size_t i;
+
+	i = 0;
+	if (str[str_index] == '\0')
+		return ((t_token_parse_helper){.type = TOKEN_END, .value = " "});
+	while (i < (sizeof(parse_helper) / sizeof(parse_helper[0])))
+	{
+		if (strncmp(parse_helper[i].value, str + str_index, strlen(parse_helper[i].value)) == 0)
+			return (parse_helper[i]);
+		i++;
+	}
+	if (isspace(str[str_index]))
+		return ((t_token_parse_helper){.type = TOKEN_SPACE, .value = " "});
+	return ((t_token_parse_helper){.type = TOKEN_STRING, .value = " "});
+}
+
 t_vec	lexer(char const *str)
 {
 	t_vec			v;
 	size_t			i;
+	t_token tok;
+	
 
 	v = vec_new(sizeof(t_token), 16, NULL);
 	i = 0;
 	while (str[i])
 	{
-		while (str[i] && str[i] == ' ')
-			i++;
-		if (!strncmp(str + i, "*", 1))
-			put_token(&v, TOKEN_ASTERISK, &i, 1);
-		else if (!strncmp(str + i, "||", 2))
-			put_token(&v, TOKEN_OR, &i, 2);
-		else if (!strncmp(str + i, "&&", 2))
-			put_token(&v, TOKEN_AND, &i, 2);
-		else if (!strncmp(str + i, "|", 1))
-			put_token(&v, TOKEN_PIPE, &i, 1);
-		else if (!strncmp(str + i, ">>", 2))
-			put_token(&v, TOKEN_REDIRECT_OUTPUT_APPEND, &i, 2);
-		else if (!strncmp(str + i, ">", 1))
-			put_token(&v, TOKEN_REDIRECT_OUTPUT, &i, 1);
-		else if (!strncmp(str + i, "<<", 2))
-			put_token(&v, TOKEN_HERE_DOCUMENT, &i, 2);
-		else if (!strncmp(str + i, "<", 1))
-			put_token(&v, TOKEN_REDIRECT_INPUT, &i, 1);
-		else if (!strncmp(str + i, "$", 1))
-			put_token(&v, TOKEN_DOLLAR, &i, 1);
-		else if (!strncmp(str + i, "'", 1))
-			put_token(&v, TOKEN_SINGLE_QUOTE, &i, 1);
-		else if (!strncmp(str + i, "\"", 1))
-			put_token(&v, TOKEN_DOUBLE_QUOTE, &i, 1);
-		else
+		t_token_parse_helper token_info = is_token(str, i);
+		tok.span.begin = i;
+		tok.type = token_info.type;
+		i += strlen(token_info.value);
+		if (tok.type == TOKEN_STRING)
 		{
-			t_token *tok;
-			if (v.len >= 1)
-			{
-				tok = (t_token *)vec_get(&v, v.len - 1);
-				if (tok->type == TOKEN_STRING && tok->span.end == i - 1)
-					tok->span.end += 1;
-				else
-					put_token(&v, TOKEN_STRING, &i, 1);
-
-			}
-			else
-				put_token(&v, TOKEN_STRING, &i, 1);
+			while (is_token(str, i).type == TOKEN_STRING)
+				i++;
 		}
-		i++;
+		tok.span.end = i - 1;
+		if (tok.type != TOKEN_SPACE)
+			vec_append(&v, &tok);
+		if (token_info.type == TOKEN_END)
+			break;
 	}
-	put_token(&v, TOKEN_END, &i, 1);
+	tok.span.begin = i;
+	tok.span.end = i;
+	tok.type = TOKEN_END;
+	vec_append(&v, &tok);
 	return (v);
 }

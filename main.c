@@ -20,6 +20,7 @@ void	lexer_debug_print(const char *original_line, t_vec v)
         "TOKEN_SINGLE_QUOTE",
 	    "TOKEN_DOUBLE_QUOTE",
         "TOKEN_END",
+        "TOKEN_SPACE"
         "TOKEN_TYPE_UNKNOW",
     };
 
