@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "ast.h"
 #include "command.h"
+#include "environement_variable.h"
 
 void	lexer_debug_print(const char *original_line, t_vec v)
 {
@@ -60,13 +61,13 @@ void	lexer_debug_print(const char *original_line, t_vec v)
     vec_free(&space);
 }
 
-void execute_line(char *line)
+void execute_line(char *line, t_env *env)
 {
     const char *str = line;
     t_vec v = lexer(str);
     lexer_debug_print(str, v);
 	t_ast *ast = ast_init(v.data, v.len);
-    ast_run_command(ast, str);
+    ast_run_command(ast, str, env);
     ast_free(ast);
     vec_free(&v);
 }
@@ -77,19 +78,22 @@ int main(int argc, char const *argv[], char const *envp[])
 {
 	(void) argc;
 	(void) argv;
-	(void) envp;
     char *line;
     int is_running = 1;
-	
+    t_env env;
+
+    env = env_init_from_envp(envp);
 	while (is_running)
 	{
 		line = readline("Minishell$ ");
 		add_history(line);
-        execute_line(line);
-		if (strncmp("exit", line, 4) == 0)
+		if (strncmp("__end", line, 5) == 0)
             is_running = 0;
+        else
+            execute_line(line, &env);
         free(line);
 	}
     clear_history();
+    env_free(&env);
 	return (0);
 }

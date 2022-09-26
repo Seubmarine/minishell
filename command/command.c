@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/19 09:54:22 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/26 04:48:45 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ Create the commands from the ast tree and pipes them, then set the redirection, 
 open the filedescriptor in command.stdin and command.stdout and replace the real stdin and stout by them
 in the forked process then execve.
 */
-void	ast_run_command(t_ast *ast, const char *src_token)
+void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
 {
 	size_t			i;
 	t_ast_command	*ast_command;
@@ -145,8 +145,21 @@ void	ast_run_command(t_ast *ast, const char *src_token)
 			if (child_command.stdout != STDOUT_FILENO)
 				close(child_command.stdout);
 			char *const envp_child[1] = {NULL};
-			execve(child_command.path, child_command.arguments, envp_child);
-			perror("execve");
+			char *real_path = find_exec(child_command.path, env_get_var(*env, "PATH"));
+			struct stat info;
+			if (real_path)
+			{
+				free(child_command.path);
+				child_command.path = real_path;
+			}
+			child_command.arguments[0] = child_command.path;
+			if (stat(child_command.path, &info) != 0)
+				perror("command doesn't exist");
+			else
+			{
+				execve(child_command.path, child_command.arguments, envp_child);
+				perror("execve");
+			}
 			i = 0;
 			while (i < ast->pipeline.len)
 			{

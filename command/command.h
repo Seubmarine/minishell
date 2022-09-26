@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/11 23:25:57 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/26 03:31:46 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <sys/wait.h>
 # include "lexer.h"
 # include "ast.h"
+# include "environement_variable.h"
+# include "path_finder.h"
 
 typedef struct s_command
 {
@@ -30,5 +32,5 @@ t_command	command_init(const char *src_token, t_token *tokens, size_t token_size
 int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);
 
-void		ast_run_command(t_ast *ast, const char *src_token);
+void		ast_run_command(t_ast *ast, const char *src_token, t_env *env);
 #endif
