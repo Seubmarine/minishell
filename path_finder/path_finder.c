@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 00:15:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/25 09:04:44 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/26 04:30:11 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,17 @@ char *find_exec(char *exec_name, char *path_array)
 	return (NULL);
 }
 
-int main(int argc, char const *argv[])
-{
-	char *path_array = getenv("PATH");
-	printf("%s\n", path_array);
-	if (!path_array)
-		return (EXIT_FAILURE);
-	char *exec_path = find_exec("ls", path_array);
-	if (exec_path)
-	{
-		printf("%s\n", exec_path);
-		free(exec_path);
-	}
-	return 0;
-}
+// int main(int argc, char const *argv[])
+// {
+// 	char *path_array = getenv("PATH");
+// 	printf("%s\n", path_array);
+// 	if (!path_array)
+// 		return (EXIT_FAILURE);
+// 	char *exec_path = find_exec("ls", path_array);
+// 	if (exec_path)
+// 	{
+// 		printf("%s\n", exec_path);
+// 		free(exec_path);
+// 	}
+// 	return 0;
+// }

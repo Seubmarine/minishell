@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/24 23:31:11 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/26 04:30:47 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,22 +129,22 @@ void	env_set_var(t_env *env, char *key, char *value)
 	}
 }
 
-#include <stdio.h>
-int main(int argc, char const *argv[], const char *envp[])
-{
-	t_env	env = env_init_from_envp(envp);
-	size_t	env_len;
-	size_t	i;
-	t_env_key_value *env_array = env_get_vars(env, &env_len);
+// #include <stdio.h>
+// int main(int argc, char const *argv[], const char *envp[])
+// {
+// 	t_env	env = env_init_from_envp(envp);
+// 	size_t	env_len;
+// 	size_t	i;
+// 	t_env_key_value *env_array = env_get_vars(env, &env_len);
 
-	i = 0;
-	while (i < env_len)
-	{
-		printf("%s=%s\n", env_array[i].key, env_array[i].value);
-		i++;
-	}
-	return (EXIT_SUCCESS);
-}
+// 	i = 0;
+// 	while (i < env_len)
+// 	{
+// 		printf("%s=%s\n", env_array[i].key, env_array[i].value);
+// 		i++;
+// 	}
+// 	return (EXIT_SUCCESS);
+// }
 
 // int main(int argc, char const *argv[], const char *envp[])
 // {
