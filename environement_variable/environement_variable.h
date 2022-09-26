@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/24 23:28:53 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/26 03:24:32 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ typedef struct s_env
 	t_vec v;
 }	t_env;
 
+//create an environement using an array of KEY=value
+//envp must be terminated by NULL
+t_env	env_init_from_envp(const char *envp[]);
 
 //get an array of key_value, pass the size of the array in length
 t_env_key_value	*env_get_vars(t_env	env, size_t *length);
