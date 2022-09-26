@@ -6,15 +6,11 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 00:15:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/26 04:30:11 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/26 04:31:41 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <dirent.h>
-#include <sys/stat.h>
+#include "path_finder.h"
 
 char *path_concat(char *path, size_t path_len, char *exec_name)
 {
