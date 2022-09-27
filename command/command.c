@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/26 04:48:45 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/27 02:45:31 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ void command_set_redirection(const char *src_token, t_command *command, t_ast_re
 	}
 }
 
+//TODO: stderr of command need to be redirected to the stdin of the minishell
 
 /*
 Create the commands from the ast tree and pipes them, then set the redirection, fork the program
@@ -144,7 +145,6 @@ void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
 				close(child_command.stdin);
 			if (child_command.stdout != STDOUT_FILENO)
 				close(child_command.stdout);
-			char *const envp_child[1] = {NULL};
 			char *real_path = find_exec(child_command.path, env_get_var(*env, "PATH"));
 			struct stat info;
 			if (real_path)
@@ -157,8 +157,10 @@ void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
 				perror("command doesn't exist");
 			else
 			{
+				char **envp_child = env_to_envp(*env);
 				execve(child_command.path, child_command.arguments, envp_child);
 				perror("execve");
+				envp_free(envp_child);
 			}
 			i = 0;
 			while (i < ast->pipeline.len)

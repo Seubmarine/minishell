@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/26 04:30:47 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/09/27 02:46:34 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,49 @@ void	env_set_var(t_env *env, char *key, char *value)
 	}
 }
 
+char *env_key_value_to_string(t_env_key_value kv)
+{
+	char			*str;
+	const size_t	key_len = strlen(kv.key); 
+	const size_t	value_len = strlen(kv.value); 
+
+	str = malloc(strlen(kv.key) + strlen(kv.value) + 2);
+	memcpy(str, kv.key, key_len);
+	str[key_len] = '=';
+	memcpy(str + key_len + 1, kv.value, value_len);
+	str[key_len + 1 + value_len] = '\0';
+	return (str);
+}
+
+char **env_to_envp(t_env env)
+{
+	char	**envp;
+	size_t	i;
+
+	envp = malloc(sizeof(*envp) * (env.v.len + 1));
+	i = 0;
+	while (i < env.v.len)
+	{
+		t_env_key_value kv = *(t_env_key_value *)vec_get(&env.v, i);
+		envp[i] = env_key_value_to_string(kv);
+		i++;
+	}
+	envp[i] = NULL;
+	return (envp);
+}
+
+void envp_free(char **envp)
+{
+	size_t	i;
+
+	i = 0;
+	while (envp[i])
+	{
+		free(envp[i]);
+		i++;
+	}
+	free(envp);
+}
 // #include <stdio.h>
 // int main(int argc, char const *argv[], const char *envp[])
 // {
