@@ -1,0 +1,15 @@
+export TMP='"hello wolrd"'
+
+[0]"hello
+[1]world"
+
+"$TMP yo"
+^^< > <>^
+QuoteDollarWord WordQuote
+
+""hello word" yo"
+^<    > <   > <>
+QuoteWord Word WordQuote
+
+The real quote are defined as TOKEN_QUOTE while added quote by a var expansion will be classified as a TOKEN_STRING
+then you group from one TOKEN_QUOTE to another TOKEN_QUOTE
