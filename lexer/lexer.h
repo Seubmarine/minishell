@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:03:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/25 16:04:47 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/10/04 03:30:20 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LEXER_H
 # include <stdlib.h>
 # include "vector.h"
+# include "environement_variable.h"
 
 enum e_token_type
 {
@@ -43,9 +44,9 @@ typedef struct s_span
 typedef struct s_token
 {
 	enum e_token_type	type;
-	t_span				span;
+	char				*word;
 }	t_token;
 
-t_vec	lexer(char const *str);
+t_vec	lexer(char *str, t_env env);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/25 17:25:18 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/10/04 01:14:31 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,28 +37,35 @@ Token: (type: TOKEN_END) Span : (begin: 24, end: 24)
 It helps to see if an input is valid and ease the program job for later
 */
 
-void	put_token(t_vec *v, enum e_token_type type,
-			size_t *current, size_t token_size)
-{
-	const t_token	token = {
-		.span = {
-		.begin = *current,
-		.end = *current + token_size - 1},
-		.type = type,
-	};
+// void	put_token(t_vec *v, enum e_token_type type,
+// 			size_t *current, size_t token_size)
+// {
+// 	const t_token	token = {
+// 		.span = {
+// 		.begin = *current,
+// 		.end = *current + token_size - 1},
+// 		.type = type,
+// 	};
 
-	*current += token_size - 1;
-	vec_append(v, (void *)&token);
-}
+// 	*current += token_size - 1;
+// 	vec_append(v, (void *)&token);
+// }
 
-typedef struct token_parse_helper
+typedef struct s_token_parse_helper
 {
 	char				*value;
 	enum e_token_type	type;
 }	t_token_parse_helper;
 
+typedef struct s_token_info
+{
+	enum e_token_type	type;
+	size_t				len;
+}	t_token_info;
+
+
 #include <ctype.h>
-t_token_parse_helper is_token(char const *str, size_t str_index)
+t_token_info is_token(char const *str)
 {
 	static const t_token_parse_helper parse_helper[] = {
 		{.value = ">>", .type = TOKEN_REDIRECT_OUTPUT_APPEND},
@@ -71,48 +78,105 @@ t_token_parse_helper is_token(char const *str, size_t str_index)
 	size_t i;
 
 	i = 0;
-	if (str[str_index] == '\0')
-		return ((t_token_parse_helper){.type = TOKEN_END, .value = " "});
+	if (*str == '\0')
+		return ((t_token_info){.type = TOKEN_END, .len = 1});
 	while (i < (sizeof(parse_helper) / sizeof(parse_helper[0])))
 	{
-		if (strncmp(parse_helper[i].value, str + str_index, strlen(parse_helper[i].value)) == 0)
-			return (parse_helper[i]);
+		if (strncmp(parse_helper[i].value, str, strlen(parse_helper[i].value)) == 0)
+			return ((t_token_info){parse_helper[i].type, strlen(parse_helper[i].value)});
 		i++;
 	}
-	if (isspace(str[str_index]))
-		return ((t_token_parse_helper){.type = TOKEN_SPACE, .value = " "});
-	return ((t_token_parse_helper){.type = TOKEN_STRING, .value = " "});
+	//check TOKEN_SPACE && TOKEN_STRING
+	i = 0;
+	while (isspace(str[i]))
+			i++;
+	if (i > 0)	
+		return ((t_token_info){.type = TOKEN_SPACE, .len = i});
+	t_token_info next = is_token(&str[1]);
+	if (next.type == TOKEN_STRING)
+		return ((t_token_info){.type = TOKEN_STRING, .len =  1 + next.len});
+	return ((t_token_info){.type = TOKEN_STRING, .len = 1});
 }
 
-t_vec	lexer(char const *str)
+void	token_free(t_token *token)
 {
-	t_vec			v;
-	size_t			i;
-	t_token tok;
-	
+	token->type = TOKEN_UNKNOW;
+	if (token->word != NULL)
+		free(token->word);
+}
 
-	v = vec_new(sizeof(t_token), 16, NULL);
+#include <stdio.h>
+void	lexer_debug(t_vec	tokens)
+{
+	const char *lex_token[] = {
+        "TOKEN_STRING",
+        "TOKEN_PIPE",
+        "TOKEN_OR",
+        "TOKEN_AND",
+        "TOKEN_ASTERISK",
+        "TOKEN_REDIRECT_INPUT",
+        "TOKEN_REDIRECT_OUTPUT",
+        "TOKEN_REDIRECT_OUTPUT_APPEND",
+        "TOKEN_HERE_DOC",
+        "TOKEN_DOLLAR",
+        "TOKEN_SINGLE_QUOTE",
+	    "TOKEN_DOUBLE_QUOTE",
+        "TOKEN_END",
+        "TOKEN_SPACE"
+        "TOKEN_TYPE_UNKNOW",
+    };
+
+	size_t	i = 0;
+	while (i < tokens.len)
+	{
+		t_token current = ((t_token *)tokens.data)[i];
+		printf("[%lu] %s", i, lex_token[current.type]);
+		if (current.type == TOKEN_STRING)
+			printf(" = %s", current.word);
+		printf("\n");
+		i++;
+	}
+}
+
+t_vec	lexer(char *str, t_env env)
+{
+	t_vec	tokens;
+	size_t	i;
+
+	(void) env;
+	tokens = vec_new(sizeof(t_token), 10, (void(*)(void *))token_free);
 	i = 0;
 	while (str[i])
 	{
-		t_token_parse_helper token_info = is_token(str, i);
-		tok.span.begin = i;
-		tok.type = token_info.type;
-		i += strlen(token_info.value);
-		if (tok.type == TOKEN_STRING)
+		t_token_info info = is_token(&str[i]);
+		t_token tok = {.type = info.type, .word = NULL};
+		
+		if (info.type == TOKEN_SPACE)
+			;
+		else if (info.type == TOKEN_STRING)
 		{
-			while (is_token(str, i).type == TOKEN_STRING)
-				i++;
+			t_vec word;
+
+			word = vec_new(sizeof(char), info.len + 1, NULL);
+			size_t j = 0;
+			while (j < info.len)
+			{
+				vec_append(&word, &str[i + j]);
+				j++;
+			}
+			vec_append(&word, "\0");
+			tok.word = word.data;
+			vec_append(&tokens, &tok);
 		}
-		tok.span.end = i - 1;
-		if (tok.type != TOKEN_SPACE)
-			vec_append(&v, &tok);
-		if (token_info.type == TOKEN_END)
-			break;
+		else
+		{
+			t_token tok = {.type = info.type, .word = NULL};
+			vec_append(&tokens, &tok);
+		}
+		i += info.len;
 	}
-	tok.span.begin = i;
-	tok.span.end = i;
-	tok.type = TOKEN_END;
-	vec_append(&v, &tok);
-	return (v);
+	t_token tok = {.type = TOKEN_END, .word = NULL};
+	vec_append(&tokens, &tok);
+	lexer_debug(tokens);
+	return (tokens);
 }

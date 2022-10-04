@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/26 03:31:46 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/10/04 01:18:23 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ typedef struct s_command
 	int		stdout;
 }	t_command;
 
-t_command	command_init(const char *src_token, t_token *tokens, size_t token_size);
+t_command	command_init(t_token *tokens, size_t token_size);
 int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);
 
-void		ast_run_command(t_ast *ast, const char *src_token, t_env *env);
+void		ast_run_command(t_ast *ast,  t_env *env);
 #endif

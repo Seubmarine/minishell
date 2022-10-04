@@ -6,21 +6,21 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/27 02:45:31 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/10/04 01:32:11 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "command.h"
 
-char *token_to_str(const char *src, t_token token)
-{
-	size_t str_size = token.span.end - token.span.begin + 1;
-	char *str = malloc((str_size + 1) * sizeof(*str));
-	memcpy(str, src + token.span.begin, str_size);
-	str[str_size] = '\0';
+// char *token_to_str(const char *src, t_token token)
+// {
+// 	size_t str_size = token.span.end - token.span.begin + 1;
+// 	char *str = malloc((str_size + 1) * sizeof(*str));
+// 	memcpy(str, src + token.span.begin, str_size);
+// 	str[str_size] = '\0';
 	
-	return (str);
-}
+// 	return (str);
+// }
 
 /*
 first we create all the command and connect them with pipe one after an other
@@ -31,7 +31,7 @@ command.stdin = STDIN_FILENO;
 command.stdout = open("file_out");
 */
 
-t_command	command_init(const char *src_token, t_token *tokens, size_t token_size)
+t_command	command_init(t_token *tokens, size_t token_size)
 {
 	t_command 	cmd;
 	size_t		i;
@@ -42,7 +42,7 @@ t_command	command_init(const char *src_token, t_token *tokens, size_t token_size
 	i = 0;
 	while (i < token_size)
 	{
-		cmd.arguments[i] = token_to_str(src_token, tokens[i]);
+		cmd.arguments[i] = tokens[i].word;
 		i++;
 	}
 	cmd.arguments[i] = NULL;
@@ -57,7 +57,6 @@ void command_free(t_command *command)
 	size_t i = 0;
 	while (command->arguments[i])
 	{
-		free(command->arguments[i]);
 		if (command->stdin != STDIN_FILENO)
 			close(command->stdin);
 		if (command->stdout != STDOUT_FILENO)
@@ -69,7 +68,7 @@ void command_free(t_command *command)
 
 //set the redirection of a command accordingly to the the redirection array in order and it's size
 #include <fcntl.h>
-void command_set_redirection(const char *src_token, t_command *command, t_ast_redirection *redirection, size_t redirection_size)
+void command_set_redirection(t_command *command, t_ast_redirection *redirection, size_t redirection_size)
 {
 	size_t	i;
 
@@ -78,11 +77,10 @@ void command_set_redirection(const char *src_token, t_command *command, t_ast_re
 	{
 		if (redirection[i].token.type == TOKEN_REDIRECT_OUTPUT)
 		{
-			char *filename = token_to_str(src_token, redirection->rhs);
+			char *filename = redirection->rhs.word;
 			if (command->stdout != STDOUT_FILENO) //if a redirection existed before close the previous file, not sure if it's the correct behavior
 				close(command->stdout);
 			command->stdout = open(filename, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
-			free(filename);
 		}
 		i++;
 	}
@@ -95,7 +93,7 @@ Create the commands from the ast tree and pipes them, then set the redirection, 
 open the filedescriptor in command.stdin and command.stdout and replace the real stdin and stout by them
 in the forked process then execve.
 */
-void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
+void	ast_run_command(t_ast *ast, t_env *env)
 {
 	size_t			i;
 	t_ast_command	*ast_command;
@@ -106,7 +104,7 @@ void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
 	while (i < ast->pipeline.len)
 	{
 		ast_command = vec_get(&ast->pipeline, i);
-		commands[i] = command_init(src_token, ast_command->args.data, ast_command->args.len);
+		commands[i] = command_init(ast_command->args.data, ast_command->args.len);
 		i++;
 	}
 	int pipes[2];
@@ -126,7 +124,7 @@ void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
 		while (j < ast_command->redirection.len)
 		{
 			t_ast_redirection *redir = vec_get(&ast_command->redirection, j);
-			command_set_redirection(src_token, &commands[i], redir, ast_command->redirection.len);
+			command_set_redirection(&commands[i], redir, ast_command->redirection.len);
 			j++;	
 		}
 		i++;
@@ -192,12 +190,6 @@ void	ast_run_command(t_ast *ast, const char *src_token, t_env *env)
 	i = 0;
 	while (i < ast->pipeline.len)
 	{
-		size_t j = 0;
-		while (commands[i].arguments[j])
-		{
-			free(commands[i].arguments[j]);
-			j++;
-		}
 		free(commands[i].arguments);
 		if (commands[i].stdin != STDIN_FILENO)
 			close(commands[i].stdin);
