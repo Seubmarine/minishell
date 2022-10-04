@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/10/04 06:18:56 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/10/04 07:35:59 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ t_token_info is_token(char const *str)
 		{.value = "$", .type = TOKEN_DOLLAR},
 		{.value = "|", .type = TOKEN_PIPE},
 		{.value = "\'", .type = TOKEN_SINGLE_QUOTE},
+		{.value = "\"", .type = TOKEN_DOUBLE_QUOTE},
 	};
 	size_t i;
 
@@ -133,7 +134,7 @@ void	lexer_debug(t_vec	tokens)
 		t_token current = ((t_token *)tokens.data)[i];
 		printf("[%lu] %s", i, lex_token[current.type]);
 		if (current.type == TOKEN_STRING)
-			printf(" = %s", current.word);
+			printf(" = \"%s\"", current.word);
 		printf("\n");
 		i++;
 	}
@@ -194,6 +195,46 @@ t_vec	lexer(char *str, t_env env)
 				vec_append(&tokens, &tok);
 
 			}
+		}
+		else if (info.type == TOKEN_DOUBLE_QUOTE)
+		{
+			size_t j = 0;
+			t_vec word;
+			
+			i++;
+			while (str[i + j] != '\"')
+				j++;
+			word = vec_new(sizeof(char), j + 1, NULL);
+			j = 0;
+			while (str[i + j] != '\"')
+			{
+				if (str[i + j] == '$' && is_token(&str[i + j + 1]).type == TOKEN_STRING)
+				{
+					t_token_info next = is_token(&str[i + j + 1]);
+					char	*env_key = strndup(&str[i + j + 1], next.len);
+					j += next.len;
+					char	*env_value = env_get_var(env, env_key);
+					free(env_key);
+					if (env_value)
+					{
+						size_t k = 0;
+						while (env_value[k])
+						{
+							vec_append(&word, &env_value[k]);
+							k++;
+						}
+					}
+					env_value = NULL;
+				}
+				else
+					vec_append(&word, &str[i + j]);
+				j++;
+			}
+			vec_append(&word, "\0");
+			tok.type = TOKEN_STRING;
+			tok.word = word.data;
+			vec_append(&tokens, &tok);
+			info.len = j + 1;
 		}
 		else if (info.type == TOKEN_SINGLE_QUOTE)
 		{
