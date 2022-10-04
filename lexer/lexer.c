@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/10/04 07:35:59 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/10/04 10:06:10 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,30 @@ void	lexer_debug(t_vec	tokens)
 	}
 }
 
+void	tokens_append(t_vec *tokens, t_token *current)
+{
+	t_token *last;
+
+	if (tokens->len > 0)
+	{
+		last = vec_get(tokens, tokens->len - 1);
+		if (last->type == TOKEN_SPACE)
+		{
+			last->type = current->type;
+			last->word = current->word;
+			return ;
+		}
+		else if (last->type == TOKEN_STRING && current->type == TOKEN_STRING)
+		{
+			if (strcat(last->word, current->word) == NULL)
+				exit(EXIT_FAILURE); //TODO error handling
+			free(current->word);
+			return ;
+		}
+	}
+	vec_append(tokens, current);
+}
+
 t_vec	lexer(char *str, t_env env)
 {
 	t_vec	tokens;
@@ -154,11 +178,11 @@ t_vec	lexer(char *str, t_env env)
 		t_token tok = {.type = info.type, .word = NULL};
 		
 		if (info.type == TOKEN_SPACE)
-			;
+			tokens_append(&tokens, &tok);
 		else if (info.type == TOKEN_STRING)
 		{
 			tok.word = strndup(&str[i], info.len);
-			vec_append(&tokens, &tok);
+			tokens_append(&tokens, &tok);
 		}
 		else if (info.type == TOKEN_DOLLAR )
 		{
@@ -174,8 +198,12 @@ t_vec	lexer(char *str, t_env env)
 					size_t j = 0;
 					while (env_value[j])
 					{
+						tok.type = TOKEN_SPACE;
+						tok.word = NULL;
 						while (isspace(env_value[j]))
 							j++;
+						if (j > 0)
+							tokens_append(&tokens, &tok);
 						if (env_value[j] == '\0')
 							break;
 						size_t reminder = j;
@@ -183,7 +211,7 @@ t_vec	lexer(char *str, t_env env)
 							j++;
 						tok.type = TOKEN_STRING;
 						tok.word = strndup(&env_value[reminder], j - reminder);
-						vec_append(&tokens, &tok);
+						tokens_append(&tokens, &tok);
 					}
 				}
 				info.len = next.len + 1;
@@ -192,7 +220,7 @@ t_vec	lexer(char *str, t_env env)
 			{
 				tok.type = TOKEN_STRING;
 				tok.word = strndup("$", 1);
-				vec_append(&tokens, &tok);
+				tokens_append(&tokens, &tok);
 
 			}
 		}
@@ -233,7 +261,7 @@ t_vec	lexer(char *str, t_env env)
 			vec_append(&word, "\0");
 			tok.type = TOKEN_STRING;
 			tok.word = word.data;
-			vec_append(&tokens, &tok);
+			tokens_append(&tokens, &tok);
 			info.len = j + 1;
 		}
 		else if (info.type == TOKEN_SINGLE_QUOTE)
@@ -245,17 +273,17 @@ t_vec	lexer(char *str, t_env env)
 			info.len = j + 1;
 			tok.type = TOKEN_STRING;
 			tok.word = strndup(&str[i], j);
-			vec_append(&tokens, &tok);
+			tokens_append(&tokens, &tok);
 		}
 		else
 		{
 			t_token tok = {.type = info.type, .word = NULL};
-			vec_append(&tokens, &tok);
+			tokens_append(&tokens, &tok);
 		}
 		i += info.len;
 	}
 	t_token tok = {.type = TOKEN_END, .word = NULL};
-	vec_append(&tokens, &tok);
+	tokens_append(&tokens, &tok);
 	lexer_debug(tokens);
 	return (tokens);
 }
