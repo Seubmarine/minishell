@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/02 15:31:06 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/03 14:21:33 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ t_env	env_init_from_envp(const char *envp[])
 	i = 0;
 	while (envp[i])
 		i++;
+	if (i <= 0)
+		i = 1;
 	env.v = vec_new(sizeof(t_env_key_value), i, (void (*)(void *))env_key_value_free);
 	i = 0;
 	while (envp[i])
