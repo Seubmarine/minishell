@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 00:15:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/26 04:31:41 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/03 14:41:28 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ char *find_exec(char *exec_name, char *path_array)
 	char	*executable_path = NULL;
 	struct stat file_info;
 	
+	if (path_array == NULL)
+		return (NULL);
 	while (*path_array)
 	{
 		path_len = 0;
