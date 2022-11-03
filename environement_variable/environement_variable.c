@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/27 02:46:34 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/02 15:31:06 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,14 @@ t_env_key_value key_value_init(char *kv)
 	t_env_key_value var;
 	size_t	i;
 
+	var.key = NULL;
+	var.value = NULL;
 	i = 0;
 	while (kv[i] && kv[i] != '=')
 		i++;
 	var.key = strndup(kv, i);
+	if (var.key == NULL)
+		return (var);
 	var.value = strdup(kv + i + 1);
 	return (var);
 }
@@ -109,9 +113,10 @@ void	env_remove_var(t_env *env, char *key)
 		current_var->value = last_var->value;
 	}
 }
-
-//if key already exist overwrite value
-//key and value will be duplicated
+/*
+if key already exist overwrite value
+key and value will be duplicated
+*/
 void	env_set_var(t_env *env, char *key, char *value)
 {
 	t_env_key_value *kv;

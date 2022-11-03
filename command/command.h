@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/10/04 01:18:23 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/02 15:48:01 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include "ast.h"
 # include "environement_variable.h"
 # include "path_finder.h"
+# include "built_in.h"
 
 typedef struct s_command
 {

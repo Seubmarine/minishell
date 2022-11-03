@@ -20,18 +20,21 @@ PATH_FINDER_INCLUDE = path_finder/
 ENV_SRCS = environement_variable.c
 ENV_INCLUDE = environement_variable/
 
+BUILTIN_SRCS = built_in.c export.c unset.c
+BUILTIN_INCLUDE = built_in/
+
 CURRENT_SRCS = main.c
 
 SRCS = $(addprefix vector/, $(VECTOR_SRCS)) $(CURRENT_SRCS) \
 		$(addprefix lexer/, $(LEXER_SRCS)) $(addprefix ast/, $(AST_SRCS)) \
 		$(addprefix command/, $(COMMAND_SRCS)) $(addprefix path_finder/, $(PATH_FINDER_SRCS)) \
-		$(addprefix $(ENV_INCLUDE), $(ENV_SRCS))
+		$(addprefix $(ENV_INCLUDE), $(ENV_SRCS)) $(addprefix $(BUILTIN_INCLUDE), $(BUILTIN_SRCS))
 
 OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE)
+INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE)
 LDFLAGS = -L/usr/lib -lreadline
 
 %.o: %.c

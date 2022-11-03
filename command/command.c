@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/10/04 01:32:11 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/03 12:16:34 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,41 @@ void command_set_redirection(t_command *command, t_ast_redirection *redirection,
 	}
 }
 
+int command_run(t_env *env, t_command command)
+{
+	int	builtin_result;
+
+	printf("Process %i.\nCommand %s\nstdin: %i\nstdout: %i\n\n", getpid(), command.path, command.stdin, command.stdout);
+	dup2(command.stdin, STDIN_FILENO);
+	dup2(command.stdout, STDOUT_FILENO);
+	if (command.stdin != STDIN_FILENO)
+		close(command.stdin);
+	if (command.stdout != STDOUT_FILENO)
+		close(command.stdout);
+	builtin_result = builtin(command.arguments, env);
+	if (builtin_result != 0)
+		return (builtin_result);
+	char *real_path = find_exec(command.path, env_get_var(*env, "PATH"));
+	if (real_path)
+	{
+		free(command.path);
+		command.path = real_path;
+	}
+	command.arguments[0] = command.path;
+	struct stat info;
+	if (stat(command.path, &info) != 0)
+		perror("command doesn't exist");
+	else
+	{
+		char **envp_child = env_to_envp(*env);
+		execve(command.path, command.arguments, envp_child);
+		perror("execve");
+		envp_free(envp_child);
+		return (-1);
+	}
+	return (-1);
+}
+
 //TODO: stderr of command need to be redirected to the stdin of the minishell
 
 /*
@@ -129,49 +164,25 @@ void	ast_run_command(t_ast *ast, t_env *env)
 		}
 		i++;
 	}
-	i = 0;
-	while (i < ast->pipeline.len)
-	{	
-		t_command child_command = commands[i];
-		pid_t pid = fork();
-		if (pid == 0) //is child
-		{
-			printf("Process %i.\nCommand %s\nstdin: %i\nstdout: %i\n\n", getpid(), child_command.path, child_command.stdin, child_command.stdout);
-			dup2(child_command.stdin, STDIN_FILENO);
-			dup2(child_command.stdout, STDOUT_FILENO);
-			if (child_command.stdin != STDIN_FILENO)
-				close(child_command.stdin);
+	int builtin_result = builtin(commands[0].arguments, env);
+	if (ast->pipeline.len == 1 && builtin_result == 1)
+		;
+	else
+	{
+		i = 0;
+		while (i < ast->pipeline.len)
+		{	
+			t_command child_command = commands[i];
+			pid_t pid = fork();
+			if (pid == 0) //is child
+			{
+				command_run(env, child_command);
+				return ;
+			}
 			if (child_command.stdout != STDOUT_FILENO)
 				close(child_command.stdout);
-			char *real_path = find_exec(child_command.path, env_get_var(*env, "PATH"));
-			struct stat info;
-			if (real_path)
-			{
-				free(child_command.path);
-				child_command.path = real_path;
-			}
-			child_command.arguments[0] = child_command.path;
-			if (stat(child_command.path, &info) != 0)
-				perror("command doesn't exist");
-			else
-			{
-				char **envp_child = env_to_envp(*env);
-				execve(child_command.path, child_command.arguments, envp_child);
-				perror("execve");
-				envp_free(envp_child);
-			}
-			i = 0;
-			while (i < ast->pipeline.len)
-			{
-				command_free(&commands[i]);
-				i++;
-			}
-			free(commands);
-			return ;
+			i++;
 		}
-		if (child_command.stdout != STDOUT_FILENO)
-			close(child_command.stdout);
-		i++;
 	}
 	i = 0;
 	while (i < ast->pipeline.len)
@@ -182,7 +193,6 @@ void	ast_run_command(t_ast *ast, t_env *env)
 			close(commands[i].stdout);
 		i++;
 	}
-	
 	int status = 0;
 	pid_t wpid;
 	while ((wpid = waitpid(-1, &status, 0)) != -1) //TODO: Exit status of recent command is here $?

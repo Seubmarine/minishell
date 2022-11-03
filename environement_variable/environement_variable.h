@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/27 02:42:32 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/02 15:33:33 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ typedef struct s_env
 {
 	t_vec v;
 }	t_env;
+
+//create a key value from a string "key=value"
+t_env_key_value key_value_init(char *kv);
 
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
