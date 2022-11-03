@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 15:20:14 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/02 16:41:18 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/03 14:00:31 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,7 @@ int	builtin(char **argv, t_env *env)
 		return (builtin_export(argv, env));
 	else if (strncmp(argv[0], "unset", 6) == 0)
 		return (builtin_unset(argv, env));
+	else if (strncmp(argv[0], "env", 3) == 0)
+		return (builtin_env(argv, env));
 	return (0);
 }
