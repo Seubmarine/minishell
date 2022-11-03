@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/10/04 10:06:10 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/03 17:18:13 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,14 @@ void	tokens_append(t_vec *tokens, t_token *current)
 		}
 		else if (last->type == TOKEN_STRING && current->type == TOKEN_STRING)
 		{
-			if (strcat(last->word, current->word) == NULL)
-				exit(EXIT_FAILURE); //TODO error handling
+			char *tmp = malloc(sizeof(char *) * (strlen(last->word) + strlen(current->word) + 1));
+			tmp[0] = '\0';
+			strcpy(tmp, last->word);
+			strcat(tmp, current->word);
+			free(last->word);
+			last->word = tmp;
+			// if (strcat(last->word, current->word) == NULL)
+			// 	exit(EXIT_FAILURE); //TODO error handling
 			free(current->word);
 			return ;
 		}
@@ -193,6 +199,7 @@ t_vec	lexer(char *str, t_env env)
 				char *env_key = strndup(&str[i + 1], next.len);
 				char *env_value = env_get_var(env, env_key);
 				free(env_key);
+				env_key = NULL;
 				if (env_value != NULL)
 				{
 					size_t j = 0;
