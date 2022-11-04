@@ -90,10 +90,10 @@ void	ft_collect_env(char **env, t_env **c_env)
 void	ft_collect_env_null(char *argv, t_env **c_env)
 {
 	t_env	*current;
-	char	str[700];	// Si tu sais comment faire une valeur indetermine sans overflow, n'hésites pas a me le dire
+	char	*str;	// Si tu sais comment faire une valeur indetermine sans overflow, n'hésites pas a me le dire
 
 	current = ft_new_env(c_env);
-	getcwd(str, sizeof(str));
+	str = getcwd(NULL, 0);
 	current->name = "PWD";
 	current->value = str;
 	current = ft_new_env(c_env);

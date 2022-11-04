@@ -72,16 +72,24 @@ void execute_line(char *line, t_env *env)
 
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <stdio.h>
 int main(int argc, char const *argv[], char const *envp[])
 {
 	(void) argc;
-	(void) argv;
     char *line;
     int is_running = 1;
     t_env env;
 
-    env = env_init_from_envp(envp);
-	while (is_running)
+    if (*envp == NULL)
+    {
+       env = env_init_null((char *)argv[0]);
+    }
+    else
+    {
+        (void) argv;
+        env = env_init_from_envp(envp);
+    }
+    while (is_running)
 	{
 		line = readline("Minishell$ ");
 		add_history(line);

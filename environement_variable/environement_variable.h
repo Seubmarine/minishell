@@ -14,6 +14,7 @@
 # define ENVIRONEMENT_VARIABLE_H
 # include <stdlib.h>
 # include <string.h>
+# include <unistd.h>
 # include "vector.h" 
 
 typedef struct s_env_key_value
@@ -34,6 +35,7 @@ t_env_key_value key_value_init(char *kv);
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
 t_env	env_init_from_envp(const char *envp[]);
+t_env	env_init_null(char *argv);
 
 //get an array of key_value, pass the size of the array in length
 t_env_key_value	*env_get_vars(t_env	env, size_t *length);
