@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 18:38:34 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/19 09:17:55 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/04 15:24:23 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,34 @@ void vec_test_3(void)
 	vec_free(&env);
 }
 
+void vec_test_4(void)
+{
+	int		i;
+	int		tmp;
+	int		*get_i;
+	t_vec	power_vec;
+
+	power_vec = vec_new(sizeof(int), 4, NULL);
+	i = 0;
+	while (i < 16)
+	{
+		tmp = i * i;
+		vec_append(&power_vec, &tmp);
+		i++;
+	}
+	i = 0;
+	while (i < 16)
+	{
+		get_i = vec_get(&power_vec, i);
+		printf("elem[%i] = %i\n", i, *get_i);
+		i++;
+	}
+}
+
+int main(void)
+{
+	vec_test_4();
+}
 /*
 int main(int argc, char const *argv[])
 {
