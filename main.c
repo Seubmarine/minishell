@@ -70,6 +70,20 @@ void execute_line(char *line, t_env *env)
     vec_free(&v);
 }
 
+#include <termios.h>
+void remove_echo_ctrl(void)
+{
+    struct termios state;
+    if(!isatty(STDIN_FILENO))
+    {
+        perror("Not a tty");
+        return ;
+    }
+    tcgetattr(STDIN_FILENO, &state);
+    state.c_lflag ^= ECHOCTL;
+    tcsetattr(STDIN_FILENO, TCSANOW, &state);
+}
+
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdio.h>
@@ -80,6 +94,7 @@ int main(int argc, char const *argv[], char const *envp[])
     int is_running = 1;
     t_env env;
 
+    remove_echo_ctrl();
     if (*envp == NULL)
     {
        env = env_init_null((char *)argv[0]);
