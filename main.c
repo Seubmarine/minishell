@@ -4,7 +4,7 @@
 #include "ast.h"
 #include "command.h"
 #include "environement_variable.h"
-
+#include "signaling.h"
 // void	lexer_debug_print(const char *original_line, t_vec v)
 // {
 // 	const char *lex_token[] = {
@@ -80,7 +80,7 @@ void remove_echo_ctrl(void)
         return ;
     }
     tcgetattr(STDIN_FILENO, &state);
-    state.c_lflag ^= ECHOCTL;
+    state.c_lflag &=  ~ECHOCTL;
     tcsetattr(STDIN_FILENO, TCSANOW, &state);
 }
 
@@ -95,6 +95,7 @@ int main(int argc, char const *argv[], char const *envp[])
     t_env env;
 
     remove_echo_ctrl();
+    signal_handling();
     if (*envp == NULL)
     {
        env = env_init_null((char *)argv[0]);
@@ -107,11 +108,15 @@ int main(int argc, char const *argv[], char const *envp[])
     while (is_running)
 	{
 		line = readline("Minishell$ ");
-		add_history(line);
-		if (strncmp("__end", line, 5) == 0)
+        if (line == NULL)
+        {
             is_running = 0;
+        }
         else
+        {
+		    add_history(line);
             execute_line(line, &env);
+        }
         free(line);
 	}
     clear_history();
