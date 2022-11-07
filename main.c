@@ -65,6 +65,11 @@
 int execute_line(char *line, t_env *env)
 {
     t_vec v = lexer(line, *env);
+    if (v.len <= 1 || (((t_token *)v.data)[v.len - 1].type) != TOKEN_END)
+    {
+        vec_free(&v);
+        return (0);
+    }        
 	t_ast *ast = ast_init(v.data, v.len);
     int is_child = ast_run_command(ast, env);
     ast_free(ast);
