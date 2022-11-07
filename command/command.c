@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/03 12:16:34 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/07 19:41:22 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,12 +127,16 @@ int command_run(t_env *env, t_command command)
 Create the commands from the ast tree and pipes them, then set the redirection, fork the program
 open the filedescriptor in command.stdin and command.stdout and replace the real stdin and stout by them
 in the forked process then execve.
+
+Return 1 if it's a child
 */
-void	ast_run_command(t_ast *ast, t_env *env)
+
+int	ast_run_command(t_ast *ast, t_env *env)
 {
 	size_t			i;
 	t_ast_command	*ast_command;
 	t_command		*commands = malloc(sizeof(*commands) * ast->pipeline.len);
+	int				is_child = 0;
 
 	//Create all commands with redirection
 	i = 0;
@@ -177,7 +181,7 @@ void	ast_run_command(t_ast *ast, t_env *env)
 			if (pid == 0) //is child
 			{
 				command_run(env, child_command);
-				return ;
+				is_child = 1;
 			}
 			if (child_command.stdout != STDOUT_FILENO)
 				close(child_command.stdout);
@@ -208,4 +212,5 @@ void	ast_run_command(t_ast *ast, t_env *env)
 		i++;
 	}
 	free(commands);
+	return (is_child);
 }

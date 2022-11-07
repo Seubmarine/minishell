@@ -61,13 +61,15 @@
 //     vec_free(&space);
 // }
 
-void execute_line(char *line, t_env *env)
+//return 1 if it's a child
+int execute_line(char *line, t_env *env)
 {
     t_vec v = lexer(line, *env);
 	t_ast *ast = ast_init(v.data, v.len);
-    ast_run_command(ast, env);
+    int is_child = ast_run_command(ast, env);
     ast_free(ast);
     vec_free(&v);
+    return (is_child);
 }
 
 #include <termios.h>
@@ -115,7 +117,8 @@ int main(int argc, char const *argv[], char const *envp[])
         else
         {
 		    add_history(line);
-            execute_line(line, &env);
+            if(execute_line(line, &env))
+                is_running = 0;
         }
         free(line);
 	}
