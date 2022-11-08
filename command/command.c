@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/08 01:20:15 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/08 02:05:43 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void command_set_redirection(t_command *command, t_ast_redirection *redirection,
 
 int command_run(t_env *env, t_command command)
 {
-	int	builtin_result;
+	int	exit_status = 42;
 
 	printf("Process %i.\nCommand %s\nstdin: %i\nstdout: %i\n\n", getpid(), command.path, command.stdin, command.stdout);
 	dup2(command.stdin, STDIN_FILENO);
@@ -97,9 +97,8 @@ int command_run(t_env *env, t_command command)
 		close(command.stdin);
 	if (command.stdout != STDOUT_FILENO)
 		close(command.stdout);
-	builtin_result = builtin(command.arguments, env);
-	if (builtin_result != 0)
-		return (builtin_result);
+	if (builtin(command.arguments, env, &exit_status))
+		return (exit_status);
 	char *real_path = find_exec(command.path, env_get_var(*env, "PATH"));
 	if (real_path)
 	{
@@ -109,16 +108,19 @@ int command_run(t_env *env, t_command command)
 	command.arguments[0] = command.path;
 	struct stat info;
 	if (stat(command.path, &info) != 0)
+	{
 		perror("command doesn't exist");
+		exit_status = 127;
+	}
 	else
 	{
 		char **envp_child = env_to_envp(*env);
 		execve(command.path, command.arguments, envp_child);
 		perror("execve");
 		envp_free(envp_child);
-		return (-1);
+		exit_status = 126;
 	}
-	return (-1);
+	return (exit_status);
 }
 
 //TODO: stderr of command need to be redirected to the stdin of the minishell
@@ -136,7 +138,7 @@ int	ast_run_command(t_ast *ast, t_env *env)
 	size_t			i;
 	t_ast_command	*ast_command;
 	t_command		*commands = malloc(sizeof(*commands) * ast->pipeline.len);
-	int				is_child = 0;
+	int				exit_status = 0;
 
 	//Create all commands with redirection
 	i = 0;
@@ -168,9 +170,11 @@ int	ast_run_command(t_ast *ast, t_env *env)
 		}
 		i++;
 	}
-	int builtin_result = builtin(commands[0].arguments, env);
-	if (ast->pipeline.len == 1 && builtin_result == 1)
-		;
+	if (ast->pipeline.len == 1 && builtin(commands[0].arguments, env, &exit_status))
+	{
+		env_set_last_status(env, exit_status);
+		exit_status = 0;
+	}
 	else
 	{
 		i = 0;
@@ -179,10 +183,7 @@ int	ast_run_command(t_ast *ast, t_env *env)
 			t_command child_command = commands[i];
 			pid_t pid = fork();
 			if (pid == 0) //is child
-			{
-				command_run(env, child_command);
-				is_child = 1;
-			}
+				exit_status = command_run(env, child_command);
 			else
 				commands[i].pid = pid;
 			if (child_command.stdout != STDOUT_FILENO)
@@ -218,5 +219,5 @@ int	ast_run_command(t_ast *ast, t_env *env)
 		i++;
 	}
 	free(commands);
-	return (is_child);
+	return (exit_status);
 }

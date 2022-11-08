@@ -10,7 +10,5 @@ int builtin_unset(char **argv, t_env *env)
 		env_remove_var(env, argv[i]);
 		i++;
 	}
-	if (i <= 1)
-		return (-1);
-	return (1);
+	return (0);
 }

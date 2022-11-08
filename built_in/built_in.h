@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 15:09:07 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/04 20:17:14 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/08 01:49:07 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,5 @@ int	builtin_unset(char **argv, t_env *env);
 int	builtin_export(char **argv, t_env *env);
 int builtin_env(char **argv, t_env *env);
 int builtin_pwd(void);
-int	builtin(char **argv, t_env *env);
+int	builtin(char **argv, t_env *env, int *exit_status);
 #endif

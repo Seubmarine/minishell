@@ -12,7 +12,5 @@ int builtin_export(char **argv, t_env *env)
 		env_set_var(env, kv.key, kv.value);
 		i++;
 	}
-	if (i <= 1)
-		return (-1);
-	return (1);
+	return (0);
 }

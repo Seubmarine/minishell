@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 14:00:42 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/03 14:23:59 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/08 01:48:15 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,5 @@ int builtin_env(char **argv, t_env *env)
 		printf("%s=%s\n", kv->key, kv->value);
 		i++;
 	}
-	return (1);
+	return (0);
 }

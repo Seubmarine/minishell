@@ -100,6 +100,7 @@ int main(int argc, char const *argv[], char const *envp[])
     char *line;
     int is_running = 1;
     t_env env;
+    int     exit_status = 0;
 
     remove_echo_ctrl();
     signal_handling();
@@ -122,12 +123,13 @@ int main(int argc, char const *argv[], char const *envp[])
         else
         {
 		    add_history(line);
-            if(execute_line(line, &env))
+            exit_status = execute_line(line, &env); 
+            if(exit_status)
                 is_running = 0;
         }
         free(line);
 	}
     clear_history();
     env_free(&env);
-	return (0);
+	return (exit_status);
 }
