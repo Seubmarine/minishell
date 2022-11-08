@@ -20,7 +20,7 @@ PATH_FINDER_INCLUDE = path_finder/
 ENV_SRCS = environement_variable.c env_null.c
 ENV_INCLUDE = environement_variable/
 
-BUILTIN_SRCS = built_in.c export.c unset.c env.c pwd.c
+BUILTIN_SRCS = built_in.c export.c unset.c env.c pwd.c ft_echo.c ft_exit.c
 BUILTIN_INCLUDE = built_in/
 
 SIGNAL_SRCS = signaling.c
