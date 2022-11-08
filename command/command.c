@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/07 19:41:22 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/08 01:20:15 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,8 @@ int	ast_run_command(t_ast *ast, t_env *env)
 				command_run(env, child_command);
 				is_child = 1;
 			}
+			else
+				commands[i].pid = pid;
 			if (child_command.stdout != STDOUT_FILENO)
 				close(child_command.stdout);
 			i++;
@@ -200,7 +202,11 @@ int	ast_run_command(t_ast *ast, t_env *env)
 	int status = 0;
 	pid_t wpid;
 	while ((wpid = waitpid(-1, &status, 0)) != -1) //TODO: Exit status of recent command is here $?
+	{
 		printf("Process %d terminated.\n\n", wpid);
+		if (commands[ast->pipeline.len - 1].pid == wpid)
+			env_set_last_status(env, (WEXITSTATUS(status)));
+	}
 	i = 0;
 	while (i < ast->pipeline.len)
 	{

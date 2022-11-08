@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/02 15:33:33 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/08 00:35:58 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@ typedef struct s_env_key_value
 	char *value;
 }	t_env_key_value;
 
+#define ENV_LAST_STATUS_SIZE 256
 
 typedef struct s_env
 {
 	t_vec v;
+	int		_last_status;
+	char	*_last_status_str;
 }	t_env;
 
 //create a key value from a string "key=value"
@@ -45,6 +48,10 @@ void	env_remove_var(t_env *env, char *key);
 
 //if key already exist overwrite value
 void	env_set_var(t_env *env, char *key, char *value);
+
+//set and get special variable $?
+char	*env_set_last_status(t_env *env, int status);
+char	*env_get_last_status(t_env *env);
 
 //if key is present get it's value, or NULL if key doesn't exist
 char	*env_get_var(t_env env, char *key);

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/07 19:32:16 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/07 23:42:14 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_command
 	char	**arguments;
 	int		stdin;
 	int		stdout;
+	pid_t	pid;
 }	t_command;
 
 t_command	command_init(t_token *tokens, size_t token_size);

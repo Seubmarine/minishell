@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/03 14:21:33 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/08 01:17:04 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ t_env	env_init_from_envp(const char *envp[])
 		i++;
 	if (i <= 0)
 		i = 1;
+	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
+	env_set_last_status(&env, 0);
 	env.v = vec_new(sizeof(t_env_key_value), i, (void (*)(void *))env_key_value_free);
 	i = 0;
 	while (envp[i])
@@ -61,6 +63,8 @@ t_env	env_init_from_envp(const char *envp[])
 void	env_free(t_env	*env)
 {
 	vec_free(&env->v);
+	env->_last_status = 0;
+	free(env->_last_status_str);
 }
 
 t_env_key_value	*env_get_vars(t_env	env, size_t *length)
@@ -90,10 +94,33 @@ t_env_key_value	*env_get_key_value_ptr(t_env env, char *key)
 char	*env_get_var(t_env env, char *key)
 {
 	t_env_key_value *kv;
+
+	if (strcmp("?", key) == 0)
+		return (env_get_last_status(&env));
 	kv = env_get_key_value_ptr(env, key);
 	if (kv == NULL)
 		return (NULL);
 	return (kv->value);
+}
+
+//set status as a string internally
+#include <stdio.h>
+char	*env_set_last_status(t_env *env, int status)
+{
+	if (env->_last_status_str == NULL)
+	{
+		write(STDERR_FILENO, "env last status isn't set corretly\n", 35);
+		exit(EXIT_FAILURE);
+	}
+	status = (status + 256) % 256;
+	env->_last_status = status;
+	snprintf(env->_last_status_str, ENV_LAST_STATUS_SIZE - 1, "%i", status);//TODO: use itoa
+	return (env->_last_status_str);
+}
+
+char	*env_get_last_status(t_env *env)
+{
+	return (env->_last_status_str);
 }
 
 //remove the variable from this key in the env
