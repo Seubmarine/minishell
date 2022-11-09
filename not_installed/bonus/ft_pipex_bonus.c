@@ -33,7 +33,7 @@ void	ft_first_cmd(t_fderr *fd_errnum, char **argv, char **envp)
 	if (fd_errnum->fd[0] == -1)
 	{
 		perror(argv[1]);
-		ft_error_fd(fd_errnum);
+		// ft_error_fd(fd_errnum);
 		exit(2);
 	}
 	close(fd_errnum->p_fd[0][0]);
@@ -83,7 +83,7 @@ void	ft_last_cmd(t_fderr *fd_errnum, char **argv, char **envp, int i)
 	if (fd_errnum->fd[1] == -1)
 	{
 		perror(argv[ft_strlen_l(argv) - 1]);
-		ft_error_fd(fd_errnum);
+		// ft_error_fd(fd_errnum);
 		exit (1);
 	}
 	fd_errnum->c_fd[0] = dup2(fd_errnum->p_fd[i - 1][0], STDIN_FILENO);

@@ -32,8 +32,8 @@ int	builtin(char **argv, t_env *env, int *exit_status)
 		*exit_status = ft_echo(argv);
 	else if (strncmp(argv[0], "exit", command_size) == 0)
 		*exit_status = ft_exit(argv);
-	else if (strncmp(argv[0], "cd", command_size) == 0)
-		*exit_status = ft_cd(argv, env);
+	// else if (strncmp(argv[0], "cd", command_size) == 0)
+	// 	*exit_status = ft_cd(argv, env);
 	else
 		return (0);
 	return (1);

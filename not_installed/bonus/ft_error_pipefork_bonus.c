@@ -45,7 +45,7 @@ void	ft_error_fork(t_fderr *fd_errnum)
 	exit(1);
 }
 
-void	ft_error_fd(t_fderr *fd_errnum)
+// void	ft_error_fd(t_fderr *fd_errnum)
 
 void	ft_error_c_fd(t_fderr *fd_errnum)
 {

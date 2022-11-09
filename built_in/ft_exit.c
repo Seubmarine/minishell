@@ -2,6 +2,19 @@
 #include "limits.h"
 // A RETIRER APRES AJOUT LIBFT
 
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	unsigned long	i;
+
+	i = 0;
+	if (n == 0)
+		return (0);
+	while ((i < n - 1) && (s1[i] == s2[i]) && (s1[i] && s2[i]))
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
+
 void	ft_putstr_fd(char *s, int fd)
 {
 	write(fd, s, ft_strlen(s));
@@ -21,7 +34,7 @@ int	ft_exit_error(char *str, int code)
 	buff = ft_strjoin("exit: ", str);
 	if (buff == NULL)
 		return (ft_putstr_fd("Error malloc\n", 2), 2);
-	message = ft_strjoin(buff, " : numeric arguement only\n");
+	message = ft_strjoin(buff, " : numeric arguement required\n");
 	free (buff);
 	if (message == NULL)
 		return (ft_putstr_fd("Error malloc\n", 2), 2);
@@ -32,13 +45,15 @@ int	ft_exit_error(char *str, int code)
 
 long long int	ft_atolli(char *str)
 {
-    long long unsigned int	res;
+	long long unsigned int	res;
 	int			sign;
 	int			i;
 
 	i = 0;
 	sign = 1;
 	res = 0;
+	if (ft_strncmp(str, "-9223372036854775808", 20) == 0)
+		return (0);
 	while (str[i] && ((str[i] >= '\t' && str[i] <= '\r')
 			|| str[i] == ' '))
 		i++;
@@ -50,11 +65,11 @@ long long int	ft_atolli(char *str)
 	}
 	while ((str[i] >= '0' && str[i] <= '9') && (res < 9223372036854775807))
 		res = res * 10 + (str[i++] - '0');
-	if (res > 9223372036854775807)
+	if ((res > 9223372036854775807) && (sign == 1))
 		ft_exit_error(str, 2);
-	if ((res == 9223372036854775807) && (sign == -1))
-        return (-9223372036854775807);
-	return (res);
+	if ((res > 9223372036854775807) && (sign == -1))
+		ft_exit_error(str, 2);
+	return (res * sign);
 }
 
 int	ft_only_num(char *arg)

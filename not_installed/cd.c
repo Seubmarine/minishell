@@ -4,6 +4,7 @@
 #include <dirent.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sys/wait.h>
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
@@ -306,17 +307,19 @@ void    ft_check_dir_change(t_env **c_env)
     pid_t   pid;
     t_env   *path;
     char    **str;
-    char    **ls[2];
+    char    *ls[2];
     path = *c_env;
-    *ls[0] = "ls";
-    *ls[1]= NULL;
+    ls[0] = "ls";
+	ls[1] = NULL;
     while (path && (ft_strncmp(path->name, "PATH", 4) != 0))
         path = path->next;
     str = ft_split(path->value, ':');
+	printf("bug\n");
     pid = fork();
     if (pid == 0)
         execve("/usr/bin/ls", ls, str);
-    wait(-1, NULL, 0);
+    waitpid(-1, NULL, 0);
+	printf("ici\n");
 }
 
 
@@ -330,7 +333,7 @@ int	ft_strlen_l(char **arg)
 	while (arg[i])
 		i++;
     if (i > 1)
-        ft_putstr_fd("cd: too many arguments\n", 2);
+		ft_putstr_fd("cd: too many arguments\n", 2);
 	return (i);
 }
 
@@ -344,7 +347,7 @@ int ft_is_flag(char *arg)
     ft_strlcpy(str, arg, 3);
     sentence = ft_strjoin("cd: ", str);
     free(str);
-    str = ft_strjoin(sentence, "invalid flag\n");
+    str = ft_strjoin(sentence, ": invalid option\n");
     free(sentence);
     ft_putstr_fd(str, 2);
     free(str);
@@ -376,7 +379,6 @@ void    ft_change_env(t_env **c_env)
     t_env   *res;
 
     str = NULL;
-    current = NULL;
     res = *c_env;
     while (res && (ft_strncmp(res->name, "PWD", 3) != 0))
         res = res->next;
@@ -408,17 +410,15 @@ t_env   *ft_get_home(t_env **c_env)
 void    ft_change_dir(char *arg, t_env **c_env)
 {
     if (chdir(arg) != 0)
-        ft_putstr_fd("error chdir\n", 2);
+        return ft_putstr_fd("error chdir\n", 2);
     ft_change_env(c_env);
 }
 
 void    ft_cd(char *str, t_env **c_env)
 {
     char	**arg;
-	char	*sentence;
-    t_env   file;
+    t_env   *file;
 
-	sentence = NULL;
 	if (ft_strlen(str) == 2)
 	{
         file = ft_get_home(c_env);
@@ -448,6 +448,7 @@ int	main(int argc, char **argv, char **env)
 	t_env	*c_env;
     t_env   *read;
 	c_env = NULL;
+	char	*str;
 	(void)argc;
 	// Partie a replacer dans minishell
 	if (*env == NULL)
@@ -460,14 +461,15 @@ int	main(int argc, char **argv, char **env)
 	// Fin de partie
 	while (1)
 	{
-        read = c_env
+        read = c_env;
 		str = readline("> ");
 		if (ft_strncmp(str, "cd", 2) == 0)
-			ft_cd(str, c_env);
+			ft_cd(str, &c_env);
         while (read)
         {
             if ((ft_strncmp(read->name, "PWD", 3) == 0) || (ft_strncmp(read->name, "OLDPWD", 6) == 0) || (ft_strncmp(read->name, "HOME", 3) == 0))
                 printf("%s=%s\n", read->name, read->value);
+			read = read->next;
         }
         ft_check_dir_change(&c_env);
 		free(str);
