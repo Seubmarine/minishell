@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/08 02:05:43 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/09 20:05:44 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,11 @@ int	ast_run_command(t_ast *ast, t_env *env)
 		if (commands[ast->pipeline.len - 1].pid == wpid)
 			env_set_last_status(env, (WEXITSTATUS(status)));
 	}
+	char **last_args = commands[ast->pipeline.len - 1].arguments;
+	i = 0;
+	while (last_args[i])
+		i++;
+	env_set_var(env, "_", last_args[i - 1]);
 	i = 0;
 	while (i < ast->pipeline.len)
 	{
