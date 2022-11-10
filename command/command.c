@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/10 13:31:34 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/10 14:12:59 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,17 @@ void command_set_redirection(t_command *command, t_ast_redirection *redirection,
 			if (command->stdout != STDOUT_FILENO) //if a redirection existed before close the previous file, not sure if it's the correct behavior
 				close(command->stdout);
 			command->stdout = open(filename, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
+			if (command->stdout == -1)
+				perror("minishell: "); // TODO: check error with name of file
+		}
+		else if (redirection[i].token.type == TOKEN_REDIRECT_INPUT)
+		{
+			char *filename = redirection->rhs.word;
+			if (command->stdin != STDIN_FILENO)
+				close(command->stdin);
+			command->stdin = open(filename, O_RDONLY);
+			if (command->stdin == -1)
+				perror("minishell: "); // TODO: check error with name of file
 		}
 		i++;
 	}
