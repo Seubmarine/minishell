@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/09 20:05:44 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/10 13:31:34 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,10 +101,7 @@ int command_run(t_env *env, t_command command)
 		return (exit_status);
 	char *real_path = find_exec(command.path, env_get_var(*env, "PATH"));
 	if (real_path)
-	{
-		free(command.path);
 		command.path = real_path;
-	}
 	command.arguments[0] = command.path;
 	struct stat info;
 	if (stat(command.path, &info) != 0)
@@ -120,6 +117,8 @@ int command_run(t_env *env, t_command command)
 		envp_free(envp_child);
 		exit_status = 126;
 	}
+	if (real_path)
+		free(real_path);
 	return (exit_status);
 }
 
