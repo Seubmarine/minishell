@@ -12,13 +12,14 @@
 
 #include "built_in.h"
 
-int builtin_pwd(void)
+int	builtin_pwd(void)
 {
 	char	*current_directory;
 
 	current_directory = getcwd(NULL, 0);
 	if (current_directory == NULL)
-		return (1);
+		return (perror("pwd: error retrieving current\
+directory: getcwd: cannot access parent directories"), 1);
 	printf("%s\n", current_directory);
 	free(current_directory);
 	return (0);

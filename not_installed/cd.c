@@ -314,12 +314,10 @@ void    ft_check_dir_change(t_env **c_env)
     while (path && (ft_strncmp(path->name, "PATH", 4) != 0))
         path = path->next;
     str = ft_split(path->value, ':');
-	printf("bug\n");
     pid = fork();
     if (pid == 0)
         execve("/usr/bin/ls", ls, str);
     waitpid(-1, NULL, 0);
-	printf("ici\n");
 }
 
 
@@ -341,10 +339,18 @@ int ft_is_flag(char *arg)
 {
     char *str;
     char *sentence;
-    if ((arg[0] != '-') || (arg[0] == '-' && ft_strlen(arg) == 1))
-        return(0);
-    str = malloc(sizeof(char) * 3);
-    ft_strlcpy(str, arg, 3);
+    if (arg[0] != '-')
+        return (0);
+	else if (ft_strlen(arg) == 1)
+	{
+		str = malloc(sizeof(char) * 2);
+		ft_strlcpy(str, arg, 2);
+	}
+	else
+	{
+	    str = malloc(sizeof(char) * 3);
+	    ft_strlcpy(str, arg, 3);
+	}
     sentence = ft_strjoin("cd: ", str);
     free(str);
     str = ft_strjoin(sentence, ": invalid option\n");
@@ -409,9 +415,12 @@ t_env   *ft_get_home(t_env **c_env)
 
 void    ft_change_dir(char *arg, t_env **c_env)
 {
-    if (chdir(arg) != 0)
-        return ft_putstr_fd("error chdir\n", 2);
-    ft_change_env(c_env);
+	if (chdir(arg) != 0)
+	{
+		ft_putstr_fd("cd: ", 2);
+		return perror(arg);
+	}
+	ft_change_env(c_env);
 }
 
 void    ft_cd(char *str, t_env **c_env)

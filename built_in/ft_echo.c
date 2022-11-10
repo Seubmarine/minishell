@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/10 18:08:41 by mportrai          #+#    #+#             */
+/*   Updated: 2022/11/10 18:08:41 by mportrai         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "built_in.h"
 #include <stdio.h>
 
@@ -92,9 +104,9 @@ int	ft_strlen_l(char **arg)
 	return (i);
 }
 
-int	ft_is_flag(char *arg)
+int	ft_is_flag_echo(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (arg[0] != '-')
@@ -111,7 +123,7 @@ char	*ft_add_next_word(char *sentence, char *arg)
 {
 	char	*s1;
 	char	*s2;
-	
+
 	s1 = NULL;
 	s2 = NULL;
 	if (sentence == NULL)
@@ -147,7 +159,7 @@ void	ft_print_sentence(char *sentence, int flag)
 int	ft_echo(char **argv)
 {
 	char	*sentence;
-	int 	i;
+	int		i;
 	int		flag;
 
 	i = 1;
@@ -155,9 +167,11 @@ int	ft_echo(char **argv)
 	sentence = NULL;
 	if (ft_strlen_l(argv) == 1)
 		return (printf("\n"), 0);
-	if ((flag = ft_is_flag(argv[1])) == 1)
+	flag = ft_is_flag_echo(argv[1]);
+	if (flag == 1)
 		i++;
-	if ((flag == 1 && (ft_strlen_l(argv) > 2)) || (flag == 0 && (ft_strlen_l(argv) > 1)))
+	if ((flag == 1 && (ft_strlen_l(argv) > 2)) \
+	|| (flag == 0 && (ft_strlen_l(argv) > 1)))
 	{
 		while (argv[i])
 			sentence = ft_add_next_word(sentence, argv[i++]);

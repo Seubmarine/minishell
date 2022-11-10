@@ -13,9 +13,9 @@
 #include "built_in.h"
 #include <stdio.h>
 
-int builtin_env(char **argv, t_env *env)
+int	builtin_env(char **argv, t_env *env)
 {
-	size_t	i;
+	size_t			i;
 	t_env_key_value	*kv;
 
 	(void) argv;

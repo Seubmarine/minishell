@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_exit.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/10 18:06:06 by mportrai          #+#    #+#             */
+/*   Updated: 2022/11/10 18:06:08 by mportrai         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "built_in.h"
 #include "limits.h"
 // A RETIRER APRES AJOUT LIBFT
@@ -14,7 +26,6 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-
 void	ft_putstr_fd(char *s, int fd)
 {
 	write(fd, s, ft_strlen(s));
@@ -26,7 +37,7 @@ int	ft_exit_error(char *str, int code)
 {
 	char	*message;
 	char	*buff;
-	
+
 	buff = NULL;
 	message = NULL;
 	if (code == 1)
@@ -46,8 +57,8 @@ int	ft_exit_error(char *str, int code)
 long long int	ft_atolli(char *str)
 {
 	long long unsigned int	res;
-	int			sign;
-	int			i;
+	int						sign;
+	int						i;
 
 	i = 0;
 	sign = 1;
@@ -74,7 +85,7 @@ long long int	ft_atolli(char *str)
 
 int	ft_only_num(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (arg[0] == '-')
@@ -95,8 +106,8 @@ int	ft_only_num(char *arg)
 
 int	ft_exit(char **argv)
 {
-	int             i;
-	long long int   errnum;
+	int				i;
+	long long int	errnum;
 
 	i = 0;
 	errnum = 256;
@@ -112,6 +123,5 @@ int	ft_exit(char **argv)
 	i = i % 256;
 	errnum += i;
 	errnum = errnum % 256;
-    printf("exit\n");
 	exit (errnum);
 }
