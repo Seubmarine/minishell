@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 18:04:49 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/10 18:04:51 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/10 18:57:36 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,13 @@ int	ft_change_env(t_env *env)
 	str = env_get_var(*env, "PWD");
 	if (str == NULL)
 		return (ft_putstr_fd("Error : env_get_var\n", 2), 1);
-	env_set_var(env, "PWD", getcwd(NULL, 0));
 	env_set_var(env, "OLDPWD", str);
+	str = getcwd(NULL, 0);
+	if (str)
+	{
+		env_set_var(env, "PWD", str);
+		free(str);
+	}
 	return (0);
 }
 
