@@ -94,6 +94,7 @@ void	ft_last_cmd(t_fderr *fd_errnum, char **argv, char **envp, int i)
 		ft_error_c_fd(fd_errnum);
 	cmd = ft_prepare_cmd(argv[i + 2], fd_errnum);
 	path = ft_prepare_path(cmd, envp, fd_errnum);
+	printf("path = %s, cmd = %s\n", path, cmd[0]);
 	if (execve(path, cmd, envp) == -1)
 		ft_error_exec(path, cmd, fd_errnum);
 }

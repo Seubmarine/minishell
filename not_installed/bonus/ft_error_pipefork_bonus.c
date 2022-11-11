@@ -59,6 +59,7 @@ void	ft_error_c_fd(t_fderr *fd_errnum)
 
 void	ft_error_no_argv(t_fderr *fd_errnum)
 {
+	(void)fd_errnum;
 	ft_putstr_fd("Error : no argument\n", 2);
 	exit(1);
 }
