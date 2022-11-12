@@ -71,7 +71,7 @@ int execute_line(char *line, t_env *env)
         return (0);
     }        
 	t_ast *ast = ast_init(v.data, v.len);
-    int is_child = ast_run_command(ast, env);
+    int is_child = ft_which_command(ast, env);
     ast_free(ast);
     vec_free(&v);
     return (is_child);
@@ -124,7 +124,7 @@ int main(int argc, char const *argv[], char const *envp[])
         {
 		    add_history(line);
             exit_status = execute_line(line, &env); 
-            if(exit_status)
+            if(env.is_child || exit_status)
                 is_running = 0;
         }
         free(line);
