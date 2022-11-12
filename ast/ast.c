@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 19:39:24 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/18 22:22:12 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/11 22:38:44 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	ast_push(t_ast *ast, t_token *tok)
 	i = 0;
 	while (tok[i].type != TOKEN_END)
 	{
-		if (tok[i].type == TOKEN_REDIRECT_INPUT || tok[i].type == TOKEN_REDIRECT_OUTPUT)
+		if (tok[i].type == TOKEN_REDIRECT_INPUT || tok[i].type == TOKEN_REDIRECT_OUTPUT || tok[i].type == TOKEN_REDIRECT_OUTPUT_APPEND || tok[i].type == TOKEN_HERE_DOCUMENT)
 		{
 			t_ast_redirection new_redirection = redirection_init(tok[i], tok[i + 1]);
 			command = vec_get(&ast->pipeline, ast->pipeline.len - 1);

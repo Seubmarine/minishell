@@ -3,124 +3,151 @@
 /*                                                        :::      ::::::::   */
 /*   ft_command.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/11 17:07:42 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/12 17:04:39 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "command.h"
 
-void	ft_open_input(int *fd, t_ast *ast, t_env *env)
+void	ft_open_input(int *fd, char *filename)
 {
 	if (fd[0] != -2)
 		close(fd[0]);
-	fd[0] = open(/*arg*/, O_RDONLY);
-	if (fd[0] == -1)
-		ft_error_open(fd, ast, env);
+	fd[0] = open(filename, O_RDONLY);
+	// if (fd[0] == -1)
+	// 	ft_error_open(fd, NULL, NULL);
 }
 
-void	ft_open_output(int *fd, t_ast, t_env *env)
+void	ft_open_output(int *fd, t_redirection redir)
 {
 	if (fd[1] != -2)
 		close(fd[1]);
-	if (/* token >*/)
-		fd[1] = open(/*arg*/, O_CREAT, | O_WRONLY | O_TRUNC, 0644);
-	if (/* token >>*/)
-		fd[1] = open(/*arg*/, O_CREAT | O_WRONLY | O_APPEND, 0644);
-	if (fd[1] == -1)
-		ft_error_open(fd, ast, env);
+	if (redir.type == REDIRECTION_OUTPUT)
+		fd[1] = open(redir.filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (redir.type == REDIRECTION_OUTPUT_APPEND)
+		fd[1] = open(redir.filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	// if (fd[1] == -1)
+	// 	ft_error_open(fd, NULL, NULL);
 }
 
-void	ft_analyse_fd(int *fd, t_ast *ast, t_env *env)
+void	ft_analyse_fd(int *fd, t_command cmd)
 {
-	int i;
+	size_t			i;
+	t_redirection	redir;
 
 	i = 0;
-	while (/*parcours fd*/)
+	while (i < cmd.redirections_len)
 	{
-		if (/*token < ou <<*/)
-			ft_open_input(fd, ast, env);
-		if (/*token > ou >>*/)
-			ft_open_output(fd, ast, env);
+		redir = cmd.redirections[i];
+		if (redir.type == REDIRECTION_INPUT)
+			ft_open_input(fd, redir.filename);
+		else if (redir.type == REDIRECTION_OUTPUT || redir.type == REDIRECTION_OUTPUT_APPEND)
+			ft_open_output(fd, redir);
 		i++;
 	}
 }
 
-void	ft_open_fd_child(int *fd, int *c_fd, t_ast *ast, t_env *env)
+void	ft_open_fd_child(int *fd, int *c_fd, t_command cmd)
 {
-	ft_analyse_fd(fd, ast, env);
+	ft_analyse_fd(fd, cmd);
 	if (fd[0] == -2)
-		fd[-2] = open("/dev/stdin", O_RDONLY);
+		fd[0] = open("/dev/stdin", O_RDONLY);
 	if (fd[1] == -2)
 		fd[1] = open("/dev/stdout", O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if ((fd[0] == -1) || (fd[1] == -1))
-		ft_error_open(fd, c_fd, ast, env);
+	{
+		perror("minishell child open: /dev/stdout or /dev/stdin");
+		//ft_error_open
+		exit(EXIT_FAILURE);
+	}
 	c_fd[0] = dup2(fd[0], STDIN_FILENO);
 	c_fd[1] = dup2(fd[1], STDOUT_FILENO);
+	printf("fd[0] = %d fd[1] = %d\n", fd[0], fd[1]);
 	close(fd[0]);
 	close(fd[1]);
-	if ((c_fd[0] == -1) || (c_fd[1] == -1))
-		ft_error_open(fd, c_fd, ast, env);
+	// if ((c_fd[0] == -1) || (c_fd[1] == -1))
+		//ft_error_open(fd, c_fd, NULL, NULL);
 }
 
-void	ft_init_exec_command(int *fd, int *c_fd, char *path, char **cmd)
+void	ft_init_exec_command(int *fd, int *c_fd)
 {
 	fd[0] = -2;
 	fd[1] = -2;
 	c_fd[0] = 0;
 	c_fd[1] = 0;
-	path = NULL;
-	cmd = NULL;
 }
 
-int	ft_exec_command(t_ast *ast, t_env *env)
+const char *REDIRECTION_DEFUG[] = {
+	"REDIRECTION_OUTPUT",
+	"REDIRECTION_OUTPUT_APPEND",
+	"REDIRECTION_INPUT",
+	"REDIRECTION_INVALID"
+};
+
+void	ft_command_debug(t_command cmd)
+{
+	size_t i;
+
+	i = 0;
+	printf("cmd : %s\n", cmd.path);
+	printf("args = {\n");
+	while (cmd.arguments[i])
+	{
+		printf("\targs[%zu] = \"%s\"\n", i, cmd.arguments[i]);
+		i++;
+	}
+	printf("}\n");
+	printf("redirection = {\n");
+	i = 0;
+	while (i < cmd.redirections_len)
+	{
+		t_redirection r = cmd.redirections[i];
+		printf("\t[%zu] type = %s, filename = \"%s\"\n", i, REDIRECTION_DEFUG[r.type], r.filename);
+		i++;
+	}
+	printf("}\n");
+}
+
+int	ft_exec_command(t_command *cmd, t_env *env)
 {
 	int		fd[2];
 	int		c_fd[2];
-	char	*path;
-	char	**cmd;
+	char	*bin_path;
 
-	ft_init_exec_command(&fd, &c_fd, path, cmd);
-	ft_open_fd_child(&fd, &c_fd, ast, cmd);
-	cmd = ft_prepare_cmd(ast);
-	if (cmd == NULL)
-		ft_error_cmd(fd, c_fd, ast, env);
-	path = ft_prepare_path(cmd, env);
-	if (path == NULL)
+	bin_path = find_exec(cmd->path, env_get_var(*env, "PATH"));
+	if (bin_path != NULL)
 	{
-		ft_free_cmd(cmd);
-		ft_error_path(fd, c_fd, ast, env);
+		free(cmd->path);
+		cmd->path = bin_path;
 	}
-	if (execve(path, cmd, env) == -1)
-	{
-		ft_free_cmd(cmd);
-		ft_error_execve(fd, c_fd, ast, env);
-	}
+	ft_command_debug(*cmd);
+	ft_init_exec_command(fd, c_fd);
+	ft_open_fd_child(fd, c_fd, *cmd);
+	char **envp = env_to_envp(*env);
+	execve(cmd->path, cmd->arguments, envp);
+	envp_free(envp);
+	return (127);
 }
 
-int	ft_simple_command(t_ast *ast, t_env *env)
+int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 {
 	int		status;
-	int		i;
 	pid_t	pid;
-	char	**last_args;
 	
-	last_args = commands[ast->pipeline.len - 1].arguments;
-	i = 0;
 	status = 0;
 	pid = fork();
 	if (pid == 0)
-		ft_exec_command(ast, env);
-	waitpid(pid, &status, 0);
-	while (last_args[i])
-		i++;
-	env_set_var(env, "_", last_args[i -1]);
-	i = -1;
-	while (++i < ast->pipeline.len)
-		free(commands[i].arguments);
-	free(commands);
+	{
+		env->is_child = 1;
+		t_command command = command_init(ast_command[0]);
+		ft_exec_command(&command, env);
+		command_free(&command);
+	}
+	else
+		waitpid(pid, &status, 0);
 	return (status);
 }
 
@@ -130,9 +157,12 @@ int	ft_which_command(t_ast *ast, t_env *env)
 	
 	exit_status = 0;
 	if (ast->pipeline.len == 1)
-		exit_status = ft_simple_command(ast, env);
-	else
-		exit_status = ft_multi_command(ast, env);
+		exit_status = ft_simple_command(vec_get(&ast->pipeline, 0), env);
+	// else
+	// 	exit_status = ft_multi_command(ast, env);
+	t_ast_command *last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
+	char *last_args = ((t_token *)vec_get(&last_cmd->args, last_cmd->args.len - 1))->word;
+	env_set_var(env, "_", last_args);
 	return (exit_status);
 }
 

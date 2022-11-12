@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/08 01:17:04 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/11 22:41:57 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ t_env	env_init_from_envp(const char *envp[])
 		i++;
 	if (i <= 0)
 		i = 1;
+	env.is_child = 0;
 	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
 	env_set_last_status(&env, 0);
 	env.v = vec_new(sizeof(t_env_key_value), i, (void (*)(void *))env_key_value_free);

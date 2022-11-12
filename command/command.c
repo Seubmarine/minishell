@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/10 14:12:59 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/12 16:28:03 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,50 +22,68 @@
 // 	return (str);
 // }
 
-/*
-first we create all the command and connect them with pipe one after an other
-the command 'ls -R .. > file_out' is represented as:
-command.arguments = ["ls", "-R", ".."];
-command.path = arguments[0];
-command.stdin = STDIN_FILENO;
-command.stdout = open("file_out");
-*/
+enum e_redirection_type token_to_redirection_type(enum e_token_type type)
+{
+	if (type == TOKEN_REDIRECT_INPUT)
+		return (REDIRECTION_INPUT);
+	else if (type == TOKEN_REDIRECT_OUTPUT)
+		return (REDIRECTION_OUTPUT);
+	else if (type == TOKEN_REDIRECT_OUTPUT_APPEND)
+		return (REDIRECTION_OUTPUT_APPEND);
+	else
+		return (REDIRECTION_INVALID);
+}
 
-t_command	command_init(t_token *tokens, size_t token_size)
+//return 0 on success 1 on error
+int	command_redirection_init(t_command *cmd, t_ast_command ast)
+{
+	size_t	i;
+	t_ast_redirection *ast_redirec;
+
+	cmd->redirections = malloc(sizeof(*cmd->redirections) * ast.redirection.len);
+	if (cmd->redirections == NULL)
+		return (1);
+	cmd->redirections_len = ast.redirection.len;
+	i = 0;
+	while (i < ast.redirection.len)
+	{
+		ast_redirec = vec_get(&ast.redirection, i);
+		if (ast_redirec->rhs.type != TOKEN_STRING)
+			return (1);
+		cmd->redirections[i].filename = ast_redirec->rhs.word;
+		cmd->redirections[i].type = token_to_redirection_type(ast_redirec->token.type);
+		i++;
+	}
+	return (0);
+}
+
+t_command	command_init(t_ast_command ast_command)
 {
 	t_command 	cmd;
 	size_t		i;
 
-	cmd.arguments = malloc(sizeof(*cmd.arguments) * (token_size + 1));
-	if (!cmd.arguments)
-		exit(EXIT_FAILURE); //TODO: Catch error
 	i = 0;
-	while (i < token_size)
+	cmd.arguments = malloc(sizeof(*cmd.arguments) * (ast_command.args.len + 1)); //TODO check error
+	while (i < ast_command.args.len)
 	{
-		cmd.arguments[i] = tokens[i].word;
+		cmd.arguments[i] = ((t_token *)vec_get(&ast_command.args, i))->word;
 		i++;
 	}
 	cmd.arguments[i] = NULL;
-	cmd.path = cmd.arguments[0];
-	cmd.stdin = STDIN_FILENO;
-	cmd.stdout = STDOUT_FILENO;
+	cmd.redirections = malloc(sizeof(*cmd.redirections) * ast_command.redirection.len); //TODO check error
+	command_redirection_init(&cmd, ast_command);
+	cmd.path = strdup(cmd.arguments[0]); //TODO: check error + use ft_strndup
+	cmd.pid = -1;
 	return (cmd);
 }
 
 void command_free(t_command *command)
 {
-	size_t i = 0;
-	while (command->arguments[i])
-	{
-		if (command->stdin != STDIN_FILENO)
-			close(command->stdin);
-		if (command->stdout != STDOUT_FILENO)
-			close(command->stdout);
-		i++;
-	}
 	free(command->arguments);
+	free(command->path);
 }
 
+/*
 //set the redirection of a command accordingly to the the redirection array in order and it's size
 #include <fcntl.h>
 void command_set_redirection(t_command *command, t_ast_redirection *redirection, size_t redirection_size)
@@ -132,7 +150,7 @@ int command_run(t_env *env, t_command command)
 		free(real_path);
 	return (exit_status);
 }
-
+*/
 //TODO: stderr of command need to be redirected to the stdin of the minishell
 
 /*
@@ -142,7 +160,7 @@ in the forked process then execve.
 
 Return 1 if it's a child
 */
-
+/*
 int	ast_run_command(t_ast *ast, t_env *env)
 {
 	size_t			i;
@@ -193,7 +211,10 @@ int	ast_run_command(t_ast *ast, t_env *env)
 			t_command child_command = commands[i];
 			pid_t pid = fork();
 			if (pid == 0) //is child
+			{
 				exit_status = command_run(env, child_command);
+				break ;
+			}
 			else
 				commands[i].pid = pid;
 			if (child_command.stdout != STDOUT_FILENO)
@@ -236,3 +257,4 @@ int	ast_run_command(t_ast *ast, t_env *env)
 	free(commands);
 	return (exit_status);
 }
+*/

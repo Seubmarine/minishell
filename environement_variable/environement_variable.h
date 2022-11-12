@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/08 00:35:58 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/11 22:40:56 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_env
 	t_vec v;
 	int		_last_status;
 	char	*_last_status_str;
+	int		is_child;
 }	t_env;
 
 //create a key value from a string "key=value"
