@@ -132,7 +132,7 @@ int	prompt(t_env *env)
 		{
 			add_history(line);
 			exit_status = execute_line(line, env);
-			if (env->is_child || exit_status)
+			if (env->is_child)
 				is_running = 0;
 		}
 		free(line);
