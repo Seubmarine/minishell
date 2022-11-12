@@ -25,12 +25,14 @@ int	ft_exit(char **argv, t_env *env);
 int	ft_cd(char **argv, t_env *env);
 int	builtin(char **argv, t_env *env, int *exit_status);
 
-// A RETIRER APRES AJOUT LIBFT
-int		ft_strlen_l(char **arg);
-char	*ft_strjoin(char const *s1, char const *s2);
+//
+size_t	ft_strlen(const char *s);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
-size_t	ft_strlen(const char *s);
+char	*ft_strjoin(char const *s1, char const *s2);
+int	ft_strncmp(const char *s1, const char *s2, size_t n);
+int	ft_strlen_l(char **arg);
 void	ft_putstr_fd(char *s, int fd);
+
 
 #endif

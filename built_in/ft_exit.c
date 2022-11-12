@@ -11,27 +11,6 @@
 /* ************************************************************************** */
 
 #include "built_in.h"
-#include "limits.h"
-// A RETIRER APRES AJOUT LIBFT
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	unsigned long	i;
-
-	i = 0;
-	if (n == 0)
-		return (0);
-	while ((i < n - 1) && (s1[i] == s2[i]) && (s1[i] && s2[i]))
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-}
-
-void	ft_putstr_fd(char *s, int fd)
-{
-	write(fd, s, ft_strlen(s));
-}
-
-//
 
 int	ft_exit_error(char *str, int code, t_env *env)
 {

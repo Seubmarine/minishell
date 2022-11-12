@@ -25,14 +25,14 @@ int	put_in_buffer(char *buffer, char c, size_t *iterator, size_t buffer_size)
 
 void	ft_swap(unsigned char *a, unsigned char *b)
 {
-	unsigned char tmp;
-	
+	unsigned char	tmp;
+
 	tmp = *a;
 	*a = *b;
 	*b = tmp;
 }
 
-void ft_strrev(char *str)
+void	ft_strrev(char *str)
 {
 	size_t	i;
 	size_t	j;
@@ -47,7 +47,7 @@ void ft_strrev(char *str)
 	}
 }
 
-int _itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
+int	_itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 {
 	if (buffer_size == 0)
 		return (0);
@@ -64,7 +64,7 @@ int _itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 
 //put an int in a string with a max size
 //return 0 on failure 1 one success
-int itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
+int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 {
 	size_t			i;
 	unsigned long long			n;
@@ -84,7 +84,7 @@ int itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 	if (is_neg)
 	{
 		buffer[0] = '-';
-		n = -n;	
+		n = -n;
 	}
 	if (!_itoa_buf(n, buffer + (is_neg), buffer_size - (is_neg)))
 		return (0);
@@ -94,11 +94,12 @@ int itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 
 char	*heredoc_naming(int heredoc_number, long long unsigned random)
 {
-	char	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
+	char	filename[HEREDOC_FILENAME_MAX_LEN];
 	char	random_str[HEREDOC_RANDOM_NUMBER_LEN];
 	char	number_str[HEREDOC_NUMBER_LEN];
 	char	*new_filename;
 
+	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
 	if (!itoa_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
 		return (NULL);
 	if (strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))
@@ -113,10 +114,10 @@ char	*heredoc_naming(int heredoc_number, long long unsigned random)
 	return (new_filename);
 }
 
-int main(int argc, char const *argv[])
+int	main(int argc, char const *argv[])
 {
-	long long unsigned seed;	
-	
+	long long unsigned	seed;	
+
 	int fd = open("/dev/urandom", O_RDONLY);
 	if (fd == -1)
 	{

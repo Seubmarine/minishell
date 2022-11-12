@@ -57,14 +57,6 @@ int	ft_change_env(t_env *env)
 	return (0);
 }
 
-char	*ft_get_home(t_env *env)
-{
-	char	*res;
-
-	res = env_get_var(*env, "HOME");
-	return (res);
-}
-
 int	ft_change_dir(char *arg, t_env *env)
 {
 	if (chdir(arg) != 0)
@@ -82,7 +74,7 @@ int	ft_cd(char **argv, t_env *env)
 
 	if (ft_strlen_l(argv) == 1)
 	{
-		file = ft_get_home(env);
+		file = env_get_var(*env, "HOME");
 		if (file == NULL)
 			return (ft_putstr_fd("cd : HOME not set\n", 2), 1);
 		if (chdir(file) != 0)
