@@ -30,6 +30,13 @@ typedef struct s_command
 	pid_t	pid;
 }	t_command;
 
+typedef struct	s_pidpes
+{
+	pid_t	*pid;
+	int 	pipes[2][2];
+	int		i;
+}	t_pidpes;
+
 t_command	command_init(t_token *tokens, size_t token_size);
 int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);

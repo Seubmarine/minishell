@@ -33,7 +33,7 @@ void	ft_putstr_fd(char *s, int fd)
 
 //
 
-int	ft_exit_error(char *str, int code)
+int	ft_exit_error(char *str, int code, t_env *env)
 {
 	char	*message;
 	char	*buff;
@@ -51,10 +51,11 @@ int	ft_exit_error(char *str, int code)
 		return (ft_putstr_fd("Error malloc\n", 2), 2);
 	ft_putstr_fd(message, 2);
 	free(message);
-	exit (2);
+	env->is_child = 1;
+	return (2);
 }
 
-long long int	ft_atolli(char *str)
+long long int	ft_atolli(char *str, t_env *env)
 {
 	long long unsigned int	res;
 	int						sign;
@@ -77,9 +78,9 @@ long long int	ft_atolli(char *str)
 	while ((str[i] >= '0' && str[i] <= '9') && (res < 9223372036854775807))
 		res = res * 10 + (str[i++] - '0');
 	if ((res > 9223372036854775807) && (sign == 1))
-		ft_exit_error(str, 2);
+		ft_exit_error(str, 2, env);
 	if ((res > 9223372036854775807) && (sign == -1))
-		ft_exit_error(str, 2);
+		ft_exit_error(str, 2, env);
 	return (res * sign);
 }
 
@@ -104,7 +105,7 @@ int	ft_only_num(char *arg)
 	return (0);
 }
 
-int	ft_exit(char **argv)
+int	ft_exit(char **argv, t_env *env)
 {
 	int				i;
 	long long int	errnum;
@@ -112,16 +113,20 @@ int	ft_exit(char **argv)
 	i = 0;
 	errnum = 256;
 	if (ft_strlen_l(argv) == 1)
-		exit (0);
+	{
+		env->is_child = 1;
+		return (0);
+	}
 	if (ft_only_num(argv[1]) != 0)
-		ft_exit_error(argv[1], 2);
+		return (ft_exit_error(argv[1], 2, env));
 	while (argv[i])
 		i++;
 	if (i > 2)
-		return (ft_exit_error(NULL, 1));
-	i = ft_atolli(argv[1]);
+		return (ft_exit_error(NULL, 1, env));
+	i = ft_atolli(argv[1], env);
 	i = i % 256;
 	errnum += i;
 	errnum = errnum % 256;
-	exit (errnum);
+	env->is_child = 1;
+	return (errnum);
 }

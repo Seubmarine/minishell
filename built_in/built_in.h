@@ -21,7 +21,7 @@ int	builtin_export(char **argv, t_env *env);
 int	builtin_env(char **argv, t_env *env);
 int	builtin_pwd(void);
 int	ft_echo(char **argv);
-int	ft_exit(char **argv);
+int	ft_exit(char **argv, t_env *env);
 int	ft_cd(char **argv, t_env *env);
 int	builtin(char **argv, t_env *env, int *exit_status);
 
