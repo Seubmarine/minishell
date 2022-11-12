@@ -38,7 +38,7 @@ int	ft_final_cmd(t_pidpes *pidpes, t_ast *ast, t_env *env)
 	// 	return (ft_error_fork());
 	if (pidpes->pid[pidpes->i] == 0)
 	{
-		env.is_child = 1;
+		env->is_child = 1;
 		status = ft_last_exec(pidpes, ast, env);
 		return (status);
 	}
@@ -62,7 +62,7 @@ int	ft_middle_cmd(t_pidpes *pidpes, t_ast *ast, t_env *env)
 		// 	return (ft_error_fork(pidpes));
 		if (pidpes->pid[pidpes->i] == 0)
 		{
-			env.is_child = 1;
+			env->is_child = 1;
 			status = ft_middle_exec(pidpes, ast, env);
 			return (status);
 		}
@@ -86,12 +86,12 @@ int	ft_multi_command(t_ast *ast, t_env *env)
 		return (ft_error_fork(&pidpes));
 	if (pidpes.pid[pidpes.i] == 0)
 	{
-		env.is_child = 1;
+		env->is_child = 1;
 		status = ft_first_exec(&pidpes, ast, env);
 	}
 	else
 		status = ft_middle_cmd(&pidpes, ast, env);
-	if (env.is_child == 0)
+	if (env->is_child == 0)
 	{
 		while (pidpes.i < ast->pipeline.len)
 		{
