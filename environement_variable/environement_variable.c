@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/11 22:41:57 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 16:48:10 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void	env_set_var(t_env *env, char *key, char *value)
 	}
 	else
 	{
-		var = {.key = strdup(key), .value = strdup(value)};
+		var = (t_env_key_value){.key = strdup(key), .value = strdup(value)};
 		vec_append(&env->v, &var);
 	}
 }
