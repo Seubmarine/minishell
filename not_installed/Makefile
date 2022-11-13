@@ -6,7 +6,7 @@
 #    By: mportrai <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/16 12:30:44 by mportrai          #+#    #+#              #
-#    Updated: 2022/06/13 18:15:45 by mportrai         ###   ########.fr        #
+#    Updated: 2022/11/12 01:30:11 by tbousque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ BONUS		= pipex_bonus
 CC		= cc
 RM		= rm -rf
 
-CFLAGS	= -Wall -Wextra -Werror 
+CFLAGS	= -Wall -Wextra 
 
 all:		${NAME}
 

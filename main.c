@@ -65,26 +65,26 @@
 //     vec_free(&space);
 // }
 
-//return 1 if it's a child
+//return exit status
 int	execute_line(char *line, t_env *env)
 {
 	t_vec	v;
 	t_ast	*ast;
-	int		is_child;
+	int		exit_status;
 
 	ast = NULL;
-	is_child = 0;
+	exit_status = 0;
 	v = lexer(line, *env);
 	if (v.len <= 1 || (((t_token *)v.data)[v.len - 1].type) != TOKEN_END)
 	{
 		vec_free(&v);
-		return (0);
-	}		
+		return (exit_status);
+	}
 	ast = ast_init(v.data, v.len);
-	is_child = ft_which_command(ast, env);
+	exit_status = ft_which_command(ast, env);
 	ast_free(ast);
 	vec_free(&v);
-	return (is_child);
+	return (exit_status);
 }
 
 void	remove_echo_ctrl(void)

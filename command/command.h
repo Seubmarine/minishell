@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/11 21:33:53 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 01:57:49 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ typedef struct s_pidpes
 	int		i;
 }	t_pidpes;
 
-t_command	command_init(t_ast_command ast_command);
+//return 0 on error 1 on success
+int			command_init(t_command *cmd, t_ast_command ast_command);
 void		command_free(t_command *command);
 int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);

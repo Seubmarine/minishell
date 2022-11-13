@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/12 17:04:39 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 16:39:21 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,8 +145,8 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 	if (pid == 0)
 	{
 		env->is_child = 1;
-		command = command_init(ast_command[0]);
-		ft_exec_command(&command, env);
+		if (command_init(&command, ast_command[0]))
+			ft_exec_command(&command, env);
 		command_free(&command);
 	}
 	else

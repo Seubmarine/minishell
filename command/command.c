@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/12 16:28:03 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 16:39:23 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ enum e_redirection_type	token_to_redirection_type(enum e_token_type type)
 		return (REDIRECTION_INVALID);
 }
 
-//return 0 on success 1 on error
+//return 1 on success 0 on error
 int	command_redirection_init(t_command *cmd, t_ast_command ast)
 {
 	size_t				i;
@@ -42,45 +42,66 @@ int	command_redirection_init(t_command *cmd, t_ast_command ast)
 
 	cmd->redirections = malloc(sizeof(*cmd->redirections) * ast.redirection.len);
 	if (cmd->redirections == NULL)
-		return (1);
+	{	ft_putstr_fd("Minishell: malloc error: command_redirection_init\n", STDERR_FILENO);
+		return (0);
+	}
 	cmd->redirections_len = ast.redirection.len;
 	i = 0;
 	while (i < ast.redirection.len)
 	{
 		ast_redirec = vec_get(&ast.redirection, i);
-		if (ast_redirec->rhs.type != TOKEN_STRING)
-			return (1);
+		if (ast_redirec->rhs.type != TOKEN_STRING || ast_redirec->rhs.word == NULL)
+		{
+			ft_putstr_fd("Minishell: redirection rhs invalid\n", STDERR_FILENO);
+			return (0);
+		}
 		cmd->redirections[i].filename = ast_redirec->rhs.word;
 		cmd->redirections[i].type = token_to_redirection_type(ast_redirec->token.type);
+		if (cmd->redirections[i].type == REDIRECTION_INVALID)
+		{
+			ft_putstr_fd("Minishell: redirection type invalid\n", STDERR_FILENO);
+			return (0);
+		}
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
-t_command	command_init(t_ast_command ast_command)
+//transform an ast command to a command type
+int command_init(t_command *cmd, t_ast_command ast_command)
 {
-	t_command	cmd;
 	size_t		i;
 
+	cmd->arguments = NULL;
+	cmd->path = NULL;
+	cmd->redirections = NULL;
+
 	i = 0;
-	cmd.arguments = malloc(sizeof(*cmd.arguments) * (ast_command.args.len + 1)); //TODO check error
+	cmd->arguments = malloc(sizeof(*cmd->arguments) * (ast_command.args.len + 1)); //TODO check error
+	if (cmd->arguments == NULL)
+		return (0);
 	while (i < ast_command.args.len)
 	{
-		cmd.arguments[i] = ((t_token *)vec_get(&ast_command.args, i))->word;
+		cmd->arguments[i] = ((t_token *)vec_get(&ast_command.args, i))->word;
 		i++;
 	}
-	cmd.arguments[i] = NULL;
-	cmd.redirections = malloc(sizeof(*cmd.redirections) * ast_command.redirection.len); //TODO check error
-	command_redirection_init(&cmd, ast_command);
-	cmd.path = strdup(cmd.arguments[0]); //TODO: check error + use ft_strndup
-	cmd.pid = -1;
-	return (cmd);
+	cmd->arguments[i] = NULL;
+	if (!command_redirection_init(cmd, ast_command))
+		return (0);
+	cmd->path = strdup(cmd->arguments[0]); //TODO: check error + use ft_strndup
+	if (cmd->path == NULL)
+		return (0);
+	cmd->pid = -1;
+	return (1);
 }
 
 void	command_free(t_command *command)
 {
+	command->pid = -1;
+	free(command->redirections);
 	free(command->arguments);
 	free(command->path);
+	command->redirections_len = 0;
 }
 
 /*
