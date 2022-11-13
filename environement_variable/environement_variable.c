@@ -170,11 +170,9 @@ void	env_set_var(t_env *env, char *key, char *value)
 char	*env_key_value_to_string(t_env_key_value kv)
 {
 	char			*str;
-	const size_t	key_len;
-	const size_t	value_len;
+	const size_t	key_len = strlen(kv.key);
+	const size_t	value_len = strlen(kv.value);
 
-	key_len = strlen(kv.key);
-	value_len = strlen(kv.value);
 	str = malloc(strlen(kv.key) + strlen(kv.value) + 2);
 	memcpy(str, kv.key, key_len);
 	str[key_len] = '=';

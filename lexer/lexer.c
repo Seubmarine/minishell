@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "lexer.h"
+#include <ctype.h>
+#include <stdio.h>
 
 /*
 The lexer as the purpose of transforming a string in a series of Token
@@ -63,40 +65,41 @@ typedef struct s_token_info
 	size_t				len;
 }	t_token_info;
 
-
-#include <ctype.h>
-t_token_info is_token(char const *str)
+t_token_info	is_token(char const *str)
 {
-	static const t_token_parse_helper parse_helper[] = {
-		{.value = ">>", .type = TOKEN_REDIRECT_OUTPUT_APPEND},
-		{.value = ">", .type = TOKEN_REDIRECT_OUTPUT},
-		{.value = "<<", .type = TOKEN_HERE_DOCUMENT},
-		{.value = "<", .type = TOKEN_REDIRECT_INPUT},
-		{.value = "$", .type = TOKEN_DOLLAR},
-		{.value = "|", .type = TOKEN_PIPE},
-		{.value = "\'", .type = TOKEN_SINGLE_QUOTE},
-		{.value = "\"", .type = TOKEN_DOUBLE_QUOTE},
+	size_t								i;
+	t_token_info						next;
+	static const t_token_parse_helper	parse_helper[] = {
+	{.value = ">>", .type = TOKEN_REDIRECT_OUTPUT_APPEND},
+	{.value = ">", .type = TOKEN_REDIRECT_OUTPUT},
+	{.value = "<<", .type = TOKEN_HERE_DOCUMENT},
+	{.value = "<", .type = TOKEN_REDIRECT_INPUT},
+	{.value = "$", .type = TOKEN_DOLLAR},
+	{.value = "|", .type = TOKEN_PIPE},
+	{.value = "\'", .type = TOKEN_SINGLE_QUOTE},
+	{.value = "\"", .type = TOKEN_DOUBLE_QUOTE},
 	};
-	size_t i;
 
 	i = 0;
 	if (*str == '\0')
 		return ((t_token_info){.type = TOKEN_END, .len = 1});
 	while (i < (sizeof(parse_helper) / sizeof(parse_helper[0])))
 	{
-		if (strncmp(parse_helper[i].value, str, strlen(parse_helper[i].value)) == 0)
-			return ((t_token_info){parse_helper[i].type, strlen(parse_helper[i].value)});
+		if (strncmp(parse_helper[i].value, str, strlen(parse_helper[i].value)) \
+		== 0)
+			return ((t_token_info){parse_helper[i].type, \
+			strlen(parse_helper[i].value)});
 		i++;
 	}
 	//check TOKEN_SPACE && TOKEN_STRING
 	i = 0;
 	while (isspace(str[i]))
 			i++;
-	if (i > 0)	
+	if (i > 0)
 		return ((t_token_info){.type = TOKEN_SPACE, .len = i});
-	t_token_info next = is_token(&str[1]);
+	next = is_token(&str[1]);
 	if (next.type == TOKEN_STRING)
-		return ((t_token_info){.type = TOKEN_STRING, .len =  1 + next.len});
+		return ((t_token_info){.type = TOKEN_STRING, .len = 1 + next.len});
 	return ((t_token_info){.type = TOKEN_STRING, .len = 1});
 }
 
@@ -107,31 +110,32 @@ void	token_free(t_token *token)
 		free(token->word);
 }
 
-#include <stdio.h>
 void	lexer_debug(t_vec	tokens)
 {
-	const char *lex_token[] = {
-        "TOKEN_STRING",
-        "TOKEN_PIPE",
-        "TOKEN_OR",
-        "TOKEN_AND",
-        "TOKEN_ASTERISK",
-        "TOKEN_REDIRECT_INPUT",
-        "TOKEN_REDIRECT_OUTPUT",
-        "TOKEN_REDIRECT_OUTPUT_APPEND",
-        "TOKEN_HERE_DOC",
-        "TOKEN_DOLLAR",
-        "TOKEN_SINGLE_QUOTE",
-	    "TOKEN_DOUBLE_QUOTE",
-        "TOKEN_END",
-        "TOKEN_SPACE"
-        "TOKEN_TYPE_UNKNOW",
-    };
+	const char	*lex_token[] = {
+		"TOKEN_STRING",
+		"TOKEN_PIPE",
+		"TOKEN_OR",
+		"TOKEN_AND",
+		"TOKEN_ASTERISK",
+		"TOKEN_REDIRECT_INPUT",
+		"TOKEN_REDIRECT_OUTPUT",
+		"TOKEN_REDIRECT_OUTPUT_APPEND",
+		"TOKEN_HERE_DOC",
+		"TOKEN_DOLLAR",
+		"TOKEN_SINGLE_QUOTE",
+		"TOKEN_DOUBLE_QUOTE",
+		"TOKEN_END",
+		"TOKEN_SPACE"
+		"TOKEN_TYPE_UNKNOW",
+	};
+	size_t		i;
+	t_token		current;
 
-	size_t	i = 0;
+	i = 0;
 	while (i < tokens.len)
 	{
-		t_token current = ((t_token *)tokens.data)[i];
+		current = ((t_token *)tokens.data)[i];
 		printf("[%lu] %s", i, lex_token[current.type]);
 		if (current.type == TOKEN_STRING)
 			printf(" = \"%s\"", current.word);
@@ -142,7 +146,8 @@ void	lexer_debug(t_vec	tokens)
 
 void	tokens_append(t_vec *tokens, t_token *current)
 {
-	t_token *last;
+	t_token	*last;
+	char	*tmp;
 
 	if (tokens->len > 0)
 	{
@@ -155,7 +160,8 @@ void	tokens_append(t_vec *tokens, t_token *current)
 		}
 		else if (last->type == TOKEN_STRING && current->type == TOKEN_STRING)
 		{
-			char *tmp = malloc(sizeof(char *) * (strlen(last->word) + strlen(current->word) + 1));
+			tmp = malloc(sizeof(char *) * (strlen(last->word) + \
+			strlen(current->word) + 1));
 			tmp[0] = '\0';
 			strcpy(tmp, last->word);
 			strcat(tmp, current->word);
@@ -172,17 +178,22 @@ void	tokens_append(t_vec *tokens, t_token *current)
 
 t_vec	lexer(char *str, t_env env)
 {
-	t_vec	tokens;
-	size_t	i;
+	t_vec			tokens;
+	size_t			i;
+	t_token_info	info;
+	t_token_info	next;
+	char			*env_key;
+	char			*env_value;
+	size_t			j;
+	size_t			reminder;
 
 	(void) env;
-	tokens = vec_new(sizeof(t_token), 10, (void(*)(void *))token_free);
+	tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
 	i = 0;
 	while (str[i])
 	{
-		t_token_info info = is_token(&str[i]);
-		t_token tok = {.type = info.type, .word = NULL};
-		
+		info = is_token(&str[i]);
+		t_token	tok = {.type = info.type, .word = NULL};
 		if (info.type == TOKEN_SPACE)
 			tokens_append(&tokens, &tok);
 		else if (info.type == TOKEN_STRING)
@@ -190,19 +201,19 @@ t_vec	lexer(char *str, t_env env)
 			tok.word = strndup(&str[i], info.len);
 			tokens_append(&tokens, &tok);
 		}
-		else if (info.type == TOKEN_DOLLAR )
+		else if (info.type == TOKEN_DOLLAR)
 		{
-			t_token_info next = is_token(&str[i + 1]);
+			next = is_token(&str[i + 1]);
 			tok.type = TOKEN_STRING;
 			if (next.type == TOKEN_STRING)
 			{
-				char *env_key = strndup(&str[i + 1], next.len);
-				char *env_value = env_get_var(env, env_key);
+				env_key = strndup(&str[i + 1], next.len);
+				env_value = env_get_var(env, env_key);
 				free(env_key);
 				env_key = NULL;
 				if (env_value != NULL)
 				{
-					size_t j = 0;
+					j = 0;
 					while (env_value[j])
 					{
 						tok.type = TOKEN_SPACE;
@@ -212,8 +223,8 @@ t_vec	lexer(char *str, t_env env)
 						if (j > 0)
 							tokens_append(&tokens, &tok);
 						if (env_value[j] == '\0')
-							break;
-						size_t reminder = j;
+							break ;
+						reminder = j;
 						while (env_value[j] != '\0' && !isspace(env_value[j]))
 							j++;
 						tok.type = TOKEN_STRING;
@@ -228,14 +239,18 @@ t_vec	lexer(char *str, t_env env)
 				tok.type = TOKEN_STRING;
 				tok.word = strndup("$", 1);
 				tokens_append(&tokens, &tok);
-
 			}
 		}
 		else if (info.type == TOKEN_DOUBLE_QUOTE)
 		{
-			size_t j = 0;
-			t_vec word;
-			
+			size_t			j;
+			t_vec			word;
+			t_token_info	next;
+			char			*env_key;
+			char			*env_value;
+			size_t			k;
+
+			j = 0;
 			i++;
 			while (str[i + j] != '\"')
 				j++;
@@ -243,16 +258,17 @@ t_vec	lexer(char *str, t_env env)
 			j = 0;
 			while (str[i + j] != '\"')
 			{
-				if (str[i + j] == '$' && is_token(&str[i + j + 1]).type == TOKEN_STRING)
+				if (str[i + j] == '$' && is_token(&str[i + j + 1]).type == \
+				TOKEN_STRING)
 				{
-					t_token_info next = is_token(&str[i + j + 1]);
-					char	*env_key = strndup(&str[i + j + 1], next.len);
+					next = is_token(&str[i + j + 1]);
+					env_key = strndup(&str[i + j + 1], next.len);
 					j += next.len;
-					char	*env_value = env_get_var(env, env_key);
+					env_value = env_get_var(env, env_key);
 					free(env_key);
 					if (env_value)
 					{
-						size_t k = 0;
+						k = 0;
 						while (env_value[k])
 						{
 							vec_append(&word, &env_value[k]);
@@ -274,7 +290,9 @@ t_vec	lexer(char *str, t_env env)
 		else if (info.type == TOKEN_SINGLE_QUOTE)
 		{
 			i++;
-			size_t j = 0;
+			size_t	j;
+
+			j = 0;
 			while (str[i + j] != '\'')
 				j++;
 			info.len = j + 1;
@@ -284,12 +302,12 @@ t_vec	lexer(char *str, t_env env)
 		}
 		else
 		{
-			t_token tok = {.type = info.type, .word = NULL};
+			t_token	tok = {.type = info.type, .word = NULL};
 			tokens_append(&tokens, &tok);
 		}
 		i += info.len;
 	}
-	t_token tok = {.type = TOKEN_END, .word = NULL};
+	t_token	tok = {.type = TOKEN_END, .word = NULL};
 	tokens_append(&tokens, &tok);
 	lexer_debug(tokens);
 	return (tokens);

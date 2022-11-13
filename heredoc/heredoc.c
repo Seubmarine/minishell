@@ -66,9 +66,9 @@ int	_itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 //return 0 on failure 1 one success
 int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 {
-	size_t			i;
-	unsigned long long			n;
-	const int		is_neg = x < 0;
+	size_t				i;
+	unsigned long long	n;
+	const int			is_neg = x < 0;
 
 	i = 0;
 	n = x;
@@ -117,18 +117,21 @@ char	*heredoc_naming(int heredoc_number, long long unsigned random)
 int	main(int argc, char const *argv[])
 {
 	long long unsigned	seed;	
+	int					fd;
+	int					i;
+	char				*filename;
 
-	int fd = open("/dev/urandom", O_RDONLY);
+	fd = open("/dev/urandom", O_RDONLY);
 	if (fd == -1)
 	{
 		perror("Minishell: /dev/urandom");
 		return (1);
 	}
-	int i = 0;
+	i = 0;
 	while (i < 1000)
 	{
 		read(fd, &seed, sizeof(seed));
-		char *filename = heredoc_naming(i, seed);
+		filename = heredoc_naming(i, seed);
 		if (filename == NULL)
 			break ;
 		printf("%s\n", filename);
@@ -136,10 +139,8 @@ int	main(int argc, char const *argv[])
 		i++;
 	}
 	close(fd);
-	
-	return 0;
+	return (0);
 }
-
 
 // int	ast_command_heredoc_unlink(t_ast_command *cmd)
 // {

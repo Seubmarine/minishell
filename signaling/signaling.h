@@ -15,5 +15,6 @@
 # include <signal.h>
 # include <unistd.h>
 # include <stdio.h>
-void    signal_handling(void);
+
+void	signal_handling(void);
 #endif

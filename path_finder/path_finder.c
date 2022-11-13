@@ -12,9 +12,11 @@
 
 #include "path_finder.h"
 
-char *path_concat(char *path, size_t path_len, char *exec_name)
+char	*path_concat(char *path, size_t path_len, char *exec_name)
 {
-	char *concat = malloc(path_len + strlen(exec_name) + 2);
+	char	*concat;
+
+	concat = malloc(path_len + strlen(exec_name) + 2);
 	if (concat == NULL)
 		return (NULL);
 	memcpy(concat, path, path_len);
@@ -26,13 +28,14 @@ char *path_concat(char *path, size_t path_len, char *exec_name)
 
 //return the path to the executable given in a formated PATH string if it exist
 //return NULL if the executable doesn't exist in the PATH
-char *find_exec(char *exec_name, char *path_array)
+char	*find_exec(char *exec_name, char *path_array)
 {
-	char	*current_path;
-	size_t	path_len;
-	char	*executable_path = NULL;
-	struct stat file_info;
-	
+	char		*current_path;
+	size_t		path_len;
+	char		*executable_path;
+	struct stat	file_info;
+
+	executable_path = NULL;
 	if (path_array == NULL)
 		return (NULL);
 	while (*path_array)

@@ -25,9 +25,10 @@ void	handler(int signum)
 	return ;
 }
 
-void    signal_handling(void)
+void	signal_handling(void)
 {
-	struct sigaction sa;
+	struct sigaction	sa;
+
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handler;
