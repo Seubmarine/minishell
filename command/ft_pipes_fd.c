@@ -66,16 +66,15 @@ int	ft_open_input_pipe(int *fd, int i, t_ast *ast, t_env *env)
 	*fd = open(/*arg*/, O_RDONLY);
 }
 
-int	ft_open_output_pipes(int fd, int i, t_ast *ast, t_env *env)
+int	ft_open_output_pipes(int *fd, int i, t_ast *ast, t_env *env)
 {
 	if (/*token >*/)
-		*fd = open(/*arg*/, O_CREAT, | O_WRONLY | O_TRUNC, 0644);
+		*fd = open(/*arg*/, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (/*token >>*/)
 		*fd = open(/*arg*/, O_CREAT | O_WRONLY | O_APPEND, 0644);
 }
 
-
-int ft_analyse_file(t_pidpes *pidpes, t_ast *ast, t_env *env)
+int	ft_analyse_file(t_pidpes *pidpes, t_ast *ast, t_env *env)
 {
 	int	i;
 
@@ -122,7 +121,6 @@ int	ft_open_fds_last(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env)
 		close(pidpes->pipes[0][0]);
 		close(pidpes->pipes[0][1]);
 	}
-
 }
 
 int	ft_open_fds_middle(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env);
@@ -151,7 +149,7 @@ int	ft_open_fds_middle(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env);
 int	ft_open_fds_first(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env)
 {
 	int	i;
-	
+
 	i = 0;
 	close(pidpes->pipes[0][0]);
 	pidpes->pipes[0][0] = -2;

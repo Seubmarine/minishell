@@ -17,48 +17,48 @@
 # include <unistd.h>
 # include "vector.h" 
 
+# define ENV_LAST_STATUS_SIZE 256
+
 typedef struct s_env_key_value
 {
-	char *key;
-	char *value;
+	char	*key;
+	char	*value;
 }	t_env_key_value;
-
-#define ENV_LAST_STATUS_SIZE 256
 
 typedef struct s_env
 {
-	t_vec v;
+	t_vec	v;
 	int		_last_status;
 	char	*_last_status_str;
 	int		is_child;
 }	t_env;
 
 //create a key value from a string "key=value"
-t_env_key_value key_value_init(char *kv);
+t_env_key_value	key_value_init(char *kv);
 
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
-t_env	env_init_from_envp(const char *envp[]);
-t_env	env_init_null(char *argv);
+t_env			env_init_from_envp(const char *envp[]);
+t_env			env_init_null(char *argv);
 
 //get an array of key_value, pass the size of the array in length
 t_env_key_value	*env_get_vars(t_env	env, size_t *length);
 
 //remove the variable from this key in the env
-void	env_remove_var(t_env *env, char *key);
+void			env_remove_var(t_env *env, char *key);
 
 //if key already exist overwrite value
-void	env_set_var(t_env *env, char *key, char *value);
+void			env_set_var(t_env *env, char *key, char *value);
 
 //set and get special variable $?
-char	*env_set_last_status(t_env *env, int status);
-char	*env_get_last_status(t_env *env);
+char			*env_set_last_status(t_env *env, int status);
+char			*env_get_last_status(t_env *env);
 
 //if key is present get it's value, or NULL if key doesn't exist
-char	*env_get_var(t_env env, char *key);
-void	env_free(t_env	*env);
+char			*env_get_var(t_env env, char *key);
+void			env_free(t_env	*env);
 
 //copy env as a formated envp to pass to function
-char **env_to_envp(t_env env);
-void envp_free(char **envp);
+char			**env_to_envp(t_env env);
+void			envp_free(char **envp);
 #endif

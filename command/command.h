@@ -32,7 +32,7 @@ enum e_redirection_type
 
 typedef struct s_redirection
 {
-	enum e_redirection_type type;
+	enum e_redirection_type	type;
 	char					*filename;
 }	t_redirection;
 
@@ -45,10 +45,10 @@ typedef struct s_command
 	pid_t			pid;
 }	t_command;
 
-typedef struct	s_pidpes
+typedef struct s_pidpes
 {
 	pid_t	*pid;
-	int 	pipes[2][2];
+	int		pipes[2][2];
 	int		i;
 }	t_pidpes;
 
@@ -56,7 +56,6 @@ t_command	command_init(t_ast_command ast_command);
 void		command_free(t_command *command);
 int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);
-
-int			ast_run_command(t_ast *ast,  t_env *env);
+int			ast_run_command(t_ast *ast, t_env *env);
 int			ft_which_command(t_ast *ast, t_env *env);
 #endif

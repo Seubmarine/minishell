@@ -18,11 +18,11 @@
 // 	char *str = malloc((str_size + 1) * sizeof(*str));
 // 	memcpy(str, src + token.span.begin, str_size);
 // 	str[str_size] = '\0';
-	
+
 // 	return (str);
 // }
 
-enum e_redirection_type token_to_redirection_type(enum e_token_type type)
+enum e_redirection_type	token_to_redirection_type(enum e_token_type type)
 {
 	if (type == TOKEN_REDIRECT_INPUT)
 		return (REDIRECTION_INPUT);
@@ -37,8 +37,8 @@ enum e_redirection_type token_to_redirection_type(enum e_token_type type)
 //return 0 on success 1 on error
 int	command_redirection_init(t_command *cmd, t_ast_command ast)
 {
-	size_t	i;
-	t_ast_redirection *ast_redirec;
+	size_t				i;
+	t_ast_redirection	*ast_redirec;
 
 	cmd->redirections = malloc(sizeof(*cmd->redirections) * ast.redirection.len);
 	if (cmd->redirections == NULL)
@@ -59,7 +59,7 @@ int	command_redirection_init(t_command *cmd, t_ast_command ast)
 
 t_command	command_init(t_ast_command ast_command)
 {
-	t_command 	cmd;
+	t_command	cmd;
 	size_t		i;
 
 	i = 0;
@@ -77,7 +77,7 @@ t_command	command_init(t_ast_command ast_command)
 	return (cmd);
 }
 
-void command_free(t_command *command)
+void	command_free(t_command *command)
 {
 	free(command->arguments);
 	free(command->path);

@@ -80,7 +80,7 @@ void	ft_init_exec_command(int *fd, int *c_fd)
 	c_fd[1] = 0;
 }
 
-const char *REDIRECTION_DEFUG[] = {
+const char	*REDIRECTION_DEFUG[] = {
 	"REDIRECTION_OUTPUT",
 	"REDIRECTION_OUTPUT_APPEND",
 	"REDIRECTION_INPUT",
@@ -89,7 +89,8 @@ const char *REDIRECTION_DEFUG[] = {
 
 void	ft_command_debug(t_command cmd)
 {
-	size_t i;
+	size_t			i;
+	t_redirection	r;
 
 	i = 0;
 	printf("cmd : %s\n", cmd.path);
@@ -104,7 +105,7 @@ void	ft_command_debug(t_command cmd)
 	i = 0;
 	while (i < cmd.redirections_len)
 	{
-		t_redirection r = cmd.redirections[i];
+		r = cmd.redirections[i];
 		printf("\t[%zu] type = %s, filename = \"%s\"\n", i, REDIRECTION_DEFUG[r.type], r.filename);
 		i++;
 	}
@@ -116,6 +117,7 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	int		fd[2];
 	int		c_fd[2];
 	char	*bin_path;
+	char	**envp;
 
 	bin_path = find_exec(cmd->path, env_get_var(*env, "PATH"));
 	if (bin_path != NULL)
@@ -126,7 +128,7 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	ft_command_debug(*cmd);
 	ft_init_exec_command(fd, c_fd);
 	ft_open_fd_child(fd, c_fd, *cmd);
-	char **envp = env_to_envp(*env);
+	envp = env_to_envp(*env);
 	execve(cmd->path, cmd->arguments, envp);
 	envp_free(envp);
 	return (127);
@@ -134,15 +136,16 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 
 int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 {
-	int		status;
-	pid_t	pid;
-	
+	int			status;
+	pid_t		pid;
+	t_command	command;
+
 	status = 0;
 	pid = fork();
 	if (pid == 0)
 	{
 		env->is_child = 1;
-		t_command command = command_init(ast_command[0]);
+		command = command_init(ast_command[0]);
 		ft_exec_command(&command, env);
 		command_free(&command);
 	}
@@ -153,16 +156,18 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 
 int	ft_which_command(t_ast *ast, t_env *env)
 {
-	int	exit_status;
-	
+	int				exit_status;
+	t_ast_command	*last_cmd;
+	char			*last_args;
+
 	exit_status = 0;
 	if (ast->pipeline.len == 1)
 		exit_status = ft_simple_command(vec_get(&ast->pipeline, 0), env);
 	// else
 	// 	exit_status = ft_multi_command(ast, env);
-	t_ast_command *last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
-	char *last_args = ((t_token *)vec_get(&last_cmd->args, last_cmd->args.len - 1))->word;
+	last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
+	last_args = ((t_token *)vec_get(&last_cmd->args, \
+	last_cmd->args.len - 1))->word;
 	env_set_var(env, "_", last_args);
 	return (exit_status);
 }
-

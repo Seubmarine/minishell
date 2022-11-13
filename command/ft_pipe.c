@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "command.c"
+#include "command.h"
 
 void	ft_init_pid(t_pidpes *pidpes, t_ast *ast)
 {
@@ -51,7 +51,7 @@ int	ft_final_cmd(t_pidpes *pidpes, t_ast *ast, t_env *env)
 int	ft_middle_cmd(t_pidpes *pidpes, t_ast *ast, t_env *env)
 {
 	int	status;
-	
+
 	pidpes->i++;
 	while (pidpes->i < (ast->pipeline.len -1))
 	{

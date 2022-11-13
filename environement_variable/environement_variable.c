@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "environement_variable.h"
+#include <stdio.h>
 
 void	env_key_value_free(t_env_key_value *kv)
 {
@@ -20,10 +21,10 @@ void	env_key_value_free(t_env_key_value *kv)
 	kv->value = NULL;
 }
 
-t_env_key_value key_value_init(char *kv)
+t_env_key_value	key_value_init(char *kv)
 {
-	t_env_key_value var;
-	size_t	i;
+	t_env_key_value	var;
+	size_t			i;
 
 	var.key = NULL;
 	var.value = NULL;
@@ -39,8 +40,9 @@ t_env_key_value key_value_init(char *kv)
 
 t_env	env_init_from_envp(const char *envp[])
 {
-	t_env env;
-	size_t	i;
+	t_env			env;
+	size_t			i;
+	t_env_key_value	key_value;
 
 	i = 0;
 	while (envp[i])
@@ -50,11 +52,12 @@ t_env	env_init_from_envp(const char *envp[])
 	env.is_child = 0;
 	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
 	env_set_last_status(&env, 0);
-	env.v = vec_new(sizeof(t_env_key_value), i, (void (*)(void *))env_key_value_free);
+	env.v = vec_new(sizeof(t_env_key_value), i, \
+	(void (*)(void *))env_key_value_free);
 	i = 0;
 	while (envp[i])
 	{
-		t_env_key_value key_value = key_value_init((char *)envp[i]);
+		key_value = key_value_init((char *)envp[i]);
 		vec_append(&env.v, &key_value);
 		i++;
 	}
@@ -77,12 +80,13 @@ t_env_key_value	*env_get_vars(t_env	env, size_t *length)
 //if key is present get it's value, or NULL if key doesn't exist
 t_env_key_value	*env_get_key_value_ptr(t_env env, char *key)
 {
-	size_t	i;
+	size_t			i;
+	t_env_key_value	*kv;
 
 	i = 0;
 	while (i < env.v.len)
 	{
-		t_env_key_value *kv = vec_get(&env.v, i);
+		kv = vec_get(&env.v, i);
 		if (strcmp(key, kv->key) == 0)
 			return (kv);
 		i++;
@@ -90,11 +94,10 @@ t_env_key_value	*env_get_key_value_ptr(t_env env, char *key)
 	return (NULL);
 }
 
-
 //get value from key
 char	*env_get_var(t_env env, char *key)
 {
-	t_env_key_value *kv;
+	t_env_key_value	*kv;
 
 	if (strcmp("?", key) == 0)
 		return (env_get_last_status(&env));
@@ -105,7 +108,6 @@ char	*env_get_var(t_env env, char *key)
 }
 
 //set status as a string internally
-#include <stdio.h>
 char	*env_set_last_status(t_env *env, int status)
 {
 	if (env->_last_status_str == NULL)
@@ -127,9 +129,8 @@ char	*env_get_last_status(t_env *env)
 //remove the variable from this key in the env
 void	env_remove_var(t_env *env, char *key)
 {
-	t_env_key_value *current_var;
-	t_env_key_value *last_var;
-
+	t_env_key_value	*current_var;
+	t_env_key_value	*last_var;
 
 	current_var = env_get_key_value_ptr(*env, key);
 	if (current_var == NULL)
@@ -143,13 +144,15 @@ void	env_remove_var(t_env *env, char *key)
 		current_var->value = last_var->value;
 	}
 }
+
 /*
 if key already exist overwrite value
 key and value will be duplicated
 */
 void	env_set_var(t_env *env, char *key, char *value)
 {
-	t_env_key_value *kv;
+	t_env_key_value	*kv;
+	t_env_key_value	var;
 
 	kv = env_get_key_value_ptr(*env, key);
 	if (kv)
@@ -159,17 +162,19 @@ void	env_set_var(t_env *env, char *key, char *value)
 	}
 	else
 	{
-		t_env_key_value var = {.key = strdup(key), .value = strdup(value)};
+		var = {.key = strdup(key), .value = strdup(value)};
 		vec_append(&env->v, &var);
 	}
 }
 
-char *env_key_value_to_string(t_env_key_value kv)
+char	*env_key_value_to_string(t_env_key_value kv)
 {
 	char			*str;
-	const size_t	key_len = strlen(kv.key); 
-	const size_t	value_len = strlen(kv.value); 
+	const size_t	key_len;
+	const size_t	value_len;
 
+	key_len = strlen(kv.key);
+	value_len = strlen(kv.value);
 	str = malloc(strlen(kv.key) + strlen(kv.value) + 2);
 	memcpy(str, kv.key, key_len);
 	str[key_len] = '=';
@@ -178,16 +183,17 @@ char *env_key_value_to_string(t_env_key_value kv)
 	return (str);
 }
 
-char **env_to_envp(t_env env)
+char	**env_to_envp(t_env env)
 {
-	char	**envp;
-	size_t	i;
+	char			**envp;
+	size_t			i;
+	t_env_key_value	kv;
 
 	envp = malloc(sizeof(*envp) * (env.v.len + 1));
 	i = 0;
 	while (i < env.v.len)
 	{
-		t_env_key_value kv = *(t_env_key_value *)vec_get(&env.v, i);
+		kv = *(t_env_key_value *)vec_get(&env.v, i);
 		envp[i] = env_key_value_to_string(kv);
 		i++;
 	}
@@ -195,7 +201,7 @@ char **env_to_envp(t_env env)
 	return (envp);
 }
 
-void envp_free(char **envp)
+void	envp_free(char **envp)
 {
 	size_t	i;
 

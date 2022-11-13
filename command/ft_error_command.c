@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "command.c"
+#include "command.h"
 
 void	ft_error_open(int *fd, int i, t_ast *ast, t_env *env)
 {
@@ -55,7 +55,7 @@ void	ft_error_cmd(int fd, int c_fd, t_ast *ast, t_env *env)
 
 void	ft_error_path(int c_fd, char **cmd, t_ast *ast, t_env *env)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	ft_putstr_fd("Error during path preparation\n", 2);
@@ -71,7 +71,7 @@ void	ft_error_path(int c_fd, char **cmd, t_ast *ast, t_env *env)
 
 void	ft_error_execve(int c_fd, char **cmd, t_ast *ast, t_env *env)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	perror("execve: ");
