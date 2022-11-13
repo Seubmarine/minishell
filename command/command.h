@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/13 01:57:49 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 17:22:10 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,6 @@ int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);
 int			ast_run_command(t_ast *ast, t_env *env);
 int			ft_which_command(t_ast *ast, t_env *env);
+int			ft_multi_command(t_ast *ast, t_env *env);
+
 #endif

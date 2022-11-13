@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/13 16:39:21 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 18:16:06 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,10 @@ void	ft_command_debug(t_command cmd)
 	t_redirection	r;
 
 	i = 0;
-	printf("cmd : %s\n", cmd.path);
+	if (cmd.path == NULL)
+		printf("cmd : NULL\n");
+	else
+		printf("cmd : %s\n", cmd.path);
 	printf("args = {\n");
 	while (cmd.arguments[i])
 	{
@@ -128,6 +131,8 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	ft_command_debug(*cmd);
 	ft_init_exec_command(fd, c_fd);
 	ft_open_fd_child(fd, c_fd, *cmd);
+	if (cmd->path == NULL)
+		return (0);
 	envp = env_to_envp(*env);
 	execve(cmd->path, cmd->arguments, envp);
 	envp_free(envp);
@@ -146,11 +151,14 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 	{
 		env->is_child = 1;
 		if (command_init(&command, ast_command[0]))
-			ft_exec_command(&command, env);
+			status = ft_exec_command(&command, env);
 		command_free(&command);
 	}
 	else
-		waitpid(pid, &status, 0);
+	{
+		if (waitpid(pid, &status, 0) != -1)
+			status = WEXITSTATUS(status);
+	}
 	return (status);
 }
 
@@ -164,10 +172,15 @@ int	ft_which_command(t_ast *ast, t_env *env)
 	if (ast->pipeline.len == 1)
 		exit_status = ft_simple_command(vec_get(&ast->pipeline, 0), env);
 	// else
-	// 	exit_status = ft_multi_command(ast, env);
+	//  	exit_status = ft_multi_command(ast, env);
+	env_set_last_status(env, exit_status);
 	last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
-	last_args = ((t_token *)vec_get(&last_cmd->args, \
-	last_cmd->args.len - 1))->word;
+	last_args = "";
+	if (last_cmd->args.len > 0)
+	{
+		last_args = ((t_token *)vec_get(&last_cmd->args, \
+		last_cmd->args.len - 1))->word;
+	}
 	env_set_var(env, "_", last_args);
 	return (exit_status);
 }

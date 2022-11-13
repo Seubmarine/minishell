@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/13 16:39:23 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/13 18:10:04 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,13 @@ int command_init(t_command *cmd, t_ast_command ast_command)
 	cmd->arguments[i] = NULL;
 	if (!command_redirection_init(cmd, ast_command))
 		return (0);
-	cmd->path = strdup(cmd->arguments[0]); //TODO: check error + use ft_strndup
-	if (cmd->path == NULL)
-		return (0);
+	cmd->path = NULL;
+	if (cmd->arguments[0] != NULL)
+	{
+		cmd->path = strdup(cmd->arguments[0]); //TODO: check error + use ft_strndup
+		if (cmd->path == NULL)
+			return (0);
+	}
 	cmd->pid = -1;
 	return (1);
 }
