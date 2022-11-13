@@ -18,6 +18,9 @@
 # include "vector.h" 
 
 # define ENV_LAST_STATUS_SIZE 256
+# define D_SHELL "/bin/zsh"
+# define D_TERM "dumb"
+# define D_PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 typedef struct s_env_key_value
 {
