@@ -149,20 +149,20 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 	signal_handling_child();
 	command_init(&command, ast_command[0]);
 	if (builtin(command.arguments, env, &status))
-		return (status);
+		return (command_free(&command), status);
 	pid = fork();
 	if (pid == 0)
 	{
 		env->is_child = 1;
 		// if (command_init(&command, ast_command[0]))
 			status = ft_exec_command(&command, env);
-		command_free(&command);
 	}
 	else
 	{
 		if (waitpid(pid, &status, 0) != -1)
 			status = WEXITSTATUS(status);
 	}
+	command_free(&command);
 	signal_handling();
 	return (status);
 }
