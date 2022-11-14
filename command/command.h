@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/13 17:22:10 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 00:44:01 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,9 @@ typedef struct s_command
 	char			*path;
 	char			**arguments;
 	t_redirection	*redirections;
-	size_t			redirections_len;	
-	pid_t			pid;
+	size_t			redirections_len;
+	int				fdin;
+	int				fdout;
 }	t_command;
 
 typedef struct s_pidpes
@@ -60,6 +61,5 @@ int			command_set_stdin(t_command *cmd);
 int			command_set_stdout(t_command *cmd);
 int			ast_run_command(t_ast *ast, t_env *env);
 int			ft_which_command(t_ast *ast, t_env *env);
-int			ft_multi_command(t_ast *ast, t_env *env);
 
 #endif

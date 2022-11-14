@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_pipes_fd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 11:58:17 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/12 11:58:18 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/14 01:12:24 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ int	ft_open_close_pipes(t_pidpes *pidpes)
 
 void	ft_close_pipes(t_pidpes *pidpes)
 {
-	if ((pidpes->i - 2) < 0)
-		return ;
-	close(pidpes->pipes[pidpes->i % 2][0]);
-	close(pidpes->pipes[pidpes->i % 2][1]);
+	if (pidpes->pipes[pidpes->i % 2][0] <= -1)
+		close(pidpes->pipes[pidpes->i % 2][0]);
+	if (pidpes->pipes[pidpes->i % 2][1] <= -1)
+		close(pidpes->pipes[pidpes->i % 2][1]);
 }
 
 void	ft_close_correct_pipes(t_pidpes *pidpes)
@@ -66,34 +66,38 @@ int	ft_open_input_pipe(int *fd, int i, t_ast *ast, t_env *env)
 	*fd = open(/*arg*/, O_RDONLY);
 }
 
-int	ft_open_output_pipes(int *fd, int i, t_ast *ast, t_env *env)
+int	ft_open_output_pipes(int *fd, char *filename, enum e_redirection_type redirection)
 {
-	if (/*token >*/)
-		*fd = open(/*arg*/, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (/*token >>*/)
-		*fd = open(/*arg*/, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	if (redirection == REDIRECTION_OUTPUT)
+		*fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	else if (redirection == REDIRECTION_OUTPUT_APPEND)
+		*fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	else
+		perror("Minishell: open_output_pipes given invalid redirection type");
 }
 
-int	ft_analyse_file(t_pidpes *pidpes, t_ast *ast, t_env *env)
+int	ft_analyse_file(t_pidpes *pidpes, t_command *cmd)
 {
 	int	i;
+	t_redirection current;
 
 	i = 0;
-	while (/* parcours fd*/)
+	while (i < cmd->redirections_len)
 	{
-		if (/* token < || << */)
+		current = cmd->redirections[i];
+		if (current.type == REDIRECTION_INPUT)
 		{
 			if ((pidpes->i % 2) == 0)
-				ft_open_input_pipes(pidpes->pipes[1][0], i, ast, env);
+				ft_open_input_pipes(pidpes->pipes[1][0], current.filename, current.type);
 			else
-				ft_open_input_pipes(pidpes->pipes[0][0], i, ast, env);
+				ft_open_input_pipes(pidpes->pipes[0][0], current.type);
 		}
-		if (/* token > || >>*/)
+		else if (current.type == REDIRECTION_OUTPUT || current.type == REDIRECTION_OUTPUT_APPEND)
 		{
 			if ((pidpes->i % 2) == 0)
-				ft_open_output_pipes(pidpes->pipes[0][1], i, ast, env);
+				ft_open_output_pipes(pidpes->pipes[0][1], current.filename, current.type);
 			else
-				ft_open_output_pipes(pidpes->pipes[1][1], i, ast, env);
+				ft_open_output_pipes(pidpes->pipes[1][1], current.filename, current.type);
 		}
 		i++;
 	}

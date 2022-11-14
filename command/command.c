@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/13 18:10:04 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/14 23:36:25 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,17 +95,19 @@ int command_init(t_command *cmd, t_ast_command ast_command)
 		if (cmd->path == NULL)
 			return (0);
 	}
-	cmd->pid = -1;
+	cmd->fdin = STDIN_FILENO;
+	cmd->fdin = STDOUT_FILENO;
 	return (1);
 }
 
 void	command_free(t_command *command)
 {
-	command->pid = -1;
 	free(command->redirections);
 	free(command->arguments);
 	free(command->path);
 	command->redirections_len = 0;
+	command->fdin = -1;
+	command->fdout = -1;
 }
 
 /*
