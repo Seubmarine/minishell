@@ -20,7 +20,7 @@ void	handler(int signum)
 		printf("\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
-		// rl_redisplay(); C'est ce qui fait le double Minishell$
+		rl_redisplay();
 	}
 	return ;
 }
@@ -33,4 +33,25 @@ void	signal_handling(void)
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handler;
 	sigaction(SIGINT, &sa, NULL);
+}
+
+void	handler_child(int signum)
+{
+	if (signum == SIGINT)
+	{
+		printf("\n");
+		rl_replace_line("", 0);
+		rl_on_new_line();
+	}
+	return ;
+}
+
+void	signal_handling_child(void)
+{
+	struct sigaction	sa_child;
+
+	sigemptyset(&sa_child.sa_mask);
+	sa_child.sa_flags = SA_RESTART;
+	sa_child.sa_handler = handler_child;
+	sigaction(SIGINT, &sa_child, NULL);
 }

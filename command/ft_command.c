@@ -146,6 +146,7 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 	t_command	command;
 
 	status = 0;
+	signal_handling_child();
 	command_init(&command, ast_command[0]);
 	if (builtin(command.arguments, env, &status))
 		return (status);
@@ -162,6 +163,7 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 		if (waitpid(pid, &status, 0) != -1)
 			status = WEXITSTATUS(status);
 	}
+	signal_handling();
 	return (status);
 }
 

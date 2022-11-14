@@ -21,6 +21,7 @@
 # include "environement_variable.h"
 # include "path_finder.h"
 # include "built_in.h"
+# include "signaling.h"
 
 enum e_redirection_type
 {

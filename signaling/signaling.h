@@ -17,4 +17,5 @@
 # include <stdio.h>
 
 void	signal_handling(void);
+void    signal_handling_child(void);
 #endif
