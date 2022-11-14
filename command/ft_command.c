@@ -146,11 +146,14 @@ int	ft_simple_command(t_ast_command *ast_command, t_env *env)
 	t_command	command;
 
 	status = 0;
+	command_init(&command, ast_command[0]);
+	if (builtin(command.arguments, env, &status))
+		return (status);
 	pid = fork();
 	if (pid == 0)
 	{
 		env->is_child = 1;
-		if (command_init(&command, ast_command[0]))
+		// if (command_init(&command, ast_command[0]))
 			status = ft_exec_command(&command, env);
 		command_free(&command);
 	}

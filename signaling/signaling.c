@@ -20,7 +20,7 @@ void	handler(int signum)
 		printf("\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
-		rl_redisplay();
+		// rl_redisplay(); C'est ce qui fait le double Minishell$
 	}
 	return ;
 }
