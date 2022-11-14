@@ -12,29 +12,26 @@
 
 #include "built_in.h"
 
-int	ft_is_flag_cd(char *arg)
+int	ft_is_flag_cd_nb_arg(char **arg)
 {
 	char	*str;
 	char	*sentence;
 
 	str = NULL;
 	sentence = NULL;
-	if (arg[0] != '-')
-		return (0);
-	str = malloc(sizeof(char) * 3);
-	ft_strlcpy(str, arg, 3);
-	sentence = ft_strjoin("cd: ", str);
-	free(str);
-	str = ft_strjoin(sentence, "invalid flag\n");
-	free(sentence);
-	ft_putstr_fd(str, 2);
-	free(str);
-	return (1);
-}
-
-int	ft_nb_arg(char **argv)
-{
-	if (ft_strlen_l(argv) == 2)
+	if (arg[1][0] == '-')
+	{
+		str = malloc(sizeof(char) * 3);
+		ft_strlcpy(str, arg[1], 3);
+		sentence = ft_strjoin("cd: ", str);
+		free(str);
+		str = ft_strjoin(sentence, ": invalid option\n");
+		free(sentence);
+		ft_putstr_fd(str, 2);
+		free(str);
+		return (1);
+	}
+	if (ft_strlen_l(arg) == 2)
 		return (0);
 	ft_putstr_fd("cd: too many arguments\n", 2);
 	return (1);
@@ -57,10 +54,43 @@ int	ft_change_env(t_env *env)
 	return (0);
 }
 
+int	ft_overpass_permission(char	*file, char *arg, t_env *env)
+{
+	int		i;
+	char	*new_cwd;
+
+	new_cwd = NULL;
+	i = ft_strlen(file);
+	printf("%s\n", file);
+	while ((i > 0) && (ft_strncmp(&file[i], "/", 1) != 0))
+		i--;
+	new_cwd = malloc(sizeof(char) * i + 1);
+	ft_strlcpy(new_cwd, file, i + 1);
+	printf("%s\n", new_cwd);
+	if (chdir(new_cwd) != 0)
+	{
+		free(new_cwd);
+		ft_putstr_fd("overpass permission: ", 2);
+		return (perror(arg), 1);
+	}
+	ft_change_env(env);
+	free(new_cwd);
+	return (0);
+}
+
 int	ft_change_dir(char *arg, t_env *env)
 {
+	char	*file;
+
+	file = NULL;
 	if (chdir(arg) != 0)
 	{
+		if (ft_strncmp(arg, "..", 2) == 0)
+		{
+			file = env_get_var(*env, "PWD");
+			if ((access(file, F_OK) == 0) && (access(file, X_OK) != 0))
+				return (ft_overpass_permission(file, arg, env));
+		}
 		ft_putstr_fd("cd: ", 2);
 		return (perror(arg), 1);
 	}
@@ -76,13 +106,13 @@ int	ft_cd(char **argv, t_env *env)
 	{
 		file = env_get_var(*env, "HOME");
 		if (file == NULL)
-			return (ft_putstr_fd("cd : HOME not set\n", 2), 1);
+			return (ft_putstr_fd("cd: HOME not set\n", 2), 1);
 		if (chdir(file) != 0)
 			return (perror(argv[0]), 1);
 		ft_change_env(env);
 		return (0);
 	}
-	if ((ft_is_flag_cd(argv[1]) == 1) || (ft_nb_arg(argv) == 1))
+	if (ft_is_flag_cd_nb_arg(argv) == 1)
 		return (1);
 	if (ft_change_dir(argv[1], env) != 0)
 		return (1);

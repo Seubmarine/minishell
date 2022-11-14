@@ -18,7 +18,7 @@ int	builtin_pwd(void)
 
 	current_directory = getcwd(NULL, 0);
 	if (current_directory == NULL)
-		return (perror("pwd: error retrieving current\
+		return (perror("pwd: error retrieving current \
 directory: getcwd: cannot access parent directories"), 1);
 	printf("%s\n", current_directory);
 	free(current_directory);
