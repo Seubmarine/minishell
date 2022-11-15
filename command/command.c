@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 01:47:19 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 08:08:26 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 enum e_redirection_type	token_to_redirection_type(enum e_token_type type)
 {
-	if (type == TOKEN_REDIRECT_INPUT)
+	if (type == TOKEN_REDIRECT_INPUT || type == TOKEN_HERE_DOCUMENT_OPEN)
 		return (REDIRECTION_INPUT);
 	else if (type == TOKEN_REDIRECT_OUTPUT)
 		return (REDIRECTION_OUTPUT);

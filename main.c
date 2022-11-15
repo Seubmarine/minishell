@@ -81,7 +81,11 @@ int	execute_line(char *line, t_env *env)
 		return (exit_status);
 	}
 	ast = ast_init(v.data, v.len);
-	exit_status = ft_which_command(ast, env);
+	if (ast_open_heredocs(ast, env) == 1)
+		exit_status = ft_which_command(ast, env);
+	else
+		exit_status = 130;
+	ast_close_heredocs(ast);
 	ast_free(ast);
 	vec_free(&v);
 	return (exit_status);

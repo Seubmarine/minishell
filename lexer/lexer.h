@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:03:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/10/04 03:30:20 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 06:51:02 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ enum e_token_type
 	TOKEN_REDIRECT_OUTPUT,
 	TOKEN_REDIRECT_OUTPUT_APPEND,
 	TOKEN_HERE_DOCUMENT,
+	TOKEN_HERE_DOCUMENT_OPEN,
 	TOKEN_DOLLAR,
 	TOKEN_SINGLE_QUOTE,
 	TOKEN_DOUBLE_QUOTE,

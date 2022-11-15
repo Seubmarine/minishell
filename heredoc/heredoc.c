@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/12 06:51:07 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 09:15:01 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ void	ft_strrev(char *str)
 {
 	size_t	i;
 	size_t	j;
+	unsigned char *ustr;
 
+	ustr = (unsigned char *)str;
 	i = 0;
 	j = strlen(str) - 1;
 	while (i < j)
 	{
-		ft_swap(&str[i], &str[j]);
+		ft_swap(&ustr[i], &ustr[j]);
 		i++;
 		j--;
 	}
@@ -66,11 +68,9 @@ int	_itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 //return 0 on failure 1 one success
 int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 {
-	size_t				i;
 	unsigned long long	n;
-	const int			is_neg = x < 0;
+	const int			is_neg = 0;
 
-	i = 0;
 	n = x;
 	if (buffer_size == 0)
 		return (0);
@@ -92,21 +92,17 @@ int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 	return (1);
 }
 
-char	*heredoc_naming(int heredoc_number, long long unsigned random)
+char	*heredoc_naming(int heredoc_number, char *random_str)
 {
-	char	filename[HEREDOC_FILENAME_MAX_LEN];
-	char	random_str[HEREDOC_RANDOM_NUMBER_LEN];
+	char	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
 	char	number_str[HEREDOC_NUMBER_LEN];
 	char	*new_filename;
 
-	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
 	if (!itoa_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
 		return (NULL);
 	if (strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))
 		return (NULL);
 	if (strlcat(filename, ".", sizeof(filename)) >= sizeof(filename))
-		return (NULL);
-	if (!itoa_buf(random, random_str, HEREDOC_NUMBER_LEN))
 		return (NULL);
 	if (strlcat(filename, random_str, sizeof(filename)) >= sizeof(filename))
 		return (NULL);
@@ -114,32 +110,131 @@ char	*heredoc_naming(int heredoc_number, long long unsigned random)
 	return (new_filename);
 }
 
-int	main(int argc, char const *argv[])
-{
-	long long unsigned	seed;	
-	int					fd;
-	int					i;
-	char				*filename;
+// int	main(int argc, char const *argv[])
+// {
+// 	long long unsigned	seed;	
+// 	int					fd;
+// 	int					i;
+// 	char				*filename;
 
-	fd = open("/dev/urandom", O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Minishell: /dev/urandom");
-		return (1);
-	}
+// 	fd = open("/dev/urandom", O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 		perror("Minishell: /dev/urandom");
+// 		return (1);
+// 	}
+// 	i = 0;
+// 	while (i < 1000)
+// 	{
+// 		read(fd, &seed, sizeof(seed));
+// 		filename = heredoc_naming(i, seed);
+// 		if (filename == NULL)
+// 			break ;
+// 		printf("%s\n", filename);
+// 		free(filename);
+// 		i++;
+// 	}
+// 	close(fd);
+// 	return (0);
+// }
+
+#include <readline/readline.h>
+#include <string.h>
+
+char *ft_strndup(const char *s, size_t n)
+{
+	char	*dupped;
+	size_t	i;
+
 	i = 0;
-	while (i < 1000)
+	while (s[i] && i < n)
+		i++;
+	dupped = malloc(sizeof(*dupped) * (i + 1));
+	if (dupped == NULL)
+		return (NULL);
+	i = 0;
+	while (s[i] && i < n)
 	{
-		read(fd, &seed, sizeof(seed));
-		filename = heredoc_naming(i, seed);
-		if (filename == NULL)
-			break ;
-		printf("%s\n", filename);
-		free(filename);
+		dupped[i] = s[i];
 		i++;
 	}
-	close(fd);
-	return (0);
+	dupped[i] = '\0';
+	return (dupped);
+}
+#include <ctype.h>
+
+void	heredoc_write(t_env *env, int fd, char *line)
+{
+	size_t	line_pos;
+	size_t	line_to_write;
+
+	line_pos = 0;
+	while (line[line_pos] != '\0')
+	{
+		line_to_write = 0;
+		while (line[line_pos + line_to_write] && line[line_pos + line_to_write] != '$')
+			line_to_write++;
+		write(fd, &line[line_pos], line_to_write);
+		line_pos += line_to_write;
+		if (line[line_pos] == '$')
+		{
+			line_pos++;
+			size_t var_size = 0;
+			while (line[line_pos + var_size] && !isspace(line[line_pos + var_size]) && line[line_pos + var_size] != '$')
+				var_size++;
+			if (var_size == 0)
+				write(fd, "$", 1);
+			else
+			{
+				char *key = ft_strndup(&line[line_pos], var_size);
+				if (key)
+				{
+					char *value = env_get_var(*env, key);
+					if (value)
+						write(fd, value, strlen(value));
+				}
+				free(key);
+			}
+			line_pos += var_size;
+		}
+	}
+	
+}
+
+char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
+{
+	char	*filename;
+	char	*line;
+	size_t	line_size;
+
+	filename = heredoc_naming(heredoc_number, env->random_str);
+	if (filename == NULL)
+		return (NULL);
+	int heredoc_fd = open(filename, O_WRONLY | O_EXCL | O_CREAT, S_IWUSR | S_IROTH | S_IRUSR | S_IRGRP);
+	if (heredoc_fd == -1)
+	{
+		perror("Minishell: eof");
+		free(filename);
+		return (0);
+	}
+	line = NULL;
+	while (1)
+	{
+		free(line);
+		line = readline("> ");
+		if (line == NULL)
+		{
+			write(STDERR_FILENO, "Warning heredoc delimited by end of file\n", 41);
+			break;
+		}
+		line_size = strlen(line);
+		if (line_size > 0 && strncmp(line, eof, line_size) == 0) //TODO: use ft
+			break;
+		heredoc_write(env, heredoc_fd, line);
+		write(heredoc_fd, "\n", 1);
+	}
+	close(heredoc_fd);
+	return (filename);
 }
 
 // int	ast_command_heredoc_unlink(t_ast_command *cmd)

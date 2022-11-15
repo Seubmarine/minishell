@@ -26,20 +26,23 @@ BUILTIN_INCLUDE = built_in/
 SIGNAL_SRCS = signaling.c
 SIGNAL_INCLUDE = signaling/
 
+HEREDOC_SRCS = heredoc.c
+HEREDOC_INCLUDE = heredoc/
+
 CURRENT_SRCS = main.c
 
 SRCS = $(addprefix vector/, $(VECTOR_SRCS)) $(CURRENT_SRCS) \
 		$(addprefix lexer/, $(LEXER_SRCS)) $(addprefix ast/, $(AST_SRCS)) \
 		$(addprefix command/, $(COMMAND_SRCS)) $(addprefix path_finder/, $(PATH_FINDER_SRCS)) \
 		$(addprefix $(ENV_INCLUDE), $(ENV_SRCS)) $(addprefix $(BUILTIN_INCLUDE), $(BUILTIN_SRCS)) \
-		$(addprefix $(SIGNAL_INCLUDE), $(SIGNAL_SRCS))
+		$(addprefix $(SIGNAL_INCLUDE), $(SIGNAL_SRCS)) $(addprefix $(HEREDOC_INCLUDE), $(HEREDOC_SRCS))
 
 OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE) -I $(SIGNAL_INCLUDE)
-LDFLAGS = -L/usr/lib -lreadline
+INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE) -I $(SIGNAL_INCLUDE) -I $(HEREDOC_INCLUDE)
+LDFLAGS = -L/usr/lib -lreadline -lbsd
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<

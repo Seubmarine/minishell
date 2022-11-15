@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/03 17:18:13 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 06:52:44 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,8 @@ void	lexer_debug(t_vec	tokens)
 		"TOKEN_REDIRECT_INPUT",
 		"TOKEN_REDIRECT_OUTPUT",
 		"TOKEN_REDIRECT_OUTPUT_APPEND",
-		"TOKEN_HERE_DOC",
+		"TOKEN_HERE_DOCUMENT",
+		"TOKEN_HERE_DOCUMENT_OPEN",
 		"TOKEN_DOLLAR",
 		"TOKEN_SINGLE_QUOTE",
 		"TOKEN_DOUBLE_QUOTE",

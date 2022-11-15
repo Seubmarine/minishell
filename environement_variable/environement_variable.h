@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/11 22:40:56 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 06:14:53 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # define D_SHELL "/bin/zsh"
 # define D_TERM "dumb"
 # define D_PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
+# define RANDOM_STR_LEN 32
 typedef struct s_env_key_value
 {
 	char	*key;
@@ -34,6 +34,7 @@ typedef struct s_env
 	int		_last_status;
 	char	*_last_status_str;
 	int		is_child;
+	char	random_str[RANDOM_STR_LEN];
 }	t_env;
 
 //create a key value from a string "key=value"

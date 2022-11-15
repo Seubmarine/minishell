@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/13 16:48:10 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 07:34:21 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,28 @@ t_env_key_value	key_value_init(char *kv)
 	return (var);
 }
 
+#include <fcntl.h>
+#include <heredoc.h>
+
+//return 1 on success 0 on error
+int	env_set_random_str(t_env *env)
+{
+	long long unsigned seed;
+	int fd_urandom; //check error
+
+	fd_urandom = open("/dev/urandom", O_RDONLY);
+	read(fd_urandom, &seed, sizeof(seed));
+	close(fd_urandom);
+	env->random_str[0] = '\0';
+	if (itoa_buf(seed, env->random_str, RANDOM_STR_LEN * sizeof(char)) == 0)
+	{
+		write(STDERR_FILENO, "Minishell: error creating seed: itoa\n", 37);
+		strlcpy(env->random_str, "seed_error", RANDOM_STR_LEN * sizeof(char));
+		return (0);
+	}
+	return (1);
+}
+
 t_env	env_init_from_envp(const char *envp[])
 {
 	t_env			env;
@@ -49,6 +71,8 @@ t_env	env_init_from_envp(const char *envp[])
 		i++;
 	if (i <= 0)
 		i = 1;
+	if (env_set_random_str(&env) == 0)
+		perror("Minishell: env set random str");//TODO: check error
 	env.is_child = 0;
 	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
 	env_set_last_status(&env, 0);

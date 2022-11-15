@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/15 01:56:51 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 08:22:09 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@ void	ft_open_input(int *fdin, char *filename)
 	if (*fdin != STDIN_FILENO)
 		close(*fdin);
 	*fdin = open(filename, O_RDONLY);
-	// if (fd[0] == -1)
-	// 	ft_error_open(fd, NULL, NULL);
+	if (*fdin == -1)
+		perror("Minishell");
+		// ft_error_open(fd, NULL, NULL);
 }
 
 void	ft_open_output(int *fdout, t_redirection redir)
