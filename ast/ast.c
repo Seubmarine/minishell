@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 19:39:24 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 08:06:30 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 18:19:52 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,13 +123,16 @@ int	ast_command_open_heredoc(t_ast_command *command, t_env	*env, size_t *heredoc
 	while (i < command->redirection.len)
 	{
 		redirections = vec_get(&command->redirection, i);
-		char	*heredoc_filename;
-		heredoc_filename = heredoc_open_routine(env, *heredoc_counter, redirections->rhs.word);
-		if (heredoc_filename == NULL)
-			return (0);
-		redirections->rhs.word = heredoc_filename;
-		redirections->token.type = TOKEN_HERE_DOCUMENT_OPEN;
-		*heredoc_counter += 1;
+		if (redirections->token.type == TOKEN_HERE_DOCUMENT)
+		{
+			char	*heredoc_filename;
+			heredoc_filename = heredoc_open_routine(env, *heredoc_counter, redirections->rhs.word);
+			if (heredoc_filename == NULL)
+				return (0);
+			redirections->rhs.word = heredoc_filename;
+			redirections->token.type = TOKEN_HERE_DOCUMENT_OPEN;
+			*heredoc_counter += 1;
+		}
 		i++;
 	}
 	return (1);
