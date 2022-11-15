@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/15 08:22:09 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 19:20:23 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,7 @@ void	ft_open_input(int *fdin, char *filename)
 	if (*fdin != STDIN_FILENO)
 		close(*fdin);
 	*fdin = open(filename, O_RDONLY);
-	if (*fdin == -1)
-		perror("Minishell");
-		// ft_error_open(fd, NULL, NULL);
+	// ft_error_open(fd, NULL, NULL);
 }
 
 void	ft_open_output(int *fdout, t_redirection redir)
@@ -34,7 +32,8 @@ void	ft_open_output(int *fdout, t_redirection redir)
 	// 	ft_error_open(fd, NULL, NULL);
 }
 
-void	ft_analyse_fd(t_command *cmd)
+//return 0 on error 1 on success
+int	ft_analyse_fd(t_command *cmd)
 {
 	size_t			i;
 	t_redirection	redir;
@@ -47,13 +46,18 @@ void	ft_analyse_fd(t_command *cmd)
 			ft_open_input(&(cmd->fdin), redir.filename);
 		else if (redir.type == REDIRECTION_OUTPUT || redir.type == REDIRECTION_OUTPUT_APPEND)
 			ft_open_output(&(cmd->fdout), redir);
+		if (cmd->fdin == -1 || cmd->fdout == -1)
+			return(perror("Minishell"), 0);
 		i++;
 	}
+	return (1);
 }
 
-void	ft_open_fd_child(t_command *cmd)
+//return 0 on error 1 on success
+int	ft_open_fd_child(t_command *cmd)
 {
-	ft_analyse_fd(cmd);
+	if (ft_analyse_fd(cmd) == 0)
+		return (0);
 	// if ((fd[0] == -1) || (fd[1] == -1))
 	// {
 	// 	perror("minishell child open: /dev/stdout or /dev/stdin");
@@ -72,6 +76,7 @@ void	ft_open_fd_child(t_command *cmd)
 		dup2(cmd->fdout, STDOUT_FILENO); //check error
 		close(cmd->fdout); // check error
 	}
+	return (1);
 }
 
 const char	*REDIRECTION_DEFUG[] = {
@@ -134,7 +139,8 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	int		exit_status;
 
 	ft_command_debug(*cmd);
-	ft_open_fd_child(cmd);
+	if (ft_open_fd_child(cmd) == 0)
+		return (1);
 	if (builtin(cmd->arguments, env, &exit_status))
 		return (exit_status);
 	bin_path = find_exec(cmd->path, env_get_var(*env, "PATH"));
