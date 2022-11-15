@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/14 23:36:25 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 01:47:19 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ int command_init(t_command *cmd, t_ast_command ast_command)
 	cmd->arguments = NULL;
 	cmd->path = NULL;
 	cmd->redirections = NULL;
+	cmd->fdin = STDIN_FILENO;
+	cmd->fdout = STDOUT_FILENO;
 
 	i = 0;
 	cmd->arguments = malloc(sizeof(*cmd->arguments) * (ast_command.args.len + 1)); //TODO check error
@@ -95,8 +97,6 @@ int command_init(t_command *cmd, t_ast_command ast_command)
 		if (cmd->path == NULL)
 			return (0);
 	}
-	cmd->fdin = STDIN_FILENO;
-	cmd->fdin = STDOUT_FILENO;
 	return (1);
 }
 

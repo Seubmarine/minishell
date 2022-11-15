@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/15 00:45:59 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/15 01:56:51 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ void	ft_analyse_fd(t_command *cmd)
 	{
 		redir = cmd->redirections[i];
 		if (redir.type == REDIRECTION_INPUT)
-			ft_open_input(&cmd->fdin, redir.filename);
+			ft_open_input(&(cmd->fdin), redir.filename);
 		else if (redir.type == REDIRECTION_OUTPUT || redir.type == REDIRECTION_OUTPUT_APPEND)
-			ft_open_output(&cmd->fdout, redir);
+			ft_open_output(&(cmd->fdout), redir);
 		i++;
 	}
 }
@@ -109,53 +109,6 @@ void	ft_command_debug(t_command cmd)
 	printf("}\n");
 }
 
-// int	ft_exec_command(t_command *cmd, t_env *env)
-// {
-// 	int		fd[2];
-// 	int		c_fd[2];
-// 	char	*bin_path;
-// 	char	**envp;
-
-// 	bin_path = find_exec(cmd->path, env_get_var(*env, "PATH"));
-// 	if (bin_path != NULL)
-// 	{
-// 		free(cmd->path);
-// 		cmd->path = bin_path;
-// 	}
-// 	ft_command_debug(*cmd);
-// 	ft_init_exec_command(fd, c_fd);
-// 	ft_open_fd_child(fd, c_fd, *cmd);
-// 	if (cmd->path == NULL)
-// 		return (0);
-// 	envp = env_to_envp(*env);
-// 	execve(cmd->path, cmd->arguments, envp);
-// 	envp_free(envp);
-// 	return (127);
-// }
-
-int	ft_simple_command(t_ast_command *ast_command, t_env *env)
-{
-	int			status;
-	pid_t		pid;
-	t_command	command;
-
-	status = 0;
-	pid = fork();
-	if (pid == 0)
-	{
-		env->is_child = 1;
-		if (command_init(&command, ast_command[0]))
-			status = ft_exec_command(&command, env);
-		command_free(&command);
-	}
-	else
-	{
-		if (waitpid(pid, &status, 0) != -1)
-			status = WEXITSTATUS(status);
-	}
-	return (status);
-}
-
 #define READ_END 0
 #define WRITE_END 1
 
@@ -177,15 +130,18 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 {
 	char	*bin_path;
 	char	**envp;
+	int		exit_status;
 
+	ft_command_debug(*cmd);
+	ft_open_fd_child(cmd);
+	if (builtin(cmd->arguments, env, &exit_status))
+		return (exit_status);
 	bin_path = find_exec(cmd->path, env_get_var(*env, "PATH"));
 	if (bin_path != NULL)
 	{
 		free(cmd->path);
 		cmd->path = bin_path;
 	}
-	ft_command_debug(*cmd);
-	ft_open_fd_child(cmd);
 	if (cmd->path == NULL)
 		return (0);
 	envp = env_to_envp(*env);
@@ -243,14 +199,63 @@ int execute_command(t_ast *ast, t_env *env)
 	return (exit_status);
 }
 
+int	ft_is_buitin(t_ast_command *ast_cmd)
+{
+	char *cmd;
+
+	if (ast_cmd->args.len == 0)
+		return (0);
+	cmd = ((t_token *)vec_get(&ast_cmd->args, 0))->word;	
+	if (cmd == NULL)
+		return (0);
+	const char *builtins_str[] = {"env", "export", "cd", "echo", "exit", "pwd", "unset"};
+	size_t	i = 0;
+	while (i < sizeof(builtins_str) / sizeof(builtins_str[0]))
+	{
+		if (ft_strncmp(cmd, builtins_str[i], ft_strlen(cmd)) == 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
+{
+	int	exit_status;
+
+	t_command cmd;
+	command_init(&cmd, *ast_cmd);
+	int fd_stdin = dup(STDIN_FILENO); 
+	int fd_stdout = dup(STDIN_FILENO); 
+	exit_status = ft_exec_command(&cmd, env);
+	if (fd_stdin != STDIN_FILENO)
+	{
+		dup2(fd_stdin, STDIN_FILENO);
+		close(fd_stdin);
+	}
+	if (fd_stdout != STDOUT_FILENO)
+	{
+		dup2(fd_stdout, STDOUT_FILENO);
+		close(fd_stdout);
+	}
+	command_free(&cmd);
+	return (exit_status);
+}
+
 int	ft_which_command(t_ast *ast, t_env *env)
 {
 	int				exit_status;
+	t_ast_command	*ast_cmd;
 	t_ast_command	*last_cmd;
 	char			*last_args;
 
-	exit_status = 0;
-	exit_status = execute_command(ast, env);
+	if (ast->pipeline.len == 0)
+		return (0);
+	ast_cmd = vec_get(&ast->pipeline, 0);
+	if (ast->pipeline.len == 1 && ft_is_buitin(ast_cmd))
+		exit_status = builtin_no_pipe(ast_cmd, env);
+	else
+		exit_status = execute_command(ast, env);
 	env_set_last_status(env, exit_status);
 	last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
 	last_args = "";
