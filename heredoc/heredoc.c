@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 09:15:01 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/17 00:46:45 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,7 @@ void	heredoc_write(t_env *env, int fd, char *line)
 	
 }
 
+#include <signaling.h>
 char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 {
 	char	*filename;
@@ -210,19 +211,30 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 	filename = heredoc_naming(heredoc_number, env->random_str);
 	if (filename == NULL)
 		return (NULL);
+	int	fdin_dup = dup(STDIN_FILENO);
 	int heredoc_fd = open(filename, O_WRONLY | O_EXCL | O_CREAT, S_IWUSR | S_IROTH | S_IRUSR | S_IRGRP);
 	if (heredoc_fd == -1)
 	{
-		perror("Minishell: eof");
+		perror("Minishell: heredoc open");
 		free(filename);
-		return (0);
+		return (NULL);
 	}
+	signal_handling_heredoc();
 	line = NULL;
 	while (1)
 	{
 		line = readline("> ");
 		if (line == NULL)
 		{
+			if (fcntl(STDIN_FILENO, F_GETFD) == -1)
+			{
+				printf("\n");
+				dup2(fdin_dup, STDIN_FILENO);//TODO check error
+				close(heredoc_fd);
+				unlink(filename);
+				free(filename);
+				return (NULL);
+			}
 			write(STDERR_FILENO, "Warning heredoc delimited by end of file\n", 41);
 			break;
 		}
@@ -234,6 +246,8 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 		free(line);
 	}
 	close(heredoc_fd);
+	close(fdin_dup);
+	signal_handling();
 	return (filename);
 }
 
