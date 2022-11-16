@@ -220,7 +220,6 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 	line = NULL;
 	while (1)
 	{
-		free(line);
 		line = readline("> ");
 		if (line == NULL)
 		{
@@ -232,6 +231,7 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 			break;
 		heredoc_write(env, heredoc_fd, line);
 		write(heredoc_fd, "\n", 1);
+		free(line);
 	}
 	close(heredoc_fd);
 	return (filename);

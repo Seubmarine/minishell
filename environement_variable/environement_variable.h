@@ -15,13 +15,12 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-# include "vector.h" 
-
+# include "vector.h"
 # define ENV_LAST_STATUS_SIZE 256
-# define D_SHELL "/bin/zsh"
 # define D_TERM "dumb"
 # define D_PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # define RANDOM_STR_LEN 32
+
 typedef struct s_env_key_value
 {
 	char	*key;
@@ -37,12 +36,15 @@ typedef struct s_env
 	char	random_str[RANDOM_STR_LEN];
 }	t_env;
 
+
+int				env_set_random_str(t_env *env);
+
 //create a key value from a string "key=value"
 t_env_key_value	key_value_init(char *kv);
 
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
-t_env			env_init_from_envp(const char *envp[]);
+t_env			env_init_from_envp(const char *envp[], char *argv);
 t_env			env_init_null(char *argv);
 
 //get an array of key_value, pass the size of the array in length

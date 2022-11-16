@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "environement_variable.h"
+#include "built_in.h"
 #include <stdio.h>
 
 void	env_key_value_free(t_env_key_value *kv)
@@ -59,8 +60,124 @@ int	env_set_random_str(t_env *env)
 	}
 	return (1);
 }
+// LIBFT
+int	ft_atoi(const char *str)
+{
+	long long	res;
+	int			sign;
+	int			i;
 
-t_env	env_init_from_envp(const char *envp[])
+	i = 0;
+	sign = 1;
+	res = 0;
+	while (str[i] && ((str[i] >= '\t' && str[i] <= '\r')
+			|| str[i] == ' '))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+	{
+		if (str[i] == '-')
+			sign = sign * -1;
+		i++;
+	}
+	while ((str[i] >= '0' && str[i] <= '9') && res < 3000000000)
+		res = res * 10 + (str[i++] - '0');
+	res = res * sign;
+	if (res < -2147483648)
+		return (0);
+	else if (res > 2147483647)
+		return (-1);
+	else
+		return ((int)res);
+}
+
+static char	*ft_write_itoa(char	*s, long n, int len)
+{
+	int		i;
+	long	buff;
+
+	buff = n;
+	i = 0;
+	if (n < 0)
+	{
+		s[i] = '-';
+		n *= -1;
+		buff = n;
+		i++;
+	}
+	while (n != 0)
+	{
+		while (n >= 10)
+			n %= 10;
+		s[len - 1] = (((char)n) + 48);
+		buff /= 10;
+		n = buff;
+		i++;
+		len--;
+	}
+	s[i] = '\0';
+	return (s);
+}
+
+static size_t	ft_strnum(long n)
+{
+	int	i;
+
+	i = 0;
+	if (n == 0)
+		return (1);
+	if (n < 0)
+	{
+		n *= -1;
+		i++;
+	}
+	while (n != 0)
+	{
+		n /= 10;
+		i++;
+	}
+	return (i);
+}
+
+char	*ft_itoa(int n)
+{
+	int		len;
+	char	*s;
+	long	nb;
+
+	nb = n;
+	len = ft_strnum(nb);
+	s = malloc(sizeof(char) * len + 1);
+	if (s == NULL)
+		return (NULL);
+	if (n == 0)
+	{
+		s[0] = '0';
+		s[1] = '\0';
+		return (s);
+	}
+	s = ft_write_itoa(s, nb, len);
+	return (s);
+}
+// A RETIRER APRES LIBFT
+void	ft_prepare_SHL_SHLVL(t_env *env, char *argv)
+{
+	int		lvl;
+	char	*buff;
+	char	*shl;
+
+	buff = getcwd(NULL, 0);
+	shl = ft_strjoin(buff, &argv[1]);
+	free(buff);
+	env_set_var(env, "SHELL", shl);
+	free(shl);
+	buff = env_get_var(*env, "SHLVL");
+	lvl = atoi(buff);
+	buff = ft_itoa(lvl + 1);
+	env_set_var(env, "SHLVL", buff);
+	free(buff);
+}
+
+t_env	env_init_from_envp(const char *envp[], char *argv)
 {
 	t_env			env;
 	size_t			i;
@@ -85,6 +202,7 @@ t_env	env_init_from_envp(const char *envp[])
 		vec_append(&env.v, &key_value);
 		i++;
 	}
+	ft_prepare_SHL_SHLVL(&env, argv);
 	return (env);
 }
 
