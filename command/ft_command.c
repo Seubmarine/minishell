@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/16 18:56:49 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/16 20:16:41 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,18 +196,18 @@ int execute_command(t_ast *ast, t_env *env)
 		i++;
 	}
 	i = 0;
+	int wstatus = 0;
 	while (env->is_child == 0 && i < ast->pipeline.len)
 	{
-		int wstatus;
 		waitpid(pids[i], &wstatus, 0);
 		exit_status = WEXITSTATUS(wstatus);
-		if (WIFSIGNALED(wstatus))
-		{
-			exit_status = WTERMSIG(wstatus) + 128;
-			write(STDERR_FILENO, "quit (core dumped)\n", 19);
-		}
-		printf("exit status %i\n", exit_status);
 		i++;
+	}
+	if (WIFSIGNALED(wstatus))
+	{
+		exit_status = WTERMSIG(wstatus) + 128;
+		if (WTERMSIG(wstatus) == SIGQUIT)
+			write(STDERR_FILENO, "quit (core dumped)\n", 19);
 	}
 	free(pids);
 	signal_handling();
