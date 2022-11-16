@@ -128,7 +128,11 @@ int	prompt(t_env *env)
 	{
 		line = readline("Minishell$ ");
 		if (line == NULL)
+		{
 			is_running = 0;
+			exit_status = 0;
+			printf("\n");
+		}
 		else
 		{
 			add_history(line);

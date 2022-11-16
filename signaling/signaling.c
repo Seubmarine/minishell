@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 19:09:02 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/07 17:37:09 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/16 18:04:27 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	handler(int signum)
 {
 	if (signum == SIGINT)
 	{
+		// printf("default handling\n");
 		printf("\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
@@ -38,11 +39,13 @@ void	signal_handling(void)
 
 void	handler_child(int signum)
 {
+	
 	if (signum == SIGINT)
 	{
-		printf("\n");
+		// printf("handling child\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
+		// rl_redisplay();
 	}
 	return ;
 }
@@ -55,5 +58,5 @@ void	signal_handling_child(void)
 	sa_child.sa_flags = SA_RESTART;
 	sa_child.sa_handler = handler_child;
 	sigaction(SIGINT, &sa_child, NULL);
-	sigaction(SIGQUIT, &sa_child, NULL);
+	// sigaction(SIGQUIT, &sa_child, NULL);
 }
