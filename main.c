@@ -112,10 +112,7 @@ t_env	ft_prepare_env(const char **envp, char *argv)
 	if (*envp == NULL)
 		env = env_init_null(argv);
 	else
-	{
-		(void) argv;
-		env = env_init_from_envp(envp);
-	}
+		env = env_init_from_envp(envp, argv);
 	return (env);
 }
 
