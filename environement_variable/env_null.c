@@ -24,7 +24,7 @@ t_env	env_init_null(char *argv)
 	str = getcwd(NULL, 0);
 	env.is_child = 0;
 	env.v = vec_new(sizeof(t_env_key_value), 3, NULL);
-	env_set_var(&env, "PWD", strcod);
+	env_set_var(&env, "PWD", str);
 	env_set_var(&env, "SHLVL", "1");
 	env_set_var(&env, "_", argv);
 	if (env_set_random_str(&env) == 0)

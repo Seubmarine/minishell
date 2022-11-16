@@ -28,11 +28,12 @@ void	handler(int signum)
 void	signal_handling(void)
 {
 	struct sigaction	sa;
-
+	
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handler;
 	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
 void	handler_child(int signum)
@@ -54,4 +55,5 @@ void	signal_handling_child(void)
 	sa_child.sa_flags = SA_RESTART;
 	sa_child.sa_handler = handler_child;
 	sigaction(SIGINT, &sa_child, NULL);
+	sigaction(SIGQUIT, &sa_child, NULL);
 }
