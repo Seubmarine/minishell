@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 06:52:44 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/16 19:28:49 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,8 @@ t_vec	lexer(char *str, t_env env)
 				}
 				info.len = next.len + 1;
 			}
+			else if (next.type == TOKEN_DOUBLE_QUOTE || next.type == TOKEN_SINGLE_QUOTE)
+				;
 			else
 			{
 				tok.type = TOKEN_STRING;
