@@ -52,6 +52,11 @@ t_vec	lexer(char *str, t_env env)
 
 	(void) env;
 	tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
+	if (tokens.data == NULL)
+	{
+		perror("Minishell: vec_new");
+		return (tokens);
+	}
 	i = 0;
 	while (str[i])
 	{

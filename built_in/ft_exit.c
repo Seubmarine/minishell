@@ -93,6 +93,8 @@ int	ft_exit(char **argv, t_env *env)
 	errnum = 256;
 	if (ft_strlen_l(argv) == 1)
 	{
+		if (env->is_child == 0 && STDOUT_FILENO == 1)
+			write(2, "exit\n", 5);
 		env->is_child = 1;
 		return (0);
 	}
@@ -106,6 +108,8 @@ int	ft_exit(char **argv, t_env *env)
 	i = i % 256;
 	errnum += i;
 	errnum = errnum % 256;
+	if (env->is_child == 0)
+		write(2, "exit\n", 5);
 	env->is_child = 1;
 	return (errnum);
 }

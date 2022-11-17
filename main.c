@@ -132,6 +132,7 @@ int	prompt(t_env *env)
 		{
 			is_running = 0;
 			exit_status = 0;
+			write(2, "exit\n", 5);
 		}
 		else
 		{
@@ -156,7 +157,6 @@ int	main(int argc, char const *argv[], char const *envp[])
 	signal_handling();
 	env = ft_prepare_env(envp, (char *)argv[0]);
 	exit_status = prompt(&env);
-	printf("exit\n");
 	clear_history();
 	env_free(&env);
 	return (exit_status);
