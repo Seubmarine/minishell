@@ -5,7 +5,7 @@ CFLAGS= -Wall -Wextra -Werror -g3
 VECTOR_SRCS = vector.c
 VECTOR_INCLUDE = vector/
 
-LEXER_SRCS = lexer.c
+LEXER_SRCS = lexer.c lexer_helper.c
 LEXER_INCLUDE = lexer/
 
 AST_SRCS = ast.c
