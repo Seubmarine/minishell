@@ -22,6 +22,7 @@
 # include "path_finder.h"
 # include "built_in.h"
 # include "signaling.h"
+# include "libft.h"
 
 enum e_redirection_type
 {

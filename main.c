@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "libft.h"
 
 // void	lexer_debug_print(const char *original_line, t_vec v)
 // {

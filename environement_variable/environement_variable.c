@@ -35,7 +35,7 @@ t_env_key_value	key_value_init(char *kv)
 	var.key = strndup(kv, i);
 	if (var.key == NULL)
 		return (var);
-	var.value = strdup(kv + i + 1);
+	var.value = ft_strdup(kv + i + 1);
 	return (var);
 }
 
@@ -55,110 +55,12 @@ int	env_set_random_str(t_env *env)
 	if (itoa_buf(seed, env->random_str, RANDOM_STR_LEN * sizeof(char)) == 0)
 	{
 		write(STDERR_FILENO, "Minishell: error creating seed: itoa\n", 37);
-		strlcpy(env->random_str, "seed_error", RANDOM_STR_LEN * sizeof(char));
+		ft_strlcpy(env->random_str, "seed_error", RANDOM_STR_LEN * sizeof(char));
 		return (0);
 	}
 	return (1);
 }
-// LIBFT
-int	ft_atoi(const char *str)
-{
-	long long	res;
-	int			sign;
-	int			i;
 
-	i = 0;
-	sign = 1;
-	res = 0;
-	while (str[i] && ((str[i] >= '\t' && str[i] <= '\r')
-			|| str[i] == ' '))
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign = sign * -1;
-		i++;
-	}
-	while ((str[i] >= '0' && str[i] <= '9') && res < 3000000000)
-		res = res * 10 + (str[i++] - '0');
-	res = res * sign;
-	if (res < -2147483648)
-		return (0);
-	else if (res > 2147483647)
-		return (-1);
-	else
-		return ((int)res);
-}
-
-static char	*ft_write_itoa(char	*s, long n, int len)
-{
-	int		i;
-	long	buff;
-
-	buff = n;
-	i = 0;
-	if (n < 0)
-	{
-		s[i] = '-';
-		n *= -1;
-		buff = n;
-		i++;
-	}
-	while (n != 0)
-	{
-		while (n >= 10)
-			n %= 10;
-		s[len - 1] = (((char)n) + 48);
-		buff /= 10;
-		n = buff;
-		i++;
-		len--;
-	}
-	s[i] = '\0';
-	return (s);
-}
-
-static size_t	ft_strnum(long n)
-{
-	int	i;
-
-	i = 0;
-	if (n == 0)
-		return (1);
-	if (n < 0)
-	{
-		n *= -1;
-		i++;
-	}
-	while (n != 0)
-	{
-		n /= 10;
-		i++;
-	}
-	return (i);
-}
-
-char	*ft_itoa(int n)
-{
-	int		len;
-	char	*s;
-	long	nb;
-
-	nb = n;
-	len = ft_strnum(nb);
-	s = malloc(sizeof(char) * len + 1);
-	if (s == NULL)
-		return (NULL);
-	if (n == 0)
-	{
-		s[0] = '0';
-		s[1] = '\0';
-		return (s);
-	}
-	s = ft_write_itoa(s, nb, len);
-	return (s);
-}
-// A RETIRER APRES LIBFT
 void	ft_prepare_SHL_SHLVL(t_env *env, char *argv)
 {
 	int		lvl;
@@ -166,12 +68,14 @@ void	ft_prepare_SHL_SHLVL(t_env *env, char *argv)
 	char	*shl;
 
 	buff = getcwd(NULL, 0);
+	// if NULL
 	shl = ft_strjoin(buff, &argv[1]);
+	// if NULL
 	free(buff);
 	env_set_var(env, "SHELL", shl);
 	free(shl);
 	buff = env_get_var(*env, "SHLVL");
-	lvl = atoi(buff);
+	lvl = ft_atoi(buff);
 	buff = ft_itoa(lvl + 1);
 	env_set_var(env, "SHLVL", buff);
 	free(buff);
@@ -300,11 +204,11 @@ void	env_set_var(t_env *env, char *key, char *value)
 	if (kv)
 	{
 		free(kv->value);
-		kv->value = strdup(value);
+		kv->value = ft_strdup(value);
 	}
 	else
 	{
-		var = (t_env_key_value){.key = strdup(key), .value = strdup(value)};
+		var = (t_env_key_value){.key = ft_strdup(key), .value = ft_strdup(value)};
 		vec_append(&env->v, &var);
 	}
 }
@@ -312,13 +216,13 @@ void	env_set_var(t_env *env, char *key, char *value)
 char	*env_key_value_to_string(t_env_key_value kv)
 {
 	char			*str;
-	const size_t	key_len = strlen(kv.key);
-	const size_t	value_len = strlen(kv.value);
+	const size_t	key_len = ft_strlen(kv.key);
+	const size_t	value_len = ft_strlen(kv.value);
 
-	str = malloc(strlen(kv.key) + strlen(kv.value) + 2);
-	memcpy(str, kv.key, key_len);
+	str = malloc(ft_strlen(kv.key) + ft_strlen(kv.value) + 2);
+	ft_memcpy(str, kv.key, key_len);
 	str[key_len] = '=';
-	memcpy(str + key_len + 1, kv.value, value_len);
+	ft_memcpy(str + key_len + 1, kv.value, value_len);
 	str[key_len + 1 + value_len] = '\0';
 	return (str);
 }
@@ -330,6 +234,7 @@ char	**env_to_envp(t_env env)
 	t_env_key_value	kv;
 
 	envp = malloc(sizeof(*envp) * (env.v.len + 1));
+	// if NULL
 	i = 0;
 	while (i < env.v.len)
 	{

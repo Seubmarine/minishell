@@ -113,6 +113,7 @@ int	ft_open_fds_last(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env)
 			pidpes->pipes[1][1] = open(1, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		c_fd[0] = dup2(pidpes->pipes[1][0], STDIN_FILENO);
 		c_fd[1] = dup2(pidpes->pipes[1][1], STDOUT_FILENO);
+		// if dup2 = -1
 		close(pidpes->pipes[1][0]);
 		close(pidpes->pipes[1][1]);
 	}
@@ -135,6 +136,7 @@ int	ft_open_fds_middle(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env);
 	{
 		c_fd[0] = dup2(pidpes->pipes[1][0], STDIN_FILENO);
 		c_fd[1] = dup2(pidpes->pipes[0][1], STDOUT_FILENO);
+		// if dup2 = -1
 		close(pidpes->pipes[1][0]);
 		close(pidpes->pipes[0][1]);
 	}
@@ -142,6 +144,7 @@ int	ft_open_fds_middle(int *c_fd, t_pidpes *pidpes, t_ast *ast, t_env *env);
 	{
 		c_fd[0] = dup2(pidpes->pipes[0][0], STDIN_FILENO);
 		c_fd[1] = dup2(pidpes->pipes[1][1], STDOUT_FILENO);
+		// if dup2 = -1
 		close(pidpes->pipes[0][0]);
 		close(pidpes->pipes[1][1]);
 	}

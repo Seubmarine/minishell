@@ -30,6 +30,7 @@ HEREDOC_SRCS = heredoc.c
 HEREDOC_INCLUDE = heredoc/
 
 CURRENT_SRCS = main.c
+LIBFT_INCLUDE = libft/
 
 SRCS = $(addprefix vector/, $(VECTOR_SRCS)) $(CURRENT_SRCS) \
 		$(addprefix lexer/, $(LEXER_SRCS)) $(addprefix ast/, $(AST_SRCS)) \
@@ -41,14 +42,17 @@ OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE) -I $(SIGNAL_INCLUDE) -I $(HEREDOC_INCLUDE)
+INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE) -I $(SIGNAL_INCLUDE) -I $(HEREDOC_INCLUDE) -I $(LIBFT_INCLUDE)
 LDFLAGS = -L/usr/lib -lreadline -lbsd
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
 
-$(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME) $(LDFLAGS)
+$(NAME) : lib $(OBJ)
+	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME) $(LDFLAGS) ./libft/libft.a
+
+lib:
+	@make -C libft
 
 clean:
 	-rm -f $(OBJ)

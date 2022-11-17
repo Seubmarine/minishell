@@ -93,7 +93,7 @@ int command_init(t_command *cmd, t_ast_command ast_command)
 	cmd->path = NULL;
 	if (cmd->arguments[0] != NULL)
 	{
-		cmd->path = strdup(cmd->arguments[0]); //TODO: check error + use ft_strndup
+		cmd->path = ft_strdup(cmd->arguments[0]); //TODO: check error + use ft_strndup
 		if (cmd->path == NULL)
 			return (0);
 	}

@@ -14,6 +14,7 @@
 # define AST_H
 # include "lexer.h"
 # include "heredoc.h"
+# include "libft.h"
 
 typedef struct s_ast
 {

@@ -12,114 +12,6 @@
 
 #include "built_in.h"
 
-
-void	ft_putstr_fd(char *s, int fd)
-{
-	write(fd, s, ft_strlen(s));
-}
-
-size_t	ft_strlen(const char *s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
-}
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	unsigned long	i;
-
-	i = 0;
-	if (n == 0)
-		return (0);
-	while ((i < n - 1) && (s1[i] == s2[i]) && (s1[i] && s2[i]))
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-}
-
-
-size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
-{
-	unsigned int	dsts;
-	unsigned int	srcs;
-	unsigned int	i;
-	unsigned int	j;
-
-	dsts = ft_strlen(dst);
-	srcs = ft_strlen(src);
-	i = 0;
-	j = dsts;
-	if (dstsize <= j)
-		return (dstsize + srcs);
-	while (src[i] && (i < dstsize - j - 1))
-	{
-		dst[dsts] = src[i];
-		dsts ++;
-		i++;
-	}
-	dst[dsts] = '\0';
-	return (j + srcs);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
-{
-	unsigned long	i;
-
-	i = 0;
-	if (dstsize != 0)
-	{
-		while (i < dstsize - 1 && src[i] != '\0')
-		{
-			dst[i] = src[i];
-			i++;
-		}
-		dst[i] = '\0';
-	}
-	i = 0;
-	while (src[i])
-		i++;
-	return (i);
-}
-
-
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	int		i;
-	int		j;
-	char	*dest;
-
-	if (s1 == NULL || s2 == NULL)
-		return (NULL);
-	i = ft_strlen(s1);
-	j = ft_strlen(s2);
-	if (i + j == 0)
-	{
-		dest = malloc(sizeof(char) * 1);
-		dest[0] = '\0';
-		return (dest);
-	}
-	dest = malloc(sizeof(char) * (i + j + 1));
-	if (dest == NULL)
-		return (NULL);
-	i = ft_strlcpy(dest, s1, i + 1);
-	j = ft_strlcat(&dest[i], s2, j + 1);
-	return (dest);
-}
-
-
-int	ft_strlen_l(char **arg)
-{
-	int	i;
-
-	i = 0;
-	while (arg[i])
-		i++;
-	return (i);
-}
-
 int	ft_is_flag_echo(char *arg)
 {
 	int	i;
@@ -145,12 +37,15 @@ char	*ft_add_next_word(char *sentence, char *arg)
 	if (sentence == NULL)
 	{
 		sentence = malloc(sizeof(char) * (ft_strlen(arg) + 1));
+		// if NULL
 		ft_strlcpy(sentence, arg, ft_strlen(arg) + 1);
 		return (sentence);
 	}
 	s1 = ft_strjoin(sentence, " ");
+	// if NULL
 	free(sentence);
 	s2 = ft_strjoin(s1, arg);
+	// if NULL
 	free (s1);
 	return (s2);
 }
@@ -191,6 +86,7 @@ int	ft_echo(char **argv)
 	{
 		while (argv[i])
 			sentence = ft_add_next_word(sentence, argv[i++]);
+			// if NULL
 	}
 	ft_print_sentence(sentence, flag);
 	return (0);

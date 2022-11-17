@@ -40,7 +40,7 @@ void	ft_strrev(char *str)
 
 	ustr = (unsigned char *)str;
 	i = 0;
-	j = strlen(str) - 1;
+	j = ft_strlen(str) - 1;
 	while (i < j)
 	{
 		ft_swap(&ustr[i], &ustr[j]);
@@ -78,7 +78,7 @@ int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
 	{
 		if (buffer_size < 2)
 			return (0);
-		memcpy(buffer, "0", 2);
+		ft_memcpy(buffer, "0", 2);
 		return (1);
 	}
 	if (is_neg)
@@ -100,13 +100,13 @@ char	*heredoc_naming(int heredoc_number, char *random_str)
 
 	if (!itoa_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
 		return (NULL);
-	if (strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))
+	if (ft_strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))
 		return (NULL);
-	if (strlcat(filename, ".", sizeof(filename)) >= sizeof(filename))
+	if (ft_strlcat(filename, ".", sizeof(filename)) >= sizeof(filename))
 		return (NULL);
-	if (strlcat(filename, random_str, sizeof(filename)) >= sizeof(filename))
+	if (ft_strlcat(filename, random_str, sizeof(filename)) >= sizeof(filename))
 		return (NULL);
-	new_filename = strdup(filename);
+	new_filename = ft_strdup(filename);
 	return (new_filename);
 }
 
@@ -191,7 +191,7 @@ void	heredoc_write(t_env *env, int fd, char *line)
 				{
 					char *value = env_get_var(*env, key);
 					if (value)
-						write(fd, value, strlen(value));
+						write(fd, value, ft_strlen(value));
 				}
 				free(key);
 			}
@@ -212,6 +212,7 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 	if (filename == NULL)
 		return (NULL);
 	int	fdin_dup = dup(STDIN_FILENO);
+	// dup = -1
 	int heredoc_fd = open(filename, O_WRONLY | O_EXCL | O_CREAT, S_IWUSR | S_IROTH | S_IRUSR | S_IRGRP);
 	if (heredoc_fd == -1)
 	{
@@ -238,8 +239,8 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 			write(STDERR_FILENO, "Warning heredoc delimited by end of file\n", 41);
 			break;
 		}
-		line_size = strlen(line);
-		if (line_size > 0 && strncmp(line, eof, line_size) == 0) //TODO: use ft
+		line_size = ft_strlen(line);
+		if (line_size > 0 && ft_strncmp(line, eof, line_size) == 0) //TODO: use ft
 			break;
 		heredoc_write(env, heredoc_fd, line);
 		write(heredoc_fd, "\n", 1);

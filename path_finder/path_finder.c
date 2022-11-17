@@ -19,9 +19,9 @@ char	*path_concat(char *path, size_t path_len, char *exec_name)
 	concat = malloc(path_len + strlen(exec_name) + 2);
 	if (concat == NULL)
 		return (NULL);
-	memcpy(concat, path, path_len);
+	ft_memcpy(concat, path, path_len);
 	concat[path_len] = '/';
-	memcpy(concat + path_len + 1, exec_name, strlen(exec_name));
+	ft_memcpy(concat + path_len + 1, exec_name, strlen(exec_name));
 	concat[path_len + 1 + strlen(exec_name)] = '\0';
 	return (concat);
 }

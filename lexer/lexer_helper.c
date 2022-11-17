@@ -32,10 +32,10 @@ t_token_info	is_token(char const *str)
 		return ((t_token_info){.type = TOKEN_END, .len = 1});
 	while (i < (sizeof(parse_helper) / sizeof(parse_helper[0])))
 	{
-		if (strncmp(parse_helper[i].value, str, strlen(parse_helper[i].value)) \
+		if (ft_strncmp(parse_helper[i].value, str, strlen(parse_helper[i].value)) \
 		== 0)
 			return ((t_token_info){parse_helper[i].type, \
-			strlen(parse_helper[i].value)});
+			ft_strlen(parse_helper[i].value)});
 		i++;
 	}
 	//check TOKEN_SPACE && TOKEN_STRING
@@ -110,9 +110,10 @@ void	tokens_append(t_vec *tokens, t_token *current)
 		{
 			tmp = malloc(sizeof(char *) * (strlen(last->word) + \
 			strlen(current->word) + 1));
+			//if NULL
 			tmp[0] = '\0';
-			strcpy(tmp, last->word);
-			strcat(tmp, current->word);
+			strcpy(tmp, last->word); // creer strcpy
+			strcat(tmp, current->word); // creer strcat
 			free(last->word);
 			last->word = tmp;
 			// if (strcat(last->word, current->word) == NULL)

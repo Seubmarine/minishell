@@ -16,6 +16,7 @@
 # include <string.h>
 # include <unistd.h>
 # include "vector.h"
+# include "libft.h"
 # define ENV_LAST_STATUS_SIZE 256
 # define D_TERM "dumb"
 # define D_PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"

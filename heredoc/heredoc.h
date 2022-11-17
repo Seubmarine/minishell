@@ -19,6 +19,7 @@
 # include <bsd/string.h>
 # include <sys/stat.h>
 # include "ast.h"
+# include "libft.h"
 
 // # include "lexer.h"
 // # include "ast.h"

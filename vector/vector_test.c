@@ -40,7 +40,7 @@ char	*ft_strdup_to_upper(char const *str)
 	char	*str_up;
 	int		j;
 
-	str_up = strdup(str);
+	str_up = ft_strdup(str);
 	j = 0;
 	while (str_up[j])
 	{
@@ -91,8 +91,8 @@ t_env_arg env_arg_init(char *arg)
 	int i = 0;
 	while (arg[i] && arg[i] != '=')
 		i++;
-	p.key = strndup(arg, i);
-	p.value = strdup(arg + i + 1);
+	p.key = ft_strndup(arg, i);
+	p.value = ft_strdup(arg + i + 1);
 	return (p);
 }
 

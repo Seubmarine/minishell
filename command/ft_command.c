@@ -242,15 +242,18 @@ int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
 	command_init(&cmd, *ast_cmd);
 	int fd_stdin = dup(STDIN_FILENO); 
 	int fd_stdout = dup(STDIN_FILENO); 
+	// if error
 	exit_status = ft_exec_command(&cmd, env);
 	if (fd_stdin != STDIN_FILENO)
 	{
 		dup2(fd_stdin, STDIN_FILENO);
+		// if error
 		close(fd_stdin);
 	}
 	if (fd_stdout != STDOUT_FILENO)
 	{
 		dup2(fd_stdout, STDOUT_FILENO);
+		// if error
 		close(fd_stdout);
 	}
 	command_free(&cmd);

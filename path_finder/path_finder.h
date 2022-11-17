@@ -17,6 +17,7 @@
 # include <string.h>
 # include <dirent.h>
 # include <sys/stat.h>
+# include "libft.h"
 
 char	*find_exec(char *exec_name, char *path_array);
 

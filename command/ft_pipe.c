@@ -23,6 +23,7 @@ void	ft_init_pid(t_pidpes *pidpes, t_ast *ast)
 	pidpes->pipes[1][0] = -2;
 	pidpes->pipes[1][1] = -2;
 	pidpes->pid = malloc(sizeof(int) * ast->pipeline.len);
+	// if pipe->pid == NULL
 	while (++i < ast->pipeline.len)
 		pidpes->pid[0] = 0;
 }

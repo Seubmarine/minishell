@@ -51,7 +51,7 @@ void	vec_grow(t_vec	*v)
 		vec_free(v);
 		return ;
 	}
-	memcpy(tmp_data, v->data, v->elem_size * (v->len));
+	ft_memcpy(tmp_data, v->data, v->elem_size * (v->len));
 	free(v->data);
 	v->data = tmp_data;
 	v->capacity *= 2;
@@ -70,7 +70,7 @@ void	vec_append(t_vec *v, void *element)
 		if (v->data == NULL)
 			return ;
 	}
-	memcpy(v->data + v->elem_size * v->len, element, v->elem_size);
+	ft_memcpy(v->data + v->elem_size * v->len, element, v->elem_size);
 	v->len += 1;
 }
 

@@ -22,10 +22,13 @@ int	ft_is_flag_cd_nb_arg(char **arg)
 	if (arg[1][0] == '-')
 	{
 		str = malloc(sizeof(char) * 3);
+		// if NULL
 		ft_strlcpy(str, arg[1], 3);
 		sentence = ft_strjoin("cd: ", str);
+		// NULL
 		free(str);
 		str = ft_strjoin(sentence, ": invalid option\n");
+		// if NUL
 		free(sentence);
 		ft_putstr_fd(str, 2);
 		free(str);
@@ -65,6 +68,7 @@ int	ft_overpass_permission(char	*file, char *arg, t_env *env)
 	while ((i > 0) && (ft_strncmp(&file[i], "/", 1) != 0))
 		i--;
 	new_cwd = malloc(sizeof(char) * i + 1);
+	// if NULL
 	ft_strlcpy(new_cwd, file, i + 1);
 	printf("%s\n", new_cwd);
 	if (chdir(new_cwd) != 0)
@@ -88,6 +92,7 @@ int	ft_change_dir(char *arg, t_env *env)
 		if (ft_strncmp(arg, "..", 2) == 0)
 		{
 			file = env_get_var(*env, "PWD");
+			// if NULL
 			if ((access(file, F_OK) == 0) && (access(file, X_OK) != 0))
 				return (ft_overpass_permission(file, arg, env));
 		}

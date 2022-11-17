@@ -17,6 +17,7 @@
 # include <ctype.h> //TODO: replace with libft for isspace
 # include "vector.h"
 # include "environement_variable.h"
+# include "libft.h"
 
 enum e_token_type
 {

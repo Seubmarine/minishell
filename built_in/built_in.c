@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "built_in.h"
+#include "libft.h"
 
 //return 1 if it was a builtin and put the command result in exit_status
 int	builtin(char **argv, t_env *env, int *exit_status)

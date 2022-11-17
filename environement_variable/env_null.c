@@ -22,6 +22,7 @@ t_env	env_init_null(char *argv)
 	char	*str;
 
 	str = getcwd(NULL, 0);
+	// if str == NULL
 	env.is_child = 0;
 	env.v = vec_new(sizeof(t_env_key_value), 3, NULL);
 	env_set_var(&env, "PWD", str);
