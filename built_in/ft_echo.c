@@ -37,16 +37,22 @@ char	*ft_add_next_word(char *sentence, char *arg)
 	if (sentence == NULL)
 	{
 		sentence = malloc(sizeof(char) * (ft_strlen(arg) + 1));
-		// if NULL
+		if (sentence == NULL)
+		{
+			printf("coucou\n");
+			return (NULL);
+		}
 		ft_strlcpy(sentence, arg, ft_strlen(arg) + 1);
 		return (sentence);
 	}
 	s1 = ft_strjoin(sentence, " ");
-	// if NULL
 	free(sentence);
+	if (s1 == NULL)
+		return (NULL);
 	s2 = ft_strjoin(s1, arg);
-	// if NULL
 	free (s1);
+	if (s2 == NULL)
+		return (NULL);
 	return (s2);
 }
 
@@ -67,6 +73,20 @@ void	ft_print_sentence(char *sentence, int flag)
 	}
 }
 
+char	*ft_prepare_sentence(char **argv, char *sentence, int i)
+{
+	while (argv[i])
+	{
+		sentence = ft_add_next_word(sentence, argv[i++]);
+		if (sentence == NULL)
+		{
+			ft_putstr_fd("Minishell: echo: error malloc\n", 2);
+			return (NULL);
+		}
+	}
+	return (sentence);
+}
+
 int	ft_echo(char **argv)
 {
 	char	*sentence;
@@ -84,9 +104,9 @@ int	ft_echo(char **argv)
 	if ((flag == 1 && (ft_strlen_l(argv) > 2)) \
 	|| (flag == 0 && (ft_strlen_l(argv) > 1)))
 	{
-		while (argv[i])
-			sentence = ft_add_next_word(sentence, argv[i++]);
-			// if NULL
+		sentence = ft_prepare_sentence(argv, sentence, i);
+		if (sentence == NULL)
+			return (1);
 	}
 	ft_print_sentence(sentence, flag);
 	return (0);

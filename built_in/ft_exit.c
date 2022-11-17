@@ -12,6 +12,14 @@
 
 #include "built_in.h"
 
+int	ft_write_exit(t_env *env)
+{
+	if (env->is_child == 0)
+		write(2, "exit\n", 5);
+	env->is_child = 1;
+	return (0);
+}
+
 int	ft_exit_error(char *str, int code, t_env *env)
 {
 	char	*message;
@@ -92,12 +100,7 @@ int	ft_exit(char **argv, t_env *env)
 	i = 0;
 	errnum = 256;
 	if (ft_strlen_l(argv) == 1)
-	{
-		if (env->is_child == 0 && STDOUT_FILENO == 1)
-			write(2, "exit\n", 5);
-		env->is_child = 1;
-		return (0);
-	}
+		return (ft_write_exit(env));
 	if (ft_only_num(argv[1]) != 0)
 		return (ft_exit_error(argv[1], 2, env));
 	while (argv[i])
@@ -108,8 +111,6 @@ int	ft_exit(char **argv, t_env *env)
 	i = i % 256;
 	errnum += i;
 	errnum = errnum % 256;
-	if (env->is_child == 0)
-		write(2, "exit\n", 5);
-	env->is_child = 1;
+	ft_write_exit(env);
 	return (errnum);
 }

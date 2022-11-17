@@ -14,24 +14,9 @@
 
 int	ft_is_flag_cd_nb_arg(char **arg)
 {
-	char	*str;
-	char	*sentence;
-
-	str = NULL;
-	sentence = NULL;
 	if (arg[1][0] == '-')
 	{
-		str = malloc(sizeof(char) * 3);
-		// if NULL
-		ft_strlcpy(str, arg[1], 3);
-		sentence = ft_strjoin("cd: ", str);
-		// NULL
-		free(str);
-		str = ft_strjoin(sentence, ": invalid option\n");
-		// if NUL
-		free(sentence);
-		ft_putstr_fd(str, 2);
-		free(str);
+		ft_putstr_fd("Minishell: cd: no flag allowed\n", 2);
 		return (1);
 	}
 	if (ft_strlen_l(arg) == 2)
@@ -64,17 +49,19 @@ int	ft_overpass_permission(char	*file, char *arg, t_env *env)
 
 	new_cwd = NULL;
 	i = ft_strlen(file);
-	printf("%s\n", file);
 	while ((i > 0) && (ft_strncmp(&file[i], "/", 1) != 0))
 		i--;
 	new_cwd = malloc(sizeof(char) * i + 1);
-	// if NULL
+	if (new_cwd == NULL)
+	{
+		ft_putstr_fd("Minishell: cd: ", 2);
+		return (perror(arg), 1);
+	}
 	ft_strlcpy(new_cwd, file, i + 1);
-	printf("%s\n", new_cwd);
 	if (chdir(new_cwd) != 0)
 	{
 		free(new_cwd);
-		ft_putstr_fd("overpass permission: ", 2);
+		ft_putstr_fd("Minishell: cd: ", 2);
 		return (perror(arg), 1);
 	}
 	ft_change_env(env);
@@ -92,7 +79,8 @@ int	ft_change_dir(char *arg, t_env *env)
 		if (ft_strncmp(arg, "..", 2) == 0)
 		{
 			file = env_get_var(*env, "PWD");
-			// if NULL
+			if (file == NULL)
+				return (perror("Minishell: cd: "), 1);
 			if ((access(file, F_OK) == 0) && (access(file, X_OK) != 0))
 				return (ft_overpass_permission(file, arg, env));
 		}
