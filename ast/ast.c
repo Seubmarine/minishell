@@ -18,6 +18,7 @@ t_ast_command	ast_command_init(void)
 
 	command.args = vec_new(sizeof(t_token), 2, NULL);
 	command.redirection = vec_new(sizeof(t_ast_redirection), 2, NULL);
+	// if arg ou redir == NULL
 	return (command);
 }
 
@@ -102,8 +103,11 @@ t_ast	*ast_init(t_token *tok, size_t tok_size)
 	(void) tok_size;
 	ast = malloc(sizeof(*ast));
 	ast->pipeline = vec_new(sizeof(t_ast_command), 2, NULL);
+	// if NULL
 	command = ast_command_init();
+	// if NULL
 	vec_append(&ast->pipeline, &command);
+	// if NULL
 	ast_push(ast, tok);
 	return (ast);
 }

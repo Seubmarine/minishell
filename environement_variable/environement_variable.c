@@ -104,7 +104,7 @@ void	ft_prepare_SHL_SHLVL(t_env *env, char *argv)
 	if (buff == NULL)
 	{
 		perror("Minishell: ft_itoa: ");
-		env_free(&env);
+		env_free(env);
 		exit (1);
 	}
 	env_set_var(env, "SHLVL", buff);
