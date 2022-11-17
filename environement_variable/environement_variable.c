@@ -49,14 +49,28 @@ int	env_set_random_str(t_env *env)
 	int fd_urandom; //check error
 
 	fd_urandom = open("/dev/urandom", O_RDONLY);
-	read(fd_urandom, &seed, sizeof(seed));
-	close(fd_urandom);
+	if (fd_urandom == -1)
+	{
+		perror("Minishell: open: ");
+		exit (1);
+	}
+	if (read(fd_urandom, &seed, sizeof(seed)) == -1)
+	{
+		close(fd_urandom);
+		perror("Minishell: read: ");
+		exit (1);
+	}
+	if (close(fd_urandom) == -1)
+	{
+		perror("Minishell: close: ");
+		exit (1);
+	}
 	env->random_str[0] = '\0';
 	if (itoa_buf(seed, env->random_str, RANDOM_STR_LEN * sizeof(char)) == 0)
 	{
 		write(STDERR_FILENO, "Minishell: error creating seed: itoa\n", 37);
 		ft_strlcpy(env->random_str, "seed_error", RANDOM_STR_LEN * sizeof(char));
-		return (0);
+		exit(1);
 	}
 	return (1);
 }
@@ -68,15 +82,31 @@ void	ft_prepare_SHL_SHLVL(t_env *env, char *argv)
 	char	*shl;
 
 	buff = getcwd(NULL, 0);
-	// if NULL
+	if (buff == NULL)
+	{
+		perror("Minishell: getcwd: ");
+		env_free(env);
+		exit (1);
+	}
 	shl = ft_strjoin(buff, &argv[1]);
-	// if NULL
 	free(buff);
+	if (shl == NULL)
+	{
+		perror("Minishell: ft_strjoin: ");
+		env_free(env);
+		exit(1);
+	}
 	env_set_var(env, "SHELL", shl);
 	free(shl);
 	buff = env_get_var(*env, "SHLVL");
 	lvl = ft_atoi(buff);
 	buff = ft_itoa(lvl + 1);
+	if (buff == NULL)
+	{
+		perror("Minishell: ft_itoa: ");
+		env_free(&env);
+		exit (1);
+	}
 	env_set_var(env, "SHLVL", buff);
 	free(buff);
 }
@@ -93,12 +123,28 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	if (i <= 0)
 		i = 1;
 	if (env_set_random_str(&env) == 0)
+	{
 		perror("Minishell: env set random str");//TODO: check error
+		env_free(&env);
+		exit(1);
+	}
 	env.is_child = 0;
 	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
+	if (env._last_status_str == NULL)
+	{
+		perror("Minishell: malloc: ");
+		env_free(&env);
+		exit (1);
+	}
 	env_set_last_status(&env, 0);
 	env.v = vec_new(sizeof(t_env_key_value), i, \
 	(void (*)(void *))env_key_value_free);
+	if (env.v.data == NULL)
+	{
+		perror("Minishell: vec_new: ");
+		env_free(&env);
+		exit (1);
+	}
 	i = 0;
 	while (envp[i])
 	{

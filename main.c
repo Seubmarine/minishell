@@ -132,14 +132,16 @@ int	prompt(t_env *env)
 		{
 			is_running = 0;
 			exit_status = 0;
-			printf("\n");
+			printf("exit\n");
 		}
 		else
 		{
+			printf("Parent : %d\n", getpid());
 			add_history(line);
 			exit_status = execute_line(line, env);
 			if (env->is_child)
 				is_running = 0;
+			printf("Bonjour, je suis %d\n", getpid());
 		}
 		free(line);
 	}
@@ -157,6 +159,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 	signal_handling();
 	env = ft_prepare_env(envp, (char *)argv[0]);
 	exit_status = prompt(&env);
+	printf("Au revoir, j'etais %d\n", getpid());
 	clear_history();
 	env_free(&env);
 	return (exit_status);

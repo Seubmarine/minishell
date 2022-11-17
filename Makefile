@@ -55,12 +55,14 @@ lib:
 	@make -C libft
 
 clean:
+	@make clean -C ./libft/
 	-rm -f $(OBJ)
 
 fclean: clean
+	@make fclean -C ./libft/
 	-rm -f $(NAME)
 
 re: fclean
 	$(MAKE) all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re lib
