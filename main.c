@@ -132,7 +132,7 @@ int	prompt(t_env *env)
 		{
 			is_running = 0;
 			exit_status = 0;
-			write(2, "exit\n", 5);
+			write(2, "\nexit\n", 6);
 		}
 		else
 		{

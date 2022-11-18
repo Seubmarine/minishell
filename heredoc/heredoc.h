@@ -28,6 +28,8 @@
 # define HEREDOC_RANDOM_NUMBER_LEN 32
 # define HEREDOC_NUMBER_LEN 32
 
-int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size);
+int		itoa_buf(unsigned long long x, char *buffer, size_t buffer_size);
 char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof);
+char	*ft_strndup(const char *s, size_t n);
+
 #endif

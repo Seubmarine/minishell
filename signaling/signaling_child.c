@@ -1,55 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signaling.c                                        :+:      :+:    :+:   */
+/*   signaling_child.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/06 19:09:02 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/17 00:45:27 by tbousque         ###   ########.fr       */
+/*   Created: 2022/11/18 16:34:02 by mportrai          #+#    #+#             */
+/*   Updated: 2022/11/18 16:34:04 by mportrai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "signaling.h"
 #include <readline/readline.h>
 
-void	handler(int signum)
+void	handler_child(int signum)
 {
 	if (signum == SIGINT)
 	{
-		// printf("default handling\n");
-		printf("\n");
+		// printf("handling child\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
-		rl_redisplay();
+		// rl_redisplay();
 	}
 	return ;
 }
 
-void	signal_handling(void)
-{
-	struct sigaction	sa;
-
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handler;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
-void	handler_heredoc(int signum)
-{
-	if (signum == SIGINT)
-		close(STDIN_FILENO);
-}
-
-void	signal_handling_heredoc(void)
+void	signal_handling_child(void)
 {
 	struct sigaction	sa_child;
 
 	sigemptyset(&sa_child.sa_mask);
 	sa_child.sa_flags = SA_RESTART;
-	sa_child.sa_handler = handler_heredoc;
+	sa_child.sa_handler = handler_child;
 	sigaction(SIGINT, &sa_child, NULL);
-	sigaction(SIGQUIT, &sa_child, NULL);
+	// sigaction(SIGQUIT, &sa_child, NULL);
 }

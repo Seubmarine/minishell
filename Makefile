@@ -23,7 +23,7 @@ ENV_INCLUDE = environement_variable/
 BUILTIN_SRCS = built_in.c export.c unset.c env.c pwd.c ft_echo.c ft_exit.c ft_cd.c
 BUILTIN_INCLUDE = built_in/
 
-SIGNAL_SRCS = signaling.c
+SIGNAL_SRCS = signaling.c signaling_child.c
 SIGNAL_INCLUDE = signaling/
 
 HEREDOC_SRCS = heredoc.c

@@ -18,7 +18,7 @@ look at vector_test.c for more information
 
 a dynamic array that will realloc when necessary to contains a given type
 */
-
+//
 /*
 create a vector and need the size of the type it will contains 
 if your vector contains a type that need to free some ressource

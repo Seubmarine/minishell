@@ -44,10 +44,11 @@ int	ft_analyse_fd(t_command *cmd)
 		redir = cmd->redirections[i];
 		if (redir.type == REDIRECTION_INPUT)
 			ft_open_input(&(cmd->fdin), redir.filename);
-		else if (redir.type == REDIRECTION_OUTPUT || redir.type == REDIRECTION_OUTPUT_APPEND)
+		else if (redir.type == REDIRECTION_OUTPUT || \
+		redir.type == REDIRECTION_OUTPUT_APPEND)
 			ft_open_output(&(cmd->fdout), redir);
 		if (cmd->fdin == -1 || cmd->fdout == -1)
-			return(perror("Minishell"), 0);
+			return (perror("Minishell: open: "), 0);
 		i++;
 	}
 	return (1);
@@ -125,7 +126,7 @@ void	fd_close_reset(int *fd)
 	*fd = -2;
 }
 
-void close_stdfd(void)
+void	close_stdfd(void)
 {
 	close(STDERR_FILENO);
 	close(STDIN_FILENO);
@@ -157,16 +158,21 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	return (127);
 }
 
-int execute_command(t_ast *ast, t_env *env)
+int	execute_command(t_ast *ast, t_env *env)
 {
-	int pipes[2];
-	int fdin = STDIN_FILENO;
-	int	exit_status = 0;
-	t_ast_command *ast_command = vec_get(&ast->pipeline, 0);
-	t_command cmd;
-	pid_t	*pids = malloc(sizeof(*pids) * ast->pipeline.len);
-	size_t	i = 0;
+	int				pipes[2];
+	int				fdin;
+	int				exit_status;
+	t_ast_command	*ast_command;
+	t_command		cmd;
+	pid_t			*pids;
+	size_t			i;
 
+	fdin = STDIN_FILENO;
+	ast_command = vec_get(&ast->pipeline, 0);
+	pids = malloc(sizeof(*pids) * ast->pipeline.len);
+	i = 0;
+	exit_status = 0;
 	signal_handling_child();
 	while (i < ast->pipeline.len)
 	{
@@ -196,7 +202,7 @@ int execute_command(t_ast *ast, t_env *env)
 		i++;
 	}
 	i = 0;
-	int wstatus = 0;
+	int	wstatus;
 	while (env->is_child == 0 && i < ast->pipeline.len)
 	{
 		waitpid(pids[i], &wstatus, 0);
@@ -207,7 +213,7 @@ int execute_command(t_ast *ast, t_env *env)
 	{
 		exit_status = WTERMSIG(wstatus) + 128;
 		if (WTERMSIG(wstatus) == SIGQUIT)
-			write(STDERR_FILENO, "quit (core dumped)\n", 19);
+			write(STDERR_FILENO, "Quit (core dumped)\n", 19);
 	}
 	free(pids);
 	signal_handling();
@@ -216,15 +222,17 @@ int execute_command(t_ast *ast, t_env *env)
 
 int	ft_is_buitin(t_ast_command *ast_cmd)
 {
-	char *cmd;
+	const char	*builtins_str[] = {"env", "export", "cd", "echo", \
+	"exit", "pwd", "unset"};
+	char		*cmd;
+	size_t		i;
 
+	i = 0;
 	if (ast_cmd->args.len == 0)
 		return (0);
-	cmd = ((t_token *)vec_get(&ast_cmd->args, 0))->word;	
+	cmd = ((t_token *)vec_get(&ast_cmd->args, 0))->word;
 	if (cmd == NULL)
 		return (0);
-	const char *builtins_str[] = {"env", "export", "cd", "echo", "exit", "pwd", "unset"};
-	size_t	i = 0;
 	while (i < sizeof(builtins_str) / sizeof(builtins_str[0]))
 	{
 		if (ft_strncmp(cmd, builtins_str[i], ft_strlen(cmd)) == 0)
@@ -237,11 +245,13 @@ int	ft_is_buitin(t_ast_command *ast_cmd)
 int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
 {
 	int	exit_status;
-
 	t_command cmd;
+	int fd_stdin;
+	int fd_stdout;
+
 	command_init(&cmd, *ast_cmd);
-	int fd_stdin = dup(STDIN_FILENO); 
-	int fd_stdout = dup(STDIN_FILENO); 
+	fd_stdin = dup(STDIN_FILENO);
+	fd_stdout = dup(STDIN_FILENO);
 	// if error
 	exit_status = ft_exec_command(&cmd, env);
 	if (fd_stdin != STDIN_FILENO)

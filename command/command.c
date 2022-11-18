@@ -34,29 +34,24 @@ enum e_redirection_type	token_to_redirection_type(enum e_token_type type)
 		return (REDIRECTION_INVALID);
 }
 
-//return 1 on success 0 on error
-int	command_redirection_init(t_command *cmd, t_ast_command ast)
+int	command_set_redirection(t_command *cmd, t_ast_command ast, \
+t_ast_redirection *ast_redirec)
 {
-	size_t				i;
-	t_ast_redirection	*ast_redirec;
+	size_t	i;
 
-	cmd->redirections = malloc(sizeof(*cmd->redirections) * ast.redirection.len);
-	if (cmd->redirections == NULL)
-	{	ft_putstr_fd("Minishell: malloc error: command_redirection_init\n", STDERR_FILENO);
-		return (0);
-	}
-	cmd->redirections_len = ast.redirection.len;
 	i = 0;
 	while (i < ast.redirection.len)
 	{
 		ast_redirec = vec_get(&ast.redirection, i);
-		if (ast_redirec->rhs.type != TOKEN_STRING || ast_redirec->rhs.word == NULL)
+		if (ast_redirec->rhs.type != TOKEN_STRING || \
+		ast_redirec->rhs.word == NULL)
 		{
 			ft_putstr_fd("Minishell: redirection rhs invalid\n", STDERR_FILENO);
 			return (0);
 		}
 		cmd->redirections[i].filename = ast_redirec->rhs.word;
-		cmd->redirections[i].type = token_to_redirection_type(ast_redirec->token.type);
+		cmd->redirections[i].type = \
+		token_to_redirection_type(ast_redirec->token.type);
 		if (cmd->redirections[i].type == REDIRECTION_INVALID)
 		{
 			ft_putstr_fd("Minishell: redirection type invalid\n", STDERR_FILENO);
@@ -67,20 +62,50 @@ int	command_redirection_init(t_command *cmd, t_ast_command ast)
 	return (1);
 }
 
-//transform an ast command to a command type
-int command_init(t_command *cmd, t_ast_command ast_command)
+//return 1 on success 0 on error
+int	command_redirection_init(t_command *cmd, t_ast_command ast)
 {
-	size_t		i;
+	t_ast_redirection	*ast_redirec;
 
+	ast_redirec = NULL;
+	cmd->redirections = malloc(\
+	sizeof(*cmd->redirections) * ast.redirection.len);
+	if (cmd->redirections == NULL)
+	{	
+		ft_putstr_fd("Minishell: malloc error: command_redirection_init\n", \
+		STDERR_FILENO);
+		return (0);
+	}
+	cmd->redirections_len = ast.redirection.len;
+	if (command_set_redirection(cmd, ast, ast_redirec) == 0)
+		return (0);
+	return (1);
+}
+
+int	command_init_value(t_command *cmd, t_ast_command ast_command)
+{
 	cmd->arguments = NULL;
 	cmd->path = NULL;
 	cmd->redirections = NULL;
 	cmd->fdin = STDIN_FILENO;
 	cmd->fdout = STDOUT_FILENO;
+	cmd->arguments = malloc(sizeof(*cmd->arguments) * \
+	(ast_command.args.len + 1)); //TODO check error
+	if (cmd->arguments == NULL)
+	{
+		ft_putstr_fd("Minishell : error malloc: cmd->arguments\n", 2);
+		return (0);
+	}
+	return (1);
+}
+
+//transform an ast command to a command type
+int	command_init(t_command *cmd, t_ast_command ast_command)
+{
+	size_t		i;
 
 	i = 0;
-	cmd->arguments = malloc(sizeof(*cmd->arguments) * (ast_command.args.len + 1)); //TODO check error
-	if (cmd->arguments == NULL)
+	if (command_init_value(cmd, ast_command) == 0)
 		return (0);
 	while (i < ast_command.args.len)
 	{
