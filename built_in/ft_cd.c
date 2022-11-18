@@ -16,6 +16,8 @@ int	ft_is_flag_cd_nb_arg(char **arg)
 {
 	if (arg[1][0] == '-')
 	{
+		if ((access(arg[1], F_OK) == 0) && (ft_strlen_l(arg) == 2))
+			return (0);
 		ft_putstr_fd("Minishell: cd: no flag allowed\n", 2);
 		return (1);
 	}
