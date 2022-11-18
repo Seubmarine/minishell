@@ -28,6 +28,24 @@ void	ft_vecnew_error(void)
 	exit (1);
 }
 
+void	ft_env_set_random_error(t_env *env)
+{
+	perror("Minishell: env_set_random_str:");//TODO: check error
+	env_free(env);
+	exit (1);
+}
+
+void	ft_set_last_status(t_env *env)
+{
+	env->_last_status_str = malloc(sizeof(ENV_LAST_STATUS_SIZE));
+	if (env->_last_status_str == NULL)
+	{
+		env_free(env);
+		exit(1);
+	}
+	env_set_last_status(env, 0);
+}
+
 t_env	env_init_null(char *argv)
 {
 	t_env	env;
@@ -44,12 +62,7 @@ t_env	env_init_null(char *argv)
 	env_set_var(&env, "SHLVL", "1");
 	env_set_var(&env, "_", argv);
 	if (env_set_random_str(&env) == 0)
-	{
-		perror("Minishell: env_set_random_str:");//TODO: check error
-		env_free(&env);
-		exit (1);
-	}
-	env._last_status_str = malloc(sizeof(ENV_LAST_STATUS_SIZE));
-	env_set_last_status(&env, 0);
+		ft_env_set_random_error(&env);
+	ft_set_last_status(&env);
 	return (env);
 }

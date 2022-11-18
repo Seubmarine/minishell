@@ -37,8 +37,13 @@ typedef struct s_env
 	char	random_str[RANDOM_STR_LEN];
 }	t_env;
 
-
 int				env_set_random_str(t_env *env);
+void			ft_prepare_shl_shlvl(t_env *env, char *argv);
+t_env_key_value	key_value_init(char *kv);
+t_env_key_value	*env_get_key_value_ptr(t_env env, char *key);
+char			*env_key_value_to_string(t_env_key_value kv);
+void			env_key_value_free(t_env_key_value *kv);
+void			ft_env_set_random_error(t_env *env);
 
 //create a key value from a string "key=value"
 t_env_key_value	key_value_init(char *kv);
@@ -46,6 +51,8 @@ t_env_key_value	key_value_init(char *kv);
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
 t_env			env_init_from_envp(const char *envp[], char *argv);
+t_env			env_collect_from_envp(char **envp, char *argv, t_env env, \
+t_env_key_value *key_value);
 t_env			env_init_null(char *argv);
 
 //get an array of key_value, pass the size of the array in length

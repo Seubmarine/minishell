@@ -14,101 +14,34 @@
 #include "built_in.h"
 #include <stdio.h>
 
-void	env_key_value_free(t_env_key_value *kv)
+void	env_vec_new_error(t_env *env)
 {
-	free(kv->key);
-	kv->key = NULL;
-	free(kv->value);
-	kv->value = NULL;
+	perror("Minishell: vec_new: ");
+	env_free(env);
+	exit (1);
 }
 
-t_env_key_value	key_value_init(char *kv)
+void	env_last_satus_error(t_env *env)
 {
-	t_env_key_value	var;
-	size_t			i;
+	perror("Minishell: malloc: ");
+	env_free(env);
+	exit (1);
+}
 
-	var.key = NULL;
-	var.value = NULL;
+t_env	env_collect_from_envp(char **envp, char *argv, t_env env, \
+t_env_key_value *key_value)
+{
+	size_t	i;
+
 	i = 0;
-	while (kv[i] && kv[i] != '=')
+	while (envp[i])
+	{
+		*key_value = key_value_init(envp[i]);
+		vec_append(&env.v, key_value);
 		i++;
-	var.key = strndup(kv, i);
-	if (var.key == NULL)
-		return (var);
-	var.value = ft_strdup(kv + i + 1);
-	return (var);
-}
-
-#include <fcntl.h>
-#include <heredoc.h>
-
-//return 1 on success 0 on error
-int	env_set_random_str(t_env *env)
-{
-	long long unsigned seed;
-	int fd_urandom; //check error
-
-	fd_urandom = open("/dev/urandom", O_RDONLY);
-	if (fd_urandom == -1)
-	{
-		perror("Minishell: open: ");
-		exit (1);
 	}
-	if (read(fd_urandom, &seed, sizeof(seed)) == -1)
-	{
-		close(fd_urandom);
-		perror("Minishell: read: ");
-		exit (1);
-	}
-	if (close(fd_urandom) == -1)
-	{
-		perror("Minishell: close: ");
-		exit (1);
-	}
-	env->random_str[0] = '\0';
-	if (itoa_buf(seed, env->random_str, RANDOM_STR_LEN * sizeof(char)) == 0)
-	{
-		write(STDERR_FILENO, "Minishell: error creating seed: itoa\n", 37);
-		ft_strlcpy(env->random_str, "seed_error", RANDOM_STR_LEN * sizeof(char));
-		exit(1);
-	}
-	return (1);
-}
-
-void	ft_prepare_SHL_SHLVL(t_env *env, char *argv)
-{
-	int		lvl;
-	char	*buff;
-	char	*shl;
-
-	buff = getcwd(NULL, 0);
-	if (buff == NULL)
-	{
-		perror("Minishell: getcwd: ");
-		env_free(env);
-		exit (1);
-	}
-	shl = ft_strjoin(buff, &argv[1]);
-	free(buff);
-	if (shl == NULL)
-	{
-		perror("Minishell: ft_strjoin: ");
-		env_free(env);
-		exit(1);
-	}
-	env_set_var(env, "SHELL", shl);
-	free(shl);
-	buff = env_get_var(*env, "SHLVL");
-	lvl = ft_atoi(buff);
-	buff = ft_itoa(lvl + 1);
-	if (buff == NULL)
-	{
-		perror("Minishell: ft_itoa: ");
-		env_free(env);
-		exit (1);
-	}
-	env_set_var(env, "SHLVL", buff);
-	free(buff);
+	ft_prepare_shl_shlvl(&env, argv);
+	return (env);
 }
 
 t_env	env_init_from_envp(const char *envp[], char *argv)
@@ -123,154 +56,18 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	if (i <= 0)
 		i = 1;
 	if (env_set_random_str(&env) == 0)
-	{
-		perror("Minishell: env set random str");//TODO: check error
-		env_free(&env);
-		exit(1);
-	}
+		ft_env_set_random_error(&env);
 	env.is_child = 0;
 	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
 	if (env._last_status_str == NULL)
-	{
-		perror("Minishell: malloc: ");
-		env_free(&env);
-		exit (1);
-	}
+		env_last_satus_error(&env);
 	env_set_last_status(&env, 0);
 	env.v = vec_new(sizeof(t_env_key_value), i, \
 	(void (*)(void *))env_key_value_free);
 	if (env.v.data == NULL)
-	{
-		perror("Minishell: vec_new: ");
-		env_free(&env);
-		exit (1);
-	}
-	i = 0;
-	while (envp[i])
-	{
-		key_value = key_value_init((char *)envp[i]);
-		vec_append(&env.v, &key_value);
-		i++;
-	}
-	ft_prepare_SHL_SHLVL(&env, argv);
+		env_vec_new_error(&env);
+	env = env_collect_from_envp((char **)envp, argv, env, &key_value);
 	return (env);
-}
-
-void	env_free(t_env	*env)
-{
-	vec_free(&env->v);
-	env->_last_status = 0;
-	free(env->_last_status_str);
-}
-
-t_env_key_value	*env_get_vars(t_env	env, size_t *length)
-{
-	*length = env.v.len;
-	return (env.v.data);
-}
-
-//if key is present get it's value, or NULL if key doesn't exist
-t_env_key_value	*env_get_key_value_ptr(t_env env, char *key)
-{
-	size_t			i;
-	t_env_key_value	*kv;
-
-	i = 0;
-	while (i < env.v.len)
-	{
-		kv = vec_get(&env.v, i);
-		if (ft_strcmp(key, kv->key) == 0)
-			return (kv);
-		i++;
-	}
-	return (NULL);
-}
-
-//get value from key
-char	*env_get_var(t_env env, char *key)
-{
-	t_env_key_value	*kv;
-
-	if (ft_strcmp("?", key) == 0)
-		return (env_get_last_status(&env));
-	kv = env_get_key_value_ptr(env, key);
-	if (kv == NULL)
-		return (NULL);
-	return (kv->value);
-}
-
-//set status as a string internally
-char	*env_set_last_status(t_env *env, int status)
-{
-	if (env->_last_status_str == NULL)
-	{
-		write(STDERR_FILENO, "env last status isn't set corretly\n", 35);
-		exit(EXIT_FAILURE);
-	}
-	status = (status + 256) % 256;
-	env->_last_status = status;
-	snprintf(env->_last_status_str, ENV_LAST_STATUS_SIZE - 1, "%i", status);//TODO: use itoa
-	return (env->_last_status_str);
-}
-
-char	*env_get_last_status(t_env *env)
-{
-	return (env->_last_status_str);
-}
-
-//remove the variable from this key in the env
-void	env_remove_var(t_env *env, char *key)
-{
-	t_env_key_value	*current_var;
-	t_env_key_value	*last_var;
-
-	current_var = env_get_key_value_ptr(*env, key);
-	if (current_var == NULL)
-		return ;
-	last_var = vec_get(&env->v, env->v.len - 1);
-	env_key_value_free(current_var);
-	env->v.len -= 1;
-	if (current_var != last_var)
-	{
-		current_var->key = last_var->key;
-		current_var->value = last_var->value;
-	}
-}
-
-/*
-if key already exist overwrite value
-key and value will be duplicated
-*/
-void	env_set_var(t_env *env, char *key, char *value)
-{
-	t_env_key_value	*kv;
-	t_env_key_value	var;
-
-	kv = env_get_key_value_ptr(*env, key);
-	if (kv)
-	{
-		free(kv->value);
-		kv->value = ft_strdup(value);
-	}
-	else
-	{
-		var = (t_env_key_value){.key = ft_strdup(key), .value = ft_strdup(value)};
-		vec_append(&env->v, &var);
-	}
-}
-
-char	*env_key_value_to_string(t_env_key_value kv)
-{
-	char			*str;
-	const size_t	key_len = ft_strlen(kv.key);
-	const size_t	value_len = ft_strlen(kv.value);
-
-	str = malloc(ft_strlen(kv.key) + ft_strlen(kv.value) + 2);
-	ft_memcpy(str, kv.key, key_len);
-	str[key_len] = '=';
-	ft_memcpy(str + key_len + 1, kv.value, value_len);
-	str[key_len + 1 + value_len] = '\0';
-	return (str);
 }
 
 char	**env_to_envp(t_env env)
@@ -292,18 +89,6 @@ char	**env_to_envp(t_env env)
 	return (envp);
 }
 
-void	envp_free(char **envp)
-{
-	size_t	i;
-
-	i = 0;
-	while (envp[i])
-	{
-		free(envp[i]);
-		i++;
-	}
-	free(envp);
-}
 // #include <stdio.h>
 // int main(int argc, char const *argv[], const char *envp[])
 // {
