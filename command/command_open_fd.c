@@ -21,7 +21,8 @@ void	ft_open_input(int *fdin, char *filename)
 	if (*fdin != STDIN_FILENO)
 		close(*fdin);
 	*fdin = open(filename, O_RDONLY);
-	// ft_error_open(fd, NULL, NULL);
+	if (*fdin == -1)
+		perror("Minishell: opening redirection type input");
 }
 
 void	ft_open_output(int *fdout, t_redirection redir)
@@ -29,11 +30,17 @@ void	ft_open_output(int *fdout, t_redirection redir)
 	if (*fdout != STDOUT_FILENO)
 		close(*fdout);
 	if (redir.type == REDIRECTION_OUTPUT)
+	{
 		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (*fdout == -1)
+			perror("Minishell: opening redirection type output");
+	}
 	if (redir.type == REDIRECTION_OUTPUT_APPEND)
+	{
 		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
-	// if (fd[1] == -1)
-	// 	ft_error_open(fd, NULL, NULL);
+		if (*fdout == -1)
+			perror("Minishell: opening redirection type output append");
+	}
 }
 
 //return 0 on error 1 on success
@@ -41,23 +48,19 @@ int	ft_open_fd_child(t_command *cmd)
 {
 	if (ft_analyse_fd(cmd) == 0)
 		return (0);
-	// if ((fd[0] == -1) || (fd[1] == -1))
-	// {
-	// 	perror("minishell child open: /dev/stdout or /dev/stdin");
-	// 	//ft_error_open
-	// 	exit(EXIT_FAILURE);
-	// }
 	if (cmd->fdin != STDIN_FILENO)
 	{
-		printf("dup2 and close fdin %i\n", cmd->fdin);
-		dup2(cmd->fdin, STDIN_FILENO); //check error
-		close(cmd->fdin); // check error
+		if (dup2(cmd->fdin, STDIN_FILENO) == -1)
+			perror("Minishell: dup2 stdin");
+		if (close(cmd->fdin) == -1)
+			perror("Minishell: closing original of dup2 stdin");
 	}
 	if (cmd->fdout != STDOUT_FILENO)
 	{
-		printf("dup2 and close fdout %i\n", cmd->fdout);
-		dup2(cmd->fdout, STDOUT_FILENO); //check error
-		close(cmd->fdout); // check error
+		if (dup2(cmd->fdout, STDOUT_FILENO) == -1)
+			perror("Minishell: dup2 stdout");
+		if (close(cmd->fdout) == -1)
+			perror("Minishell: closing original of dup2 stdout");
 	}
 	return (1);
 }
