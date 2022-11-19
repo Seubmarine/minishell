@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/17 03:38:17 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:25:18 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,29 @@ Token: (type: TOKEN_END) Span : (begin: 24, end: 24)
 It helps to see if an input is valid and ease the program job for later
 */
 
-t_vec	lexer(char *str, t_env env)
+int		lexer_case_token_single_quote(t_vec *tokens, const char *str, t_token_info *current)
 {
-	t_vec			tokens;
+	size_t	j;
+	t_token	tok;
+
+	j = 0;
+	while (str[j] != '\0' && str[j] != '\'')
+		j++;
+	if (str[j] == '\0')
+	{
+		write(STDERR_FILENO, "Minishell: error unclosed single quote\n", 39);
+		return (0);
+	}
+	current->len = j + 1;
+	tok.type = TOKEN_STRING;
+	tok.word = strndup(str, j);
+	tokens_append(tokens, &tok);
+	return (1);
+}
+
+//return 0 on failure, 1 on success
+int	lexer(char *str, t_env env, t_vec *tokens)
+{
 	size_t			i;
 	t_token_info	info;
 	t_token_info	next;
@@ -51,11 +71,11 @@ t_vec	lexer(char *str, t_env env)
 	size_t			reminder;
 
 	(void) env;
-	tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
-	if (tokens.data == NULL)
+	*tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
+	if (tokens->data == NULL)
 	{
 		perror("Minishell: vec_new");
-		return (tokens);
+		return (0);
 	}
 	i = 0;
 	while (str[i])
@@ -63,11 +83,11 @@ t_vec	lexer(char *str, t_env env)
 		info = is_token(&str[i]);
 		t_token	tok = {.type = info.type, .word = NULL};
 		if (info.type == TOKEN_SPACE)
-			tokens_append(&tokens, &tok);
+			tokens_append(tokens, &tok);
 		else if (info.type == TOKEN_STRING)
 		{
 			tok.word = strndup(&str[i], info.len);
-			tokens_append(&tokens, &tok);
+			tokens_append(tokens, &tok);
 		}
 		else if (info.type == TOKEN_DOLLAR)
 		{
@@ -89,7 +109,7 @@ t_vec	lexer(char *str, t_env env)
 						while (isspace(env_value[j]))
 							j++;
 						if (j > 0)
-							tokens_append(&tokens, &tok);
+							tokens_append(tokens, &tok);
 						if (env_value[j] == '\0')
 							break ;
 						reminder = j;
@@ -97,7 +117,7 @@ t_vec	lexer(char *str, t_env env)
 							j++;
 						tok.type = TOKEN_STRING;
 						tok.word = strndup(&env_value[reminder], j - reminder);
-						tokens_append(&tokens, &tok);
+						tokens_append(tokens, &tok);
 					}
 				}
 				info.len = next.len + 1;
@@ -108,7 +128,7 @@ t_vec	lexer(char *str, t_env env)
 			{
 				tok.type = TOKEN_STRING;
 				tok.word = strndup("$", 1);
-				tokens_append(&tokens, &tok);
+				tokens_append(tokens, &tok);
 			}
 		}
 		else if (info.type == TOKEN_DOUBLE_QUOTE)
@@ -154,31 +174,23 @@ t_vec	lexer(char *str, t_env env)
 			vec_append(&word, "\0");
 			tok.type = TOKEN_STRING;
 			tok.word = word.data;
-			tokens_append(&tokens, &tok);
+			tokens_append(tokens, &tok);
 			info.len = j + 1;
 		}
 		else if (info.type == TOKEN_SINGLE_QUOTE)
 		{
-			i++;
-			size_t	j;
-
-			j = 0;
-			while (str[i + j] != '\'')
-				j++;
-			info.len = j + 1;
-			tok.type = TOKEN_STRING;
-			tok.word = strndup(&str[i], j);
-			tokens_append(&tokens, &tok);
+			if (lexer_case_token_single_quote(tokens, &str[++i], &info) == 0)
+				return (0);
 		}
 		else
 		{
 			t_token	tok = {.type = info.type, .word = NULL};
-			tokens_append(&tokens, &tok);
+			tokens_append(tokens, &tok);
 		}
 		i += info.len;
 	}
 	t_token	tok = {.type = TOKEN_END, .word = NULL};
-	tokens_append(&tokens, &tok);
-	lexer_debug(tokens);
-	return (tokens);
+	tokens_append(tokens, &tok);
+	lexer_debug(*tokens);
+	return (1);
 }

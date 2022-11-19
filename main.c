@@ -69,26 +69,30 @@
 //return exit status
 int	execute_line(char *line, t_env *env)
 {
-	t_vec	v;
+	t_vec	tokens;
 	t_ast	*ast;
 	int		exit_status;
 
 	ast = NULL;
 	exit_status = 0;
-	v = lexer(line, *env);
-	if (v.len <= 1 || (((t_token *)v.data)[v.len - 1].type) != TOKEN_END)
+	if (lexer(line, *env, &tokens) == 0)
 	{
-		vec_free(&v);
+		vec_free(&tokens);
 		return (exit_status);
 	}
-	ast = ast_init(v.data, v.len);
+	if (tokens.len <= 1 || (((t_token *)tokens.data)[tokens.len - 1].type) != TOKEN_END)
+	{
+		vec_free(&tokens);
+		return (exit_status);
+	}
+	ast = ast_init(tokens.data, tokens.len);
 	if (ast_open_heredocs(ast, env) == 1)
 		exit_status = ft_which_command(ast, env);
 	else
 		exit_status = 130;
 	ast_close_heredocs(ast);
 	ast_free(ast);
-	vec_free(&v);
+	vec_free(&tokens);
 	return (exit_status);
 }
 

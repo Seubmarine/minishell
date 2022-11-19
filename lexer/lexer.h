@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:03:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/17 03:43:57 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:08:35 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ typedef struct s_token_info
 	size_t				len;
 }	t_token_info;
 
-t_vec			lexer(char *str, t_env env);
+int				lexer(char *str, t_env env, t_vec *tokens);
 void			lexer_debug(t_vec	tokens);
 t_token_info	is_token(char const *str);
 void			tokens_append(t_vec *tokens, t_token *current);
