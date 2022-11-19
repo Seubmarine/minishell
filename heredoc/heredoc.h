@@ -43,5 +43,4 @@ int		heredoc_null_line(t_hd_fd *hd_fds, char *filename);
 int		heredoc_open_fd(t_hd_fd *hd_fds, char *filename);
 char	*heredoc_naming(int heredoc_number, char *random_str);
 
-
 #endif
