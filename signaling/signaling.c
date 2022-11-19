@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 19:09:02 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/17 00:45:27 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/18 21:28:59 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	handler(int signum)
 {
 	if (signum == SIGINT)
 	{
-		// printf("default handling\n");
 		printf("\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
