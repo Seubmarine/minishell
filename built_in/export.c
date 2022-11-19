@@ -8,8 +8,9 @@ int	builtin_export(char **argv, t_env *env)
 	i = 1;
 	while (argv[i])
 	{
-		kv = key_value_init(argv[i]);
-		env_set_var(env, kv.key, kv.value);
+		if (key_value_init(argv[i], &kv) == 1)
+			env_set_var(env, kv.key, kv.value);
+		env_key_value_free(&kv);
 		i++;
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 21:30:01 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/18 21:30:05 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:56:33 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,22 @@ void	env_key_value_free(t_env_key_value *kv)
 	kv->value = NULL;
 }
 
-t_env_key_value	key_value_init(char *kv)
+int	key_value_init(char *kv, t_env_key_value *var)
 {
-	t_env_key_value	var;
 	size_t			i;
 
-	var.key = NULL;
-	var.value = NULL;
+	var->key = NULL;
+	var->value = NULL;
 	i = 0;
 	while (kv[i] && kv[i] != '=')
 		i++;
-	var.key = strndup(kv, i);
-	if (var.key == NULL)
-		return (var);
-	var.value = ft_strdup(kv + i + 1);
-	return (var);
+	if (kv[i] != '=' || i == 0)
+		return (0);
+	var->key = strndup(kv, i);
+	if (var->key == NULL)
+		return (0);
+	var->value = ft_strdup(kv + i + 1);
+	return (1);
 }
 
 //if key is present get it's value, or NULL if key doesn't exist

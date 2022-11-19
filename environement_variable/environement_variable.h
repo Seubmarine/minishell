@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 07:06:49 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:49:05 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,13 @@ typedef struct s_env
 
 int				env_set_random_str(t_env *env);
 void			ft_prepare_shl_shlvl(t_env *env, char *argv);
-t_env_key_value	key_value_init(char *kv);
 t_env_key_value	*env_get_key_value_ptr(t_env env, char *key);
 char			*env_key_value_to_string(t_env_key_value kv);
 void			env_key_value_free(t_env_key_value *kv);
 void			ft_env_set_random_error(t_env *env);
 
 //create a key value from a string "key=value"
-t_env_key_value	key_value_init(char *kv);
+int				key_value_init(char *kv, t_env_key_value *var);
 
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 06:55:08 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:51:29 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ t_env_key_value *key_value)
 	i = 0;
 	while (envp[i])
 	{
-		*key_value = key_value_init(envp[i]);
-		vec_append(&env.v, key_value);
+		if (key_value_init(envp[i], key_value) != 0)
+			vec_append(&env.v, key_value);
 		i++;
 	}
 	ft_prepare_shl_shlvl(&env, argv);
