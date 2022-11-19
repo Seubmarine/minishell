@@ -1,5 +1,6 @@
 #include "command.h"
 
+//return 1 on success
 int	preparing_fd_pipe(t_pidpes *pidpes, t_ast *ast)
 {
 	pidpes->pipes[READ_END] = STDIN_FILENO;
@@ -9,11 +10,11 @@ int	preparing_fd_pipe(t_pidpes *pidpes, t_ast *ast)
 		if (pipe(pidpes->pipes) == -1)
 		{
 			return (perror("Minishell: pipe: "), 1);
-			free(pidpes->pids);
-			return (1);
+			pidpes->exit_status = 1;
+			return (0);
 		}
 	}
-	return (0);
+	return (1);
 }
 
 void	ft_open_input(int *fdin, char *filename)

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/19 06:17:24 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:43:10 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,15 +131,16 @@ int	execute_command(t_ast *ast, t_env *env)
 	signal_handling_child();
 	while (pidpes.i < ast->pipeline.len)
 	{
-		if (preparing_fd_pipe(&pidpes, ast) == 1)
-			return (1);
+		if (preparing_fd_pipe(&pidpes, ast) == 0)
+			break;
 		manage_child(env, &cmd, &pidpes, ast_command);
-		if (pidpes.pids[pidpes.i] == 0)
+		if (pidpes.pids[pidpes.i] == 0 || pidpes.pids[pidpes.i] == -1)
 			break ;
 		manage_parent(&pidpes);
 	}
-	pidpes.exit_status = waiting_childs(env, ast, &pidpes);
-	free(pidpes.pids);
+	if (env->is_child == 0)
+		pidpes.exit_status = waiting_childs(env, ast, &pidpes);
 	signal_handling();
+	free(pidpes.pids);
 	return (pidpes.exit_status);
 }
