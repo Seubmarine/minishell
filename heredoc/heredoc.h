@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 02:52:43 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 08:27:39 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 06:30:50 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <fcntl.h>
-# include <bsd/string.h>
 # include <sys/stat.h>
+# include <readline/readline.h>
+# include <ctype.h>
+# include <signaling.h>
 # include "ast.h"
 # include "libft.h"
 

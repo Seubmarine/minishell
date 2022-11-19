@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 00:44:01 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 06:35:27 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@
 # include "signaling.h"
 # include "libft.h"
 # include "heredoc.h"
+
+// constant to use for accessing pipe
+# define READ_END 0
+# define WRITE_END 1
 
 enum e_redirection_type
 {
@@ -57,11 +61,13 @@ typedef struct s_pidpes
 }	t_pidpes;
 
 //return 0 on error 1 on success
-int			command_init(t_command *cmd, t_ast_command ast_command);
-void		command_free(t_command *command);
-int			command_set_stdin(t_command *cmd);
-int			command_set_stdout(t_command *cmd);
-int			ast_run_command(t_ast *ast, t_env *env);
-int			ft_which_command(t_ast *ast, t_env *env);
+int						command_init(t_command *cmd, t_ast_command ast_command);
+void					command_free(t_command *command);
+
+enum e_redirection_type	token_to_redirection_type(enum e_token_type type);
+int						command_set_stdin(t_command *cmd);
+int						command_set_stdout(t_command *cmd);
+int						ast_run_command(t_ast *ast, t_env *env);
+int						ft_which_command(t_ast *ast, t_env *env);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/16 20:16:41 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 06:17:24 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,45 +80,43 @@ int	ft_open_fd_child(t_command *cmd)
 	return (1);
 }
 
-const char	*REDIRECTION_DEFUG[] = {
-	"REDIRECTION_OUTPUT",
-	"REDIRECTION_OUTPUT_APPEND",
-	"REDIRECTION_INPUT",
-	"REDIRECTION_INVALID"
-};
+// const char	*REDIRECTION_DEFUG[] = {
+// 	"REDIRECTION_OUTPUT",
+// 	"REDIRECTION_OUTPUT_APPEND",
+// 	"REDIRECTION_INPUT",
+// 	"REDIRECTION_INVALID"
+// };
 
-void	ft_command_debug(t_command cmd)
-{
-	size_t			i;
-	t_redirection	r;
+// void	ft_command_debug(t_command cmd)
+// {
+// 	size_t			i;
+// 	t_redirection	r;
 
-	i = 0;
-	if (cmd.path == NULL)
-		printf("cmd : NULL\n");
-	else
-		printf("cmd : %s\n", cmd.path);
-	printf("fdin = %i, fdout = %i\n", cmd.fdin, cmd.fdout);
-	printf("args = {\n");
-	while (cmd.arguments[i])
-	{
-		printf("\targs[%zu] = \"%s\"\n", i, cmd.arguments[i]);
-		i++;
-	}
-	printf("}\n");
-	printf("redirection = {\n");
-	i = 0;
-	while (i < cmd.redirections_len)
-	{
-		r = cmd.redirections[i];
-		printf("\t[%zu] type = %s, filename = \"%s\"\n", i, REDIRECTION_DEFUG[r.type], r.filename);
-		i++;
-	}
-	printf("}\n");
-}
+// 	i = 0;
+// 	if (cmd.path == NULL)
+// 		printf("cmd : NULL\n");
+// 	else
+// 		printf("cmd : %s\n", cmd.path);
+// 	printf("fdin = %i, fdout = %i\n", cmd.fdin, cmd.fdout);
+// 	printf("args = {\n");
+// 	while (cmd.arguments[i])
+// 	{
+// 		printf("\targs[%zu] = \"%s\"\n", i, cmd.arguments[i]);
+// 		i++;
+// 	}
+// 	printf("}\n");
+// 	printf("redirection = {\n");
+// 	i = 0;
+// 	while (i < cmd.redirections_len)
+// 	{
+// 		r = cmd.redirections[i];
+// 		printf("\t[%zu] type = %s, filename = \"%s\"\n", i, REDIRECTION_DEFUG[r.type], r.filename);
+// 		i++;
+// 	}
+// 	printf("}\n");
+// }
 
-#define READ_END 0
-#define WRITE_END 1
-
+//close an fd and put the dummy value of -2 to show it's invalid
 void	fd_close_reset(int *fd)
 {
 	if (close(*fd) != 0)
@@ -133,13 +131,15 @@ void	close_stdfd(void)
 	close(STDOUT_FILENO);
 }
 
+//put "ft_command_debug" at he beginning to debug
+
+//find the path of a command if needed, open redirection and launch the command
 int	ft_exec_command(t_command *cmd, t_env *env)
 {
 	char	*bin_path;
 	char	**envp;
 	int		exit_status;
 
-	ft_command_debug(*cmd);
 	if (ft_open_fd_child(cmd) == 0)
 		return (1);
 	if (builtin(cmd->arguments, env, &exit_status))

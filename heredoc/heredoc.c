@@ -6,15 +6,11 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/17 00:46:45 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 06:49:53 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "heredoc.h"
-#include <readline/readline.h>
-#include <string.h>
-#include <ctype.h>
-#include <signaling.h>
 
 //try to put character c in the buffer and augment iterator
 //return 0 if the iterator exceed buffer size
@@ -27,82 +23,13 @@ int	put_in_buffer(char *buffer, char c, size_t *iterator, size_t buffer_size)
 	return (1);
 }
 
-void	ft_swap(unsigned char *a, unsigned char *b)
-{
-	unsigned char	tmp;
-
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-void	ft_strrev(char *str)
-{
-	size_t			i;
-	size_t			j;
-	unsigned char	*ustr;
-
-	ustr = (unsigned char *)str;
-	i = 0;
-	j = ft_strlen(str) - 1;
-	while (i < j)
-	{
-		ft_swap(&ustr[i], &ustr[j]);
-		i++;
-		j--;
-	}
-}
-
-int	_itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
-{
-	if (buffer_size == 0)
-		return (0);
-	if (x == 0)
-	{
-		buffer[0] = '\0';
-		return (1);
-	}
-	buffer[0] = (x % 10 + '0');
-	if (!_itoa_buf(x / 10, buffer + 1, buffer_size - 1))
-		return (0);
-	return (1);
-}
-
-//put an int in a string with a max size
-//return 0 on failure 1 one success
-int	itoa_buf(unsigned long long x, char *buffer, size_t buffer_size)
-{
-	unsigned long long	n;
-	const int			is_neg = 0;
-
-	n = x;
-	if (buffer_size == 0)
-		return (0);
-	if (n == 0)
-	{
-		if (buffer_size < 2)
-			return (0);
-		ft_memcpy(buffer, "0", 2);
-		return (1);
-	}
-	if (is_neg)
-	{
-		buffer[0] = '-';
-		n = -n;
-	}
-	if (!_itoa_buf(n, buffer + (is_neg), buffer_size - (is_neg)))
-		return (0);
-	ft_strrev(buffer + (is_neg));
-	return (1);
-}
-
 char	*heredoc_naming(int heredoc_number, char *random_str)
 {
 	char	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
 	char	number_str[HEREDOC_NUMBER_LEN];
 	char	*new_filename;
 
-	if (!itoa_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
+	if (!ft_ullto_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
 		return (NULL);
 	if (ft_strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))
 		return (NULL);
