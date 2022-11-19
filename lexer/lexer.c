@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 19:25:18 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:46:52 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,8 +142,13 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 
 			j = 0;
 			i++;
-			while (str[i + j] != '\"')
+			while (str[i + j] != '\0' && str[i + j] != '\"')
 				j++;
+			if (str[i + j] == '\0')
+			{
+				ft_putstr_fd("Minishell: error unclosed double quote\n", STDERR_FILENO);
+				return (0);
+			}
 			word = vec_new(sizeof(char), j + 1, NULL);
 			j = 0;
 			while (str[i + j] != '\"')
