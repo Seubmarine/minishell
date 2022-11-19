@@ -1,9 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_key.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/18 21:30:01 by tbousque          #+#    #+#             */
+/*   Updated: 2022/11/18 21:30:05 by tbousque         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "environement_variable.h"
-#include "built_in.h"
-#include <stdio.h>
-#include <fcntl.h>
-#include <heredoc.h>
 
 void	env_key_value_free(t_env_key_value *kv)
 {

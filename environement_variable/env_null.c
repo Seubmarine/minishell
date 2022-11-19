@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_null.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 15:13:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/13 15:13:42 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/19 06:56:16 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ void	ft_vecnew_error(void)
 	exit (1);
 }
 
+//TODO: return instead of exiting
 void	ft_env_set_random_error(t_env *env)
 {
-	perror("Minishell: env_set_random_str:");//TODO: check error
+	perror("Minishell: env_set_random_str:");
 	env_free(env);
-	exit (1);
 }
 
 void	ft_set_last_status(t_env *env)

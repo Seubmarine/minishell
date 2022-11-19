@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 07:34:21 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 06:55:08 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ t_env_key_value *key_value)
 	return (env);
 }
 
+//TODO rework env_init
 t_env	env_init_from_envp(const char *envp[], char *argv)
 {
 	t_env			env;
@@ -58,7 +59,7 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	if (env_set_random_str(&env) == 0)
 		ft_env_set_random_error(&env);
 	env.is_child = 0;
-	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE); //TODO: check malloc error
+	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE);
 	if (env._last_status_str == NULL)
 		env_last_satus_error(&env);
 	env_set_last_status(&env, 0);
@@ -77,7 +78,11 @@ char	**env_to_envp(t_env env)
 	t_env_key_value	kv;
 
 	envp = malloc(sizeof(*envp) * (env.v.len + 1));
-	// if NULL
+	if (envp == NULL)
+	{
+		perror("Minishell: malloc error: env_to_envp");
+		return (NULL);
+	}
 	i = 0;
 	while (i < env.v.len)
 	{
@@ -88,35 +93,3 @@ char	**env_to_envp(t_env env)
 	envp[i] = NULL;
 	return (envp);
 }
-
-// #include <stdio.h>
-// int main(int argc, char const *argv[], const char *envp[])
-// {
-// 	t_env	env = env_init_from_envp(envp);
-// 	size_t	env_len;
-// 	size_t	i;
-// 	t_env_key_value *env_array = env_get_vars(env, &env_len);
-
-// 	i = 0;
-// 	while (i < env_len)
-// 	{
-// 		printf("%s=%s\n", env_array[i].key, env_array[i].value);
-// 		i++;
-// 	}
-// 	return (EXIT_SUCCESS);
-// }
-
-// int main(int argc, char const *argv[], const char *envp[])
-// {
-// 	// char *key_values[] = {"KEY=value", "SHELL=minishell", "PATH=/bin:/usr/bin", "MOMMY=sophie"};
-// 	t_env env = env_init_from_envp(envp);
-// 	char *str;
-
-// 	env_set_var(&env, "PATH", "/tmp/bin");
-// 	env_remove_var(&env, "PATH");
-// 	str = env_get_var(env, "PATH");
-// 	if (str)
-// 		printf("%s\n", str);
-// 	env_free(&env);
-// 	return (0);
-// }

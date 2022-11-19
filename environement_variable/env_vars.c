@@ -1,8 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_vars.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/19 06:52:59 by tbousque          #+#    #+#             */
+/*   Updated: 2022/11/19 06:52:59 by tbousque         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "environement_variable.h"
-#include "built_in.h"
-#include <stdio.h>
-#include <fcntl.h>
-#include <heredoc.h>
 
 /*
 if key already exist overwrite value

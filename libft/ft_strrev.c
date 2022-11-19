@@ -1,33 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_free.c                                         :+:      :+:    :+:   */
+/*   ft_strrev.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/18 21:29:30 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/18 21:29:37 by tbousque         ###   ########.fr       */
+/*   Created: 2022/11/19 06:32:39 by tbousque          #+#    #+#             */
+/*   Updated: 2022/11/19 06:34:46 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "environement_variable.h"
+#include "libft.h"
 
-void	env_free(t_env	*env)
+void	ft_swap(unsigned char *a, unsigned char *b)
 {
-	vec_free(&env->v);
-	env->_last_status = 0;
-	free(env->_last_status_str);
+	unsigned char	tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
 }
 
-void	envp_free(char **envp)
+void	ft_strrev(char *str)
 {
-	size_t	i;
+	size_t			i;
+	size_t			j;
+	unsigned char	*ustr;
 
+	ustr = (unsigned char *)str;
 	i = 0;
-	while (envp[i])
+	j = ft_strlen(str) - 1;
+	while (i < j)
 	{
-		free(envp[i]);
+		ft_swap(&ustr[i], &ustr[j]);
 		i++;
+		j--;
 	}
-	free(envp);
 }
