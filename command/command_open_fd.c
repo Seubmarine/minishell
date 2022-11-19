@@ -81,7 +81,10 @@ int	ft_analyse_fd(t_command *cmd)
 		redir.type == REDIRECTION_OUTPUT_APPEND)
 			ft_open_output(&(cmd->fdout), redir);
 		if (cmd->fdin == -1 || cmd->fdout == -1)
-			return (perror("Minishell: open: "), 0);
+		{
+			ft_putstr_fd("Minishell: ", STDERR_FILENO);
+			return (perror(redir.filename), 0);
+		}
 		i++;
 	}
 	return (1);
