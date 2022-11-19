@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 03:36:34 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/18 05:46:41 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 21:39:02 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	tokens_append(t_vec *tokens, t_token *current)
 		}
 		else if (last->type == TOKEN_STRING && current->type == TOKEN_STRING)
 		{
-			tmp = ft_strjoin(current->word, last->word);
+			tmp = ft_strjoin(last->word, current->word);
 			if (tmp == NULL)
 				return ;
 			free(last->word);
