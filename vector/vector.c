@@ -18,11 +18,11 @@ look at vector_test.c for more information
 
 a dynamic array that will realloc when necessary to contains a given type
 */
-//
 /*
 create a vector and need the size of the type it will contains 
 if your vector contains a type that need to free some ressource
-you can pass a function in free_elem that will be executed to every elements in the vector
+you can pass a function in free_elem that will be executed to every elements
+in the vector
 */
 t_vec	vec_new(size_t element_size, size_t capacity, void (*free_elem)(void *))
 {

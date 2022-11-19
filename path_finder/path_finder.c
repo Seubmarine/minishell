@@ -26,6 +26,17 @@ char	*path_concat(char *path, size_t path_len, char *exec_name)
 	return (concat);
 }
 
+char	*get_current_path(char *path_array, size_t *path_len, char *exec_name)
+{
+	char	*current_path;
+
+	current_path = NULL;
+	while (path_array[*path_len] && path_array[*path_len] != ':')
+		*path_len += 1;
+	current_path = path_concat(path_array, *path_len, exec_name);
+	return (current_path);
+}
+
 //return the path to the executable given in a formated PATH string if it exist
 //return NULL if the executable doesn't exist in the PATH
 char	*find_exec(char *exec_name, char *path_array)
@@ -36,14 +47,13 @@ char	*find_exec(char *exec_name, char *path_array)
 	struct stat	file_info;
 
 	executable_path = NULL;
+	current_path = NULL;
 	if (exec_name == NULL || path_array == NULL)
 		return (NULL);
 	while (*path_array)
 	{
 		path_len = 0;
-		while (path_array[path_len] && path_array[path_len] != ':')
-			path_len++;
-		current_path = path_concat(path_array, path_len, exec_name);
+		current_path = get_current_path(path_array, &path_len, exec_name);
 		if (current_path == NULL)
 			return (NULL);
 		if (stat(current_path, &file_info) == 0)

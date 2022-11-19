@@ -12,74 +12,6 @@
 
 #include "command.h"
 
-void	ft_open_input(int *fdin, char *filename)
-{
-	if (*fdin != STDIN_FILENO)
-		close(*fdin);
-	*fdin = open(filename, O_RDONLY);
-	// ft_error_open(fd, NULL, NULL);
-}
-
-void	ft_open_output(int *fdout, t_redirection redir)
-{
-	if (*fdout != STDOUT_FILENO)
-		close(*fdout);
-	if (redir.type == REDIRECTION_OUTPUT)
-		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (redir.type == REDIRECTION_OUTPUT_APPEND)
-		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
-	// if (fd[1] == -1)
-	// 	ft_error_open(fd, NULL, NULL);
-}
-
-//return 0 on error 1 on success
-int	ft_analyse_fd(t_command *cmd)
-{
-	size_t			i;
-	t_redirection	redir;
-
-	i = 0;
-	while (i < cmd->redirections_len)
-	{
-		redir = cmd->redirections[i];
-		if (redir.type == REDIRECTION_INPUT)
-			ft_open_input(&(cmd->fdin), redir.filename);
-		else if (redir.type == REDIRECTION_OUTPUT || \
-		redir.type == REDIRECTION_OUTPUT_APPEND)
-			ft_open_output(&(cmd->fdout), redir);
-		if (cmd->fdin == -1 || cmd->fdout == -1)
-			return (perror("Minishell: open: "), 0);
-		i++;
-	}
-	return (1);
-}
-
-//return 0 on error 1 on success
-int	ft_open_fd_child(t_command *cmd)
-{
-	if (ft_analyse_fd(cmd) == 0)
-		return (0);
-	// if ((fd[0] == -1) || (fd[1] == -1))
-	// {
-	// 	perror("minishell child open: /dev/stdout or /dev/stdin");
-	// 	//ft_error_open
-	// 	exit(EXIT_FAILURE);
-	// }
-	if (cmd->fdin != STDIN_FILENO)
-	{
-		printf("dup2 and close fdin %i\n", cmd->fdin);
-		dup2(cmd->fdin, STDIN_FILENO); //check error
-		close(cmd->fdin); // check error
-	}
-	if (cmd->fdout != STDOUT_FILENO)
-	{
-		printf("dup2 and close fdout %i\n", cmd->fdout);
-		dup2(cmd->fdout, STDOUT_FILENO); //check error
-		close(cmd->fdout); // check error
-	}
-	return (1);
-}
-
 // const char	*REDIRECTION_DEFUG[] = {
 // 	"REDIRECTION_OUTPUT",
 // 	"REDIRECTION_OUTPUT_APPEND",
@@ -110,26 +42,12 @@ int	ft_open_fd_child(t_command *cmd)
 // 	while (i < cmd.redirections_len)
 // 	{
 // 		r = cmd.redirections[i];
-// 		printf("\t[%zu] type = %s, filename = \"%s\"\n", i, REDIRECTION_DEFUG[r.type], r.filename);
+// 		printf("\t[%zu] type = %s, filename = 
+		// \"%s\"\n", i, REDIRECTION_DEFUG[r.type], r.filename);
 // 		i++;
 // 	}
 // 	printf("}\n");
 // }
-
-//close an fd and put the dummy value of -2 to show it's invalid
-void	fd_close_reset(int *fd)
-{
-	if (close(*fd) != 0)
-		printf("error closing fd %i\n", *fd);
-	*fd = -2;
-}
-
-void	close_stdfd(void)
-{
-	close(STDERR_FILENO);
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO);
-}
 
 //put "ft_command_debug" at he beginning to debug
 
@@ -153,145 +71,74 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	if (cmd->path == NULL)
 		return (0);
 	envp = env_to_envp(*env);
-	execve(cmd->path, cmd->arguments, envp);
+	if (execve(cmd->path, cmd->arguments, envp) == -1)
+	{
+		ft_putstr_fd("Minishell: ", 2);
+		perror(cmd->arguments[0]);
+	}
 	envp_free(envp);
 	return (127);
 }
 
+void	manage_child(t_env *env, t_command *cmd, t_pidpes *pidpes, \
+t_ast_command *ast_command)
+{
+	pidpes->pids[pidpes->i] = fork();
+	if (pidpes->pids[pidpes->i] == -1)
+		return (perror("Minishell: fork: "));
+	if (pidpes->pids[pidpes->i] == 0)
+	{
+		env->is_child = 1;
+		if (pidpes->pipes[READ_END] != STDIN_FILENO)
+			close(pidpes->pipes[READ_END]);
+		command_init(cmd, ast_command[pidpes->i]);
+		cmd->fdin = pidpes->fdin;
+		cmd->fdout = pidpes->pipes[WRITE_END];
+		pidpes->exit_status = ft_exec_command(cmd, env);
+		command_free(cmd);
+	}
+}
+
+void	manage_parent(t_pidpes *pidpes)
+{
+	if (pidpes->fdin != STDIN_FILENO)
+		fd_close_reset(&(pidpes)->fdin);
+	if (pidpes->pipes[WRITE_END] != STDOUT_FILENO)
+		fd_close_reset(&(pidpes)->pipes[WRITE_END]);
+	pidpes->fdin = pidpes->pipes[READ_END];
+	pidpes->i += 1;
+}
+
+void	command_init_int(t_pidpes *pidpes)
+{
+	pidpes->fdin = STDIN_FILENO;
+	pidpes->i = 0;
+	pidpes->exit_status = 0;
+}
+
 int	execute_command(t_ast *ast, t_env *env)
 {
-	int				pipes[2];
-	int				fdin;
-	int				exit_status;
+	t_pidpes		pidpes;
 	t_ast_command	*ast_command;
 	t_command		cmd;
-	pid_t			*pids;
-	size_t			i;
 
-	fdin = STDIN_FILENO;
+	command_init_int(&pidpes);
 	ast_command = vec_get(&ast->pipeline, 0);
-	pids = malloc(sizeof(*pids) * ast->pipeline.len);
-	i = 0;
-	exit_status = 0;
+	pidpes.pids = malloc(sizeof(pidpes.pids) * ast->pipeline.len);
+	if (pidpes.pids == NULL)
+		return (perror("Minishell: pids malloc: "), 1);
 	signal_handling_child();
-	while (i < ast->pipeline.len)
+	while (pidpes.i < ast->pipeline.len)
 	{
-		pipes[READ_END] = STDIN_FILENO;
-		pipes[WRITE_END] = STDOUT_FILENO;
-		if (i < ast->pipeline.len - 1)
-			pipe(pipes);
-		pids[i] = fork();
-		if (pids[i] == 0) //is child
-		{
-			env->is_child = 1;
-			if (pipes[READ_END] != STDIN_FILENO)
-				close(pipes[READ_END]);
-			command_init(&cmd, ast_command[i]);
-			cmd.fdin = fdin;
-			cmd.fdout = pipes[WRITE_END];
-			exit_status = ft_exec_command(&cmd, env);
-			command_free(&cmd);
-			break ;
-		}
-		// is parent
-		if (fdin != STDIN_FILENO)
-			fd_close_reset(&fdin);
-		if (pipes[WRITE_END] != STDOUT_FILENO)
-			fd_close_reset(&pipes[WRITE_END]);
-		fdin = pipes[READ_END];
-		i++;
-	}
-	i = 0;
-	int	wstatus;
-	while (env->is_child == 0 && i < ast->pipeline.len)
-	{
-		waitpid(pids[i], &wstatus, 0);
-		exit_status = WEXITSTATUS(wstatus);
-		i++;
-	}
-	if (WIFSIGNALED(wstatus))
-	{
-		exit_status = WTERMSIG(wstatus) + 128;
-		if (WTERMSIG(wstatus) == SIGQUIT)
-			write(STDERR_FILENO, "Quit (core dumped)\n", 19);
-	}
-	free(pids);
-	signal_handling();
-	return (exit_status);
-}
-
-int	ft_is_buitin(t_ast_command *ast_cmd)
-{
-	const char	*builtins_str[] = {"env", "export", "cd", "echo", \
-	"exit", "pwd", "unset"};
-	char		*cmd;
-	size_t		i;
-
-	i = 0;
-	if (ast_cmd->args.len == 0)
-		return (0);
-	cmd = ((t_token *)vec_get(&ast_cmd->args, 0))->word;
-	if (cmd == NULL)
-		return (0);
-	while (i < sizeof(builtins_str) / sizeof(builtins_str[0]))
-	{
-		if (ft_strncmp(cmd, builtins_str[i], ft_strlen(cmd)) == 0)
+		if (preparing_fd_pipe(&pidpes, ast) == 1)
 			return (1);
-		i++;
+		manage_child(env, &cmd, &pidpes, ast_command);
+		if (pidpes.pids[pidpes.i] == 0)
+			break ;
+		manage_parent(&pidpes);
 	}
-	return (0);
-}
-
-int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
-{
-	int	exit_status;
-	t_command cmd;
-	int fd_stdin;
-	int fd_stdout;
-
-	command_init(&cmd, *ast_cmd);
-	fd_stdin = dup(STDIN_FILENO);
-	fd_stdout = dup(STDIN_FILENO);
-	// if error
-	exit_status = ft_exec_command(&cmd, env);
-	if (fd_stdin != STDIN_FILENO)
-	{
-		dup2(fd_stdin, STDIN_FILENO);
-		// if error
-		close(fd_stdin);
-	}
-	if (fd_stdout != STDOUT_FILENO)
-	{
-		dup2(fd_stdout, STDOUT_FILENO);
-		// if error
-		close(fd_stdout);
-	}
-	command_free(&cmd);
-	return (exit_status);
-}
-
-int	ft_which_command(t_ast *ast, t_env *env)
-{
-	int				exit_status;
-	t_ast_command	*ast_cmd;
-	t_ast_command	*last_cmd;
-	char			*last_args;
-
-	if (ast->pipeline.len == 0)
-		return (0);
-	ast_cmd = vec_get(&ast->pipeline, 0);
-	if (ast->pipeline.len == 1 && ft_is_buitin(ast_cmd))
-		exit_status = builtin_no_pipe(ast_cmd, env);
-	else
-		exit_status = execute_command(ast, env);
-	env_set_last_status(env, exit_status);
-	last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
-	last_args = "";
-	if (last_cmd->args.len > 0)
-	{
-		last_args = ((t_token *)vec_get(&last_cmd->args, \
-		last_cmd->args.len - 1))->word;
-	}
-	env_set_var(env, "_", last_args);
-	return (exit_status);
+	pidpes.exit_status = waiting_childs(env, ast, &pidpes);
+	free(pidpes.pids);
+	signal_handling();
+	return (pidpes.exit_status);
 }

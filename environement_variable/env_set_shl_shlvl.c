@@ -51,6 +51,7 @@ void	ft_prepare_shl_shlvl(t_env *env, char *argv)
 	if (shl == NULL)
 		ft_shl_shlvl_join_error(env);
 	env_set_var(env, "SHELL", shl);
+	env_set_var(env, "_", shl);
 	free(shl);
 	buff = env_get_var(*env, "SHLVL");
 	lvl = ft_atoi(buff);

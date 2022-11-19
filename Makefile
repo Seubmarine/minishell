@@ -11,7 +11,7 @@ LEXER_INCLUDE = lexer/
 AST_SRCS = ast.c
 AST_INCLUDE = ast/
 
-COMMAND_SRCS = command.c ft_command.c command_token.c
+COMMAND_SRCS = command.c ft_command.c command_token.c command_close_fd.c command_open_fd.c command_types.c command_wait.c
 COMMAND_INCLUDE = command/
 
 PATH_FINDER_SRCS = path_finder.c
