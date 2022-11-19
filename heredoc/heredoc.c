@@ -23,24 +23,6 @@ int	put_in_buffer(char *buffer, char c, size_t *iterator, size_t buffer_size)
 	return (1);
 }
 
-char	*heredoc_naming(int heredoc_number, char *random_str)
-{
-	char	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
-	char	number_str[HEREDOC_NUMBER_LEN];
-	char	*new_filename;
-
-	if (!ft_ullto_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
-		return (NULL);
-	if (ft_strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))
-		return (NULL);
-	if (ft_strlcat(filename, ".", sizeof(filename)) >= sizeof(filename))
-		return (NULL);
-	if (ft_strlcat(filename, random_str, sizeof(filename)) >= sizeof(filename))
-		return (NULL);
-	new_filename = ft_strdup(filename);
-	return (new_filename);
-}
-
 // int	main(int argc, char const *argv[])
 // {
 // 	long long unsigned	seed;	
@@ -69,25 +51,31 @@ char	*heredoc_naming(int heredoc_number, char *random_str)
 // 	return (0);
 // }
 
-char	*ft_strndup(const char *s, size_t n)
+void	heredoc_env_variable(int fd, char *line, size_t *line_pos, t_env *env)
 {
-	char	*dupped;
-	size_t	i;
+	size_t	var_size;
+	char	*key;
+	char	*value;
 
-	i = 0;
-	while (s[i] && i < n)
-		i++;
-	dupped = malloc(sizeof(*dupped) * (i + 1));
-	if (dupped == NULL)
-		return (NULL);
-	i = 0;
-	while (s[i] && i < n)
+	var_size = 0;
+	*line_pos += 1;
+	while (line[*line_pos + var_size] && !isspace(line[*line_pos + var_size]) \
+	&& line[*line_pos + var_size] != '$')
+		var_size++;
+	if (var_size == 0)
+		write(fd, "$", 1);
+	else
 	{
-		dupped[i] = s[i];
-		i++;
+		key = ft_strndup(&line[*line_pos], var_size);
+		if (key)
+		{
+			value = env_get_var(*env, key);
+			if (value)
+				write(fd, value, ft_strlen(value));
+		}
+		free(key);
 	}
-	dupped[i] = '\0';
-	return (dupped);
+	*line_pos += var_size;
 }
 
 void	heredoc_write(t_env *env, int fd, char *line)
@@ -105,80 +93,51 @@ void	heredoc_write(t_env *env, int fd, char *line)
 		write(fd, &line[line_pos], line_to_write);
 		line_pos += line_to_write;
 		if (line[line_pos] == '$')
-		{
-			line_pos++;
-			size_t	var_size = 0;
-			while (line[line_pos + var_size] && !isspace(line[line_pos + \
-			var_size]) && line[line_pos + var_size] != '$')
-				var_size++;
-			if (var_size == 0)
-				write(fd, "$", 1);
-			else
-			{
-				char	*key = ft_strndup(&line[line_pos], var_size);
-				if (key)
-				{
-					char	*value = env_get_var(*env, key);
-					if (value)
-						write(fd, value, ft_strlen(value));
-				}
-				free(key);
-			}
-			line_pos += var_size;
-		}
+			heredoc_env_variable(fd, line, &line_pos, env);
 	}
 }
 
-char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
+int	heredoc_readline(t_hd_fd *hd_fds, char *eof, char *filename, t_env *env)
 {
-	char	*filename;
 	char	*line;
 	size_t	line_size;
-	int		fdin_dup;
-	int		heredoc_fd;
 
-	filename = heredoc_naming(heredoc_number, env->random_str);
-	if (filename == NULL)
-		return (NULL);
-	fdin_dup = dup(STDIN_FILENO);
-	// dup = -1
-	heredoc_fd = open(filename, O_WRONLY | O_EXCL | O_CREAT, \
-	S_IWUSR | S_IROTH | S_IRUSR | S_IRGRP);
-	if (heredoc_fd == -1)
-	{
-		perror("Minishell: heredoc open");
-		free(filename);
-		return (NULL);
-	}
-	signal_handling_heredoc();
 	line = NULL;
+	line_size = 0;
 	while (1)
 	{
 		line = readline("> ");
 		if (line == NULL)
 		{
-			if (fcntl(STDIN_FILENO, F_GETFD) == -1)
-			{
-				printf("\n");
-				dup2(fdin_dup, STDIN_FILENO);//TODO check error
-				close(heredoc_fd);
-				unlink(filename);
-				free(filename);
-				return (NULL);
-			}
-			write(STDERR_FILENO, "Warning heredoc delimited by end of file\n", \
-			41);
+			if (heredoc_null_line(hd_fds, filename) == 1)
+				return (1);
 			break ;
 		}
 		line_size = ft_strlen(line);
 		if (line_size > 0 && ft_strncmp(line, eof, line_size) == 0) //TODO: use ft
 			break ;
-		heredoc_write(env, heredoc_fd, line);
-		write(heredoc_fd, "\n", 1);
+		heredoc_write(env, hd_fds->heredoc_fd, line);
+		write(hd_fds->heredoc_fd, "\n", 1);
 		free(line);
 	}
-	close(heredoc_fd);
-	close(fdin_dup);
+	return (0);
+}
+
+char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
+{
+	char	*filename;
+	t_hd_fd	hd_fds;
+
+	filename = heredoc_naming(heredoc_number, env->random_str);
+	if (filename == NULL)
+		return (NULL);
+	if (heredoc_open_fd(&hd_fds, filename) == 1)
+		return (NULL);
+	signal_handling_heredoc();
+	if (heredoc_readline(&hd_fds, eof, filename, env) == 1)
+		return (NULL);
+	close(hd_fds.heredoc_fd);
+	close(hd_fds.fdin_dup);
 	signal_handling();
 	return (filename);
 }
@@ -193,7 +152,7 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 // 		t_ast_redirection *redir = vec_get(&cmd->redirection, i);
 // 		if (redir->token.type == TOKEN_HERE_DOCUMENT)
 // 		{
-			
+
 // 		}
 // 		i++;
 // 	}
@@ -211,7 +170,7 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 // 	{
 // 		ast
 // 	}
-	
+
 // }
 
 // int ast_command_heredoc_open(t_ast_command *cmd, t_env *env, size_t *heredoc_number)
@@ -256,5 +215,4 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 // 		ast_command_open_heredoc(cmd, env, &heredoc_number);
 // 		i_cmd++;
 // 	}
-	
 // }

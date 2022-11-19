@@ -74,7 +74,8 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	if (execve(cmd->path, cmd->arguments, envp) == -1)
 	{
 		ft_putstr_fd("Minishell: ", 2);
-		perror(cmd->arguments[0]);
+		ft_putstr_fd(cmd->arguments[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 	}
 	envp_free(envp);
 	return (127);

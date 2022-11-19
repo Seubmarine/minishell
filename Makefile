@@ -8,7 +8,7 @@ VECTOR_INCLUDE = vector/
 LEXER_SRCS = lexer.c lexer_helper.c
 LEXER_INCLUDE = lexer/
 
-AST_SRCS = ast.c
+AST_SRCS = ast.c ast_heredoc.c ast_init_free.c
 AST_INCLUDE = ast/
 
 COMMAND_SRCS = command.c ft_command.c command_token.c command_close_fd.c command_open_fd.c command_types.c command_wait.c
@@ -26,7 +26,7 @@ BUILTIN_INCLUDE = built_in/
 SIGNAL_SRCS = signaling.c signaling_child.c
 SIGNAL_INCLUDE = signaling/
 
-HEREDOC_SRCS = heredoc.c
+HEREDOC_SRCS = heredoc.c heredoc_utils.c
 HEREDOC_INCLUDE = heredoc/
 
 CURRENT_SRCS = main.c

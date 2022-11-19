@@ -33,10 +33,12 @@ typedef struct s_ast_command
 	t_vec	redirection;
 }	t_ast_command;
 
-t_ast	*ast_init(t_token *tok, size_t tok_size);
-void	ast_free(t_ast *ast);
-
-int		ast_open_heredocs(t_ast *ast, t_env *env);
-void	ast_close_heredocs(t_ast *ast);
+t_ast			*ast_init(t_token *tok, size_t tok_size);
+void			ast_free(t_ast *ast);
+t_ast_command	ast_command_init(void);
+void			ast_push(t_ast *ast, t_token *tok);
+void			ast_command_free(t_ast_command *command);
+int				ast_open_heredocs(t_ast *ast, t_env *env);
+void			ast_close_heredocs(t_ast *ast);
 
 #endif
