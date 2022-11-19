@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:32 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 06:22:58 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:29:59 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_ast_redirection *ast_redirec)
 		if (ast_redirec->rhs.type != TOKEN_STRING || \
 		ast_redirec->rhs.word == NULL)
 		{
-			ft_putstr_fd("Minishell: redirection rhs invalid\n", STDERR_FILENO);
+			ft_putstr_fd("Minishell: redirection filename is NULL\n", STDERR_FILENO);
 			return (0);
 		}
 		cmd->redirections[i].filename = ast_redirec->rhs.word;

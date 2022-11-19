@@ -21,8 +21,6 @@ void	ft_open_input(int *fdin, char *filename)
 	if (*fdin != STDIN_FILENO)
 		close(*fdin);
 	*fdin = open(filename, O_RDONLY);
-	if (*fdin == -1)
-		perror("Minishell: opening redirection type input");
 }
 
 void	ft_open_output(int *fdout, t_redirection redir)
@@ -30,17 +28,9 @@ void	ft_open_output(int *fdout, t_redirection redir)
 	if (*fdout != STDOUT_FILENO)
 		close(*fdout);
 	if (redir.type == REDIRECTION_OUTPUT)
-	{
 		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-		if (*fdout == -1)
-			perror("Minishell: opening redirection type output");
-	}
 	if (redir.type == REDIRECTION_OUTPUT_APPEND)
-	{
 		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
-		if (*fdout == -1)
-			perror("Minishell: opening redirection type output append");
-	}
 }
 
 //return 0 on error 1 on success
