@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_open_fd.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/20 14:22:45 by tbousque          #+#    #+#             */
+/*   Updated: 2022/11/20 14:25:51 by tbousque         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "command.h"
 
 //return 1 on success
@@ -17,52 +29,44 @@ int	preparing_fd_pipe(t_pidpes *pidpes, t_ast *ast)
 	return (1);
 }
 
+void	ft_dup2close(int *fd, int fd_to_replace)
+{
+	if (dup2(*fd, fd_to_replace) == -1)
+		perror("Minishell: dup2");
+	if (close(*fd) == -1)
+		perror("Minishell: close");
+	*fd = -2;
+}
+
+
 void	ft_open_input(int *fdin, char *filename)
 {
-	if (*fdin != STDIN_FILENO)
-		close(*fdin);
 	*fdin = open(filename, O_RDONLY);
+	if (*fdin >= 0)
+		ft_dup2close(fdin, STDIN_FILENO);
 }
 
 void	ft_open_output(int *fdout, t_redirection redir)
 {
-	if (*fdout != STDOUT_FILENO)
-		close(*fdout);
 	if (redir.type == REDIRECTION_OUTPUT)
 		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (redir.type == REDIRECTION_OUTPUT_APPEND)
 		*fdout = open(redir.filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	if (*fdout >= 0)
+		ft_dup2close(fdout, STDOUT_FILENO);
 }
 
 //return 0 on error 1 on success
-int	ft_open_fd_child(t_command *cmd)
-{
-	if (ft_analyse_fd(cmd) == 0)
-		return (0);
-	if (cmd->fdin != STDIN_FILENO)
-	{
-		if (dup2(cmd->fdin, STDIN_FILENO) == -1)
-			perror("Minishell: dup2 stdin");
-		if (close(cmd->fdin) == -1)
-			perror("Minishell: closing original of dup2 stdin");
-	}
-	if (cmd->fdout != STDOUT_FILENO)
-	{
-		if (dup2(cmd->fdout, STDOUT_FILENO) == -1)
-			perror("Minishell: dup2 stdout");
-		if (close(cmd->fdout) == -1)
-			perror("Minishell: closing original of dup2 stdout");
-	}
-	return (1);
-}
-
-//return 0 on error 1 on success
-int	ft_analyse_fd(t_command *cmd)
+int	ft_open_redirection(t_command *cmd)
 {
 	size_t			i;
 	t_redirection	redir;
 
 	i = 0;
+	if (cmd->fdin != STDIN_FILENO)
+		ft_dup2close(&cmd->fdin, STDIN_FILENO);
+	if (cmd->fdout != STDOUT_FILENO)
+		ft_dup2close(&cmd->fdout, STDOUT_FILENO);
 	while (i < cmd->redirections_len)
 	{
 		redir = cmd->redirections[i];

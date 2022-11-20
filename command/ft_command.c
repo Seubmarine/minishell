@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 17:07:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/19 22:43:10 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/20 14:16:12 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	ft_exec_command(t_command *cmd, t_env *env)
 	char	**envp;
 	int		exit_status;
 
-	if (ft_open_fd_child(cmd) == 0)
+	if (ft_open_redirection(cmd) == 0)
 		return (1);
 	if (builtin(cmd->arguments, env, &exit_status))
 		return (exit_status);

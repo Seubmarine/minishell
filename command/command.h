@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 18:03:48 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 06:35:27 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/20 14:25:43 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ t_pidpes *pidpes);
 int						ft_analyse_fd(t_command *cmd);
 void					ft_open_input(int *fdin, char *filename);
 void					ft_open_output(int *fdout, t_redirection redir);
-int						ft_open_fd_child(t_command *cmd);
+int						ft_open_redirection(t_command *cmd);
 void					close_stdfd(void);
 void					fd_close_reset(int *fd);
 
