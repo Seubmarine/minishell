@@ -54,6 +54,7 @@ void	ast_push(t_ast *ast, t_token *tok)
 	t_ast_command		cmd;
 
 	i = 0;
+	command = NULL;
 	while (tok[i].type != TOKEN_END)
 	{
 		if (is_redirection_token(tok, i) == 0)
