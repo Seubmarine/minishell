@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 22:46:52 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/20 02:14:32 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,16 +59,63 @@ int		lexer_case_token_single_quote(t_vec *tokens, const char *str, t_token_info 
 	return (1);
 }
 
+int lexer_case_token_dollar(t_vec *tokens, const char *str, t_token_info	*current, t_env env)
+{
+	t_token_info	next;
+	t_token			tok;
+	size_t			reminder;
+
+	next = is_token(&str[1]);
+	tok.type = TOKEN_STRING;
+	if (next.type == TOKEN_STRING)
+	{
+		char *env_key = strndup(&str[1], next.len);
+		char *env_value = env_get_var(env, env_key);
+		free(env_key);
+		env_key = NULL;
+		if (env_value != NULL)
+		{
+			size_t j = 0;
+			while (env_value[j])
+			{
+				tok.type = TOKEN_SPACE;
+				tok.word = NULL;
+				while (isspace(env_value[j]))
+					j++;
+				if (j > 0)
+				{
+					if (tokens_append(tokens, &tok) == 0)
+						return (0);
+				}
+				if (env_value[j] == '\0')
+					break ;
+				reminder = j;
+				while (env_value[j] != '\0' && !isspace(env_value[j]))
+					j++;
+				tok.type = TOKEN_STRING;
+				tok.word = strndup(&env_value[reminder], j - reminder);
+				if (tok.word == NULL || tokens_append(tokens, &tok) == 0)
+					return (0);
+			}
+		}
+		current->len = next.len + 1;
+	}
+	else if (next.type == TOKEN_DOUBLE_QUOTE || next.type == TOKEN_SINGLE_QUOTE)
+		;
+	else
+	{
+		tok.type = TOKEN_STRING;
+		tok.word = strndup("$", 1);
+		tokens_append(tokens, &tok);
+	}
+	return (1);
+}
+
 //return 0 on failure, 1 on success
 int	lexer(char *str, t_env env, t_vec *tokens)
 {
 	size_t			i;
 	t_token_info	info;
-	t_token_info	next;
-	char			*env_key;
-	char			*env_value;
-	size_t			j;
-	size_t			reminder;
 
 	(void) env;
 	*tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
@@ -91,45 +138,8 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 		}
 		else if (info.type == TOKEN_DOLLAR)
 		{
-			next = is_token(&str[i + 1]);
-			tok.type = TOKEN_STRING;
-			if (next.type == TOKEN_STRING)
-			{
-				env_key = strndup(&str[i + 1], next.len);
-				env_value = env_get_var(env, env_key);
-				free(env_key);
-				env_key = NULL;
-				if (env_value != NULL)
-				{
-					j = 0;
-					while (env_value[j])
-					{
-						tok.type = TOKEN_SPACE;
-						tok.word = NULL;
-						while (isspace(env_value[j]))
-							j++;
-						if (j > 0)
-							tokens_append(tokens, &tok);
-						if (env_value[j] == '\0')
-							break ;
-						reminder = j;
-						while (env_value[j] != '\0' && !isspace(env_value[j]))
-							j++;
-						tok.type = TOKEN_STRING;
-						tok.word = strndup(&env_value[reminder], j - reminder);
-						tokens_append(tokens, &tok);
-					}
-				}
-				info.len = next.len + 1;
-			}
-			else if (next.type == TOKEN_DOUBLE_QUOTE || next.type == TOKEN_SINGLE_QUOTE)
-				;
-			else
-			{
-				tok.type = TOKEN_STRING;
-				tok.word = strndup("$", 1);
-				tokens_append(tokens, &tok);
-			}
+			if (lexer_case_token_dollar(tokens, &str[i], &info, env) == 0)
+				return (0);
 		}
 		else if (info.type == TOKEN_DOUBLE_QUOTE)
 		{
