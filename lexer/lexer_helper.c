@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 03:36:34 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 21:39:02 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/20 02:15:26 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	lexer_debug(t_vec	tokens)
 	}
 }
 
-void	tokens_append(t_vec *tokens, t_token *current)
+int	tokens_append(t_vec *tokens, t_token *current)
 {
 	t_token	*last;
 	char	*tmp;
@@ -99,18 +99,20 @@ void	tokens_append(t_vec *tokens, t_token *current)
 		{
 			last->type = current->type;
 			last->word = current->word;
-			return ;
+			return (1);
 		}
 		else if (last->type == TOKEN_STRING && current->type == TOKEN_STRING)
 		{
 			tmp = ft_strjoin(last->word, current->word);
 			if (tmp == NULL)
-				return ;
+				return (0);
 			free(last->word);
 			free(current->word);
 			last->word = tmp;
-			return ;
+			return (1);
 		}
 	}
-	vec_append(tokens, current);
+	if (vec_append(tokens, current) == 0)
+		return (0);
+	return (1);
 }

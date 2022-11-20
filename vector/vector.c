@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:19:00 by tbousque          #+#    #+#             */
-/*   Updated: 2022/09/19 09:11:26 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/20 02:22:35 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,20 +41,26 @@ t_vec	vec_new(size_t element_size, size_t capacity, void (*free_elem)(void *))
 }
 
 //helper fonction that will multiply by two the size of the vector 
-void	vec_grow(t_vec	*v)
+int	vec_grow(t_vec	*v)
 {
 	void	*tmp_data;
 
+	if (v->capacity * 2 <= v->capacity)
+	{
+		ft_putstr_fd("Minishell: vector capacity overflow\n", STDERR_FILENO);
+		return (0);
+	}
 	tmp_data = malloc(v->elem_size * (v->capacity * 2));
 	if (tmp_data == NULL)
 	{
-		vec_free(v);
-		return ;
+		ft_putstr_fd("Minishell: malloc error: vec_grow\n", STDERR_FILENO);
+		return (0);
 	}
 	ft_memcpy(tmp_data, v->data, v->elem_size * (v->len));
 	free(v->data);
 	v->data = tmp_data;
 	v->capacity *= 2;
+	return (1);
 }
 
 /*
@@ -62,16 +68,16 @@ add an element at the end of the vector
 element is a pointer to the value you want to put in the vector
 will grow the vector if neccesary
 */
-void	vec_append(t_vec *v, void *element)
+int	vec_append(t_vec *v, void *element)
 {
 	if ((v->len + 1) > v->capacity)
 	{
-		vec_grow(v);
-		if (v->data == NULL)
-			return ;
+		if (vec_grow(v) == 0)
+			return (0);
 	}
 	ft_memcpy(v->data + v->elem_size * v->len, element, v->elem_size);
 	v->len += 1;
+	return (1);
 }
 
 /*
