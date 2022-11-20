@@ -16,7 +16,7 @@ char	*path_concat(char *path, size_t path_len, char *exec_name)
 {
 	char	*concat;
 
-	concat = malloc(path_len + strlen(exec_name) + 2);
+	concat = malloc(path_len + ft_strlen(exec_name) + 2);
 	if (concat == NULL)
 		return (NULL);
 	ft_memcpy(concat, path, path_len);
