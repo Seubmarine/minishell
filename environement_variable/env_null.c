@@ -37,7 +37,7 @@ void	ft_env_set_random_error(t_env *env)
 
 void	ft_set_last_status(t_env *env)
 {
-	env->_last_status_str = malloc(sizeof(ENV_LAST_STATUS_SIZE));
+	env->_last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE);
 	if (env->_last_status_str == NULL)
 	{
 		env_free(env);
