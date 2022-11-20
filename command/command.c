@@ -24,7 +24,8 @@ t_ast_redirection *ast_redirec)
 		if (ast_redirec->rhs.type != TOKEN_STRING || \
 		ast_redirec->rhs.word == NULL)
 		{
-			ft_putstr_fd("Minishell: redirection filename is NULL\n", STDERR_FILENO);
+			ft_putstr_fd("Minishell: redirection filename is NULL\n", \
+			STDERR_FILENO);
 			return (0);
 		}
 		cmd->redirections[i].filename = ast_redirec->rhs.word;

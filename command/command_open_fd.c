@@ -38,7 +38,6 @@ void	ft_dup2close(int *fd, int fd_to_replace)
 	*fd = -2;
 }
 
-
 void	ft_open_input(int *fdin, char *filename)
 {
 	*fdin = open(filename, O_RDONLY);

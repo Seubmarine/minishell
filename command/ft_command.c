@@ -125,14 +125,14 @@ int	execute_command(t_ast *ast, t_env *env)
 
 	command_init_int(&pidpes);
 	ast_command = vec_get(&ast->pipeline, 0);
-	pidpes.pids = malloc(sizeof(pidpes.pids) * ast->pipeline.len);
+	pidpes.pids = malloc(sizeof(pid_t) * ast->pipeline.len);
 	if (pidpes.pids == NULL)
 		return (perror("Minishell: pids malloc: "), 1);
 	signal_handling_child();
 	while (pidpes.i < ast->pipeline.len)
 	{
 		if (preparing_fd_pipe(&pidpes, ast) == 0)
-			break;
+			break ;
 		manage_child(env, &cmd, &pidpes, ast_command);
 		if (pidpes.pids[pidpes.i] == 0 || pidpes.pids[pidpes.i] == -1)
 			break ;
