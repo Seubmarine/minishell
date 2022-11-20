@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/20 02:14:32 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/20 17:28:42 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,59 @@ int lexer_case_token_dollar(t_vec *tokens, const char *str, t_token_info	*curren
 	return (1);
 }
 
+int lexer_case_token_double_quote(t_vec *tokens, const char *str, t_token_info *current, t_env env)
+{
+	size_t			j;
+	t_vec			word;
+	t_token_info	next;
+	char			*env_key;
+	char			*env_value;
+	size_t			k;
+
+	j = 0;
+	while (str[j] != '\0' && str[j] != '\"')
+		j++;
+	if (str[j] == '\0')
+	{
+		ft_putstr_fd("Minishell: error unclosed double quote\n", STDERR_FILENO);
+		return (0);
+	}
+	word = vec_new(sizeof(char), j + 1, NULL);
+	j = 0;
+	while (str[j] != '\"')
+	{
+		if (str[j] == '$' && is_token(&str[j + 1]).type == \
+		TOKEN_STRING)
+		{
+			next = is_token(&str[j + 1]);
+			env_key = ft_strndup((const char *)&str[j + 1], next.len);
+			j += next.len;
+			env_value = env_get_var(env, env_key);
+			free(env_key);
+			if (env_value)
+			{
+				k = 0;
+				while (env_value[k])
+				{
+					vec_append(&word, &env_value[k]);
+					k++;
+				}
+			}
+			env_value = NULL;
+		}
+		else
+			vec_append(&word, (void *)&str[j]);
+		j++;
+	}
+	vec_append(&word, "\0");
+	t_token tok;
+	tok.type = TOKEN_STRING;
+	tok.word = word.data;
+	tokens_append(tokens, &tok);
+	current->len = j + 1;
+	return (1);
+}
+
 //return 0 on failure, 1 on success
 int	lexer(char *str, t_env env, t_vec *tokens)
 {
@@ -143,54 +196,8 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 		}
 		else if (info.type == TOKEN_DOUBLE_QUOTE)
 		{
-			size_t			j;
-			t_vec			word;
-			t_token_info	next;
-			char			*env_key;
-			char			*env_value;
-			size_t			k;
-
-			j = 0;
-			i++;
-			while (str[i + j] != '\0' && str[i + j] != '\"')
-				j++;
-			if (str[i + j] == '\0')
-			{
-				ft_putstr_fd("Minishell: error unclosed double quote\n", STDERR_FILENO);
+			if (lexer_case_token_double_quote(tokens, &str[++i], &info, env) == 0)
 				return (0);
-			}
-			word = vec_new(sizeof(char), j + 1, NULL);
-			j = 0;
-			while (str[i + j] != '\"')
-			{
-				if (str[i + j] == '$' && is_token(&str[i + j + 1]).type == \
-				TOKEN_STRING)
-				{
-					next = is_token(&str[i + j + 1]);
-					env_key = ft_strndup((const char *)&str[i + j + 1], next.len);
-					j += next.len;
-					env_value = env_get_var(env, env_key);
-					free(env_key);
-					if (env_value)
-					{
-						k = 0;
-						while (env_value[k])
-						{
-							vec_append(&word, &env_value[k]);
-							k++;
-						}
-					}
-					env_value = NULL;
-				}
-				else
-					vec_append(&word, &str[i + j]);
-				j++;
-			}
-			vec_append(&word, "\0");
-			tok.type = TOKEN_STRING;
-			tok.word = word.data;
-			tokens_append(tokens, &tok);
-			info.len = j + 1;
 		}
 		else if (info.type == TOKEN_SINGLE_QUOTE)
 		{
