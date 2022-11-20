@@ -31,7 +31,7 @@ int	key_value_init(char *kv, t_env_key_value *var)
 		i++;
 	if (kv[i] != '=' || i == 0)
 		return (0);
-	var->key = strndup(kv, i);
+	var->key = ft_strndup((const char *)kv, i); // TODO CHANGER EN LIBFT
 	if (var->key == NULL)
 		return (0);
 	var->value = ft_strdup(kv + i + 1);

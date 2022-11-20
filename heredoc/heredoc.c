@@ -59,7 +59,7 @@ void	heredoc_env_variable(int fd, char *line, size_t *line_pos, t_env *env)
 
 	var_size = 0;
 	*line_pos += 1;
-	while (line[*line_pos + var_size] && !isspace(line[*line_pos + var_size]) \
+	while (line[*line_pos + var_size] && !ft_isspace(line[*line_pos + var_size]) \
 	&& line[*line_pos + var_size] != '$')
 		var_size++;
 	if (var_size == 0)

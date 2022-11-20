@@ -56,7 +56,7 @@ int	ft_overpass_permission(char	*file, char *arg, t_env *env)
 	new_cwd = malloc(sizeof(char) * i + 1);
 	if (new_cwd == NULL)
 	{
-		ft_putstr_fd("Minishell: cd: ", 2);
+		ft_putstr_fd("Minishell: malloc: ", 2);
 		return (perror(arg), 1);
 	}
 	ft_strlcpy(new_cwd, file, i + 1);
@@ -86,7 +86,7 @@ int	ft_change_dir(char *arg, t_env *env)
 			if ((access(file, F_OK) == 0) && (access(file, X_OK) != 0))
 				return (ft_overpass_permission(file, arg, env));
 		}
-		ft_putstr_fd("cd: ", 2);
+		ft_putstr_fd("Minishell: cd: ", 2);
 		return (perror(arg), 1);
 	}
 	ft_change_env(env);

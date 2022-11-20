@@ -22,22 +22,11 @@ int	ft_write_exit(t_env *env)
 
 int	ft_exit_error(char *str, int code, t_env *env)
 {
-	char	*message;
-	char	*buff;
-
-	buff = NULL;
-	message = NULL;
 	if (code == 1)
 		return (ft_putstr_fd("exit: too many arguments\n", 2), 1);
-	buff = ft_strjoin("exit: ", str);
-	if (buff == NULL)
-		return (ft_putstr_fd("Error malloc\n", 2), 2);
-	message = ft_strjoin(buff, " : numeric arguement required\n");
-	free (buff);
-	if (message == NULL)
-		return (ft_putstr_fd("Error malloc\n", 2), 2);
-	ft_putstr_fd(message, 2);
-	free(message);
+	ft_putstr_fd("Minishel: exit: ", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
 	env->is_child = 1;
 	return (2);
 }
@@ -100,7 +89,7 @@ int	ft_exit(char **argv, t_env *env)
 	i = 0;
 	errnum = 256;
 	if (ft_strlen_l(argv) == 1)
-		return (ft_write_exit(env));
+		return (ft_write_exit(env), 0);
 	if (ft_only_num(argv[1]) != 0)
 		return (ft_exit_error(argv[1], 2, env));
 	while (argv[i])

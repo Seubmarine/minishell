@@ -71,7 +71,7 @@ int						command_set_stdin(t_command *cmd);
 int						command_set_stdout(t_command *cmd);
 int						ast_run_command(t_ast *ast, t_env *env);
 int						builtin_no_pipe(t_ast_command *ast_cmd, t_env *env);
-int						ft_is_buitin(t_ast_command *ast_cmd);
+int						ft_is_builtin(t_ast_command *ast_cmd);
 int						ft_which_command(t_ast *ast, t_env *env);
 int						preparing_fd_pipe(t_pidpes *pidpes, t_ast *ast);
 int						ft_exec_command(t_command *cmd, t_env *env);

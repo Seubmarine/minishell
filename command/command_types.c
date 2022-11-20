@@ -1,6 +1,6 @@
 #include "command.h"
 
-int	ft_is_buitin(t_ast_command *ast_cmd)
+int	ft_is_builtin(t_ast_command *ast_cmd)
 {
 	const char	*builtins_str[] = {"env", "export", "cd", "echo", \
 	"exit", "pwd", "unset"};
@@ -60,7 +60,7 @@ int	ft_which_command(t_ast *ast, t_env *env)
 	if (ast->pipeline.len == 0)
 		return (0);
 	ast_cmd = vec_get(&ast->pipeline, 0);
-	if (ast->pipeline.len == 1 && ft_is_buitin(ast_cmd))
+	if (ast->pipeline.len == 1 && ft_is_builtin(ast_cmd))
 		exit_status = builtin_no_pipe(ast_cmd, env);
 	else
 		exit_status = execute_command(ast, env);

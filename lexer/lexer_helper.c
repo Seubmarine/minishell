@@ -18,7 +18,7 @@ t_token_info	is_token_string_or_space(char const *str)
 	t_token_info	next;
 
 	i = 0;
-	while (isspace(str[i]))
+	while (ft_isspace(str[i])) // TODO FLAG INTERDIT, A CHANGER
 			i++;
 	if (i > 0)
 		return ((t_token_info){.type = TOKEN_SPACE, .len = i});
@@ -48,7 +48,7 @@ t_token_info	is_token(char const *str)
 	while (i < (sizeof(parse_helper) / sizeof(parse_helper[0])))
 	{
 		if (ft_strncmp(parse_helper[i].value, str, \
-		strlen(parse_helper[i].value)) == 0)
+		ft_strlen(parse_helper[i].value)) == 0)
 			return ((t_token_info){parse_helper[i].type, \
 			ft_strlen(parse_helper[i].value)});
 		i++;

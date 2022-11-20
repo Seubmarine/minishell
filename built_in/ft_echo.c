@@ -38,10 +38,7 @@ char	*ft_add_next_word(char *sentence, char *arg)
 	{
 		sentence = malloc(sizeof(char) * (ft_strlen(arg) + 1));
 		if (sentence == NULL)
-		{
-			printf("coucou\n");
 			return (NULL);
-		}
 		ft_strlcpy(sentence, arg, ft_strlen(arg) + 1);
 		return (sentence);
 	}

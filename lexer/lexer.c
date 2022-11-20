@@ -54,7 +54,7 @@ int		lexer_case_token_single_quote(t_vec *tokens, const char *str, t_token_info 
 	}
 	current->len = j + 1;
 	tok.type = TOKEN_STRING;
-	tok.word = strndup(str, j);
+	tok.word = ft_strndup((const char *)str, j);
 	tokens_append(tokens, &tok);
 	return (1);
 }
@@ -69,7 +69,7 @@ int lexer_case_token_dollar(t_vec *tokens, const char *str, t_token_info	*curren
 	tok.type = TOKEN_STRING;
 	if (next.type == TOKEN_STRING)
 	{
-		char *env_key = strndup(&str[1], next.len);
+		char *env_key = ft_strndup((const char *)&str[1], next.len);
 		char *env_value = env_get_var(env, env_key);
 		free(env_key);
 		env_key = NULL;
@@ -80,7 +80,7 @@ int lexer_case_token_dollar(t_vec *tokens, const char *str, t_token_info	*curren
 			{
 				tok.type = TOKEN_SPACE;
 				tok.word = NULL;
-				while (isspace(env_value[j]))
+				while (ft_isspace(env_value[j]))
 					j++;
 				if (j > 0)
 				{
@@ -90,10 +90,10 @@ int lexer_case_token_dollar(t_vec *tokens, const char *str, t_token_info	*curren
 				if (env_value[j] == '\0')
 					break ;
 				reminder = j;
-				while (env_value[j] != '\0' && !isspace(env_value[j]))
+				while (env_value[j] != '\0' && !ft_isspace(env_value[j]))
 					j++;
 				tok.type = TOKEN_STRING;
-				tok.word = strndup(&env_value[reminder], j - reminder);
+				tok.word = ft_strndup((const char *)&env_value[reminder], j - reminder);
 				if (tok.word == NULL || tokens_append(tokens, &tok) == 0)
 					return (0);
 			}
@@ -105,7 +105,7 @@ int lexer_case_token_dollar(t_vec *tokens, const char *str, t_token_info	*curren
 	else
 	{
 		tok.type = TOKEN_STRING;
-		tok.word = strndup("$", 1);
+		tok.word = ft_strndup("$", 1);
 		tokens_append(tokens, &tok);
 	}
 	return (1);
@@ -121,7 +121,7 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	*tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
 	if (tokens->data == NULL)
 	{
-		perror("Minishell: vec_new");
+		perror("Minishell: vec_new: ");
 		return (0);
 	}
 	i = 0;
@@ -133,7 +133,7 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 			tokens_append(tokens, &tok);
 		else if (info.type == TOKEN_STRING)
 		{
-			tok.word = strndup(&str[i], info.len);
+			tok.word = ft_strndup((const char *)&str[i], info.len);
 			tokens_append(tokens, &tok);
 		}
 		else if (info.type == TOKEN_DOLLAR)
@@ -167,7 +167,7 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 				TOKEN_STRING)
 				{
 					next = is_token(&str[i + j + 1]);
-					env_key = strndup(&str[i + j + 1], next.len);
+					env_key = ft_strndup((const char *)&str[i + j + 1], next.len);
 					j += next.len;
 					env_value = env_get_var(env, env_key);
 					free(env_key);

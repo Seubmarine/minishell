@@ -21,8 +21,8 @@ char	*path_concat(char *path, size_t path_len, char *exec_name)
 		return (NULL);
 	ft_memcpy(concat, path, path_len);
 	concat[path_len] = '/';
-	ft_memcpy(concat + path_len + 1, exec_name, strlen(exec_name));
-	concat[path_len + 1 + strlen(exec_name)] = '\0';
+	ft_memcpy(concat + path_len + 1, exec_name, ft_strlen(exec_name));
+	concat[path_len + 1 + ft_strlen(exec_name)] = '\0';
 	return (concat);
 }
 
