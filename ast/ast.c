@@ -46,7 +46,7 @@ void	token_string(t_ast_command *command, t_token *tok, t_ast *ast, size_t i)
 	vec_append(&command->args, &tok[i]);
 }
 
-void	ast_push(t_ast *ast, t_token *tok)
+int	ast_push(t_ast *ast, t_token *tok)
 {
 	size_t				i;
 	t_ast_command		*command;
@@ -61,7 +61,8 @@ void	ast_push(t_ast *ast, t_token *tok)
 		{
 			new_redirection = redirection_init(tok[i], tok[i + 1]);
 			command = vec_get(&ast->pipeline, ast->pipeline.len - 1);
-			vec_append(&command->redirection, &new_redirection);
+			if (vec_append(&command->redirection, &new_redirection) == 0)
+				return (0);
 			i += 1;
 		}
 		else if (tok[i].type == TOKEN_STRING)
@@ -69,8 +70,15 @@ void	ast_push(t_ast *ast, t_token *tok)
 		else if (tok[i].type == TOKEN_PIPE)
 		{
 			cmd = ast_command_init(); // TODO error malloc
-			vec_append(&ast->pipeline, &cmd);
+			if (cmd.args.data == NULL || cmd.redirection.data == NULL)
+			{
+				ast_command_free(&cmd);
+				return (0);
+			}
+			if (vec_append(&ast->pipeline, &cmd) == 0)
+				return (0);
 		}
 		i++;
 	}
+	return (1);
 }

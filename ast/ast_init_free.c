@@ -19,7 +19,6 @@ void	ast_free(t_ast *ast)
 		i++;
 	}
 	vec_free(&ast->pipeline);
-	free(ast);
 }
 /*
 Create an array of token by placing them in a command and their redirection
@@ -31,19 +30,26 @@ for example : "echo hello world | wc > out"
 		command[1].redirection = [.type = tok[5], .name = tok[6]]
 */
 
-t_ast	*ast_init(t_token *tok, size_t tok_size)
+int		ast_init(t_token *tok, size_t tok_size, t_ast *ast)
 {
-	t_ast			*ast;
 	t_ast_command	command;
 
 	(void) tok_size;
-	ast = malloc(sizeof(*ast));
 	ast->pipeline = vec_new(sizeof(t_ast_command), 2, NULL);
-	// if NULL
+	if (ast->pipeline.data == NULL)
+	{
+		ft_putstr_fd("Minishell: vec_new: malloc error\n", 2);
+		return (0);
+	}
 	command = ast_command_init();
-	// if NULL
-	vec_append(&ast->pipeline, &command);
-	// if NULL
-	ast_push(ast, tok);
-	return (ast);
+	if (command.args.data == NULL || command.redirection.data == NULL)
+	{
+		ft_putstr_fd("Minishell: ast_command_init: malloc error\n", 2);
+		return (0);
+	}
+	if (vec_append(&ast->pipeline, &command) == 0)
+		return (0);
+	if (ast_push(ast, tok) == 0)
+		return (0);
+	return (1);
 }

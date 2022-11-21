@@ -86,7 +86,7 @@ t_ast_command *ast_command)
 {
 	pidpes->pids[pidpes->i] = fork();
 	if (pidpes->pids[pidpes->i] == -1)
-		return (perror("Minishell: fork: "));
+		return (perror("Minishell: fork"));
 	if (pidpes->pids[pidpes->i] == 0)
 	{
 		env->is_child = 1;
@@ -127,7 +127,7 @@ int	execute_command(t_ast *ast, t_env *env)
 	ast_command = vec_get(&ast->pipeline, 0);
 	pidpes.pids = malloc(sizeof(pid_t) * ast->pipeline.len);
 	if (pidpes.pids == NULL)
-		return (perror("Minishell: pids malloc: "), 1);
+		return (perror("Minishell: pids malloc"), 1);
 	signal_handling_child();
 	while (pidpes.i < ast->pipeline.len)
 	{

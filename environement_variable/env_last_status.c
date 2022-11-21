@@ -20,7 +20,7 @@ char	*env_set_last_status(t_env *env, int status)
 	if (env->_last_status_str == NULL)
 	{
 		write(STDERR_FILENO, "env last status isn't set corretly\n", 35);
-		exit(EXIT_FAILURE);
+		return (NULL);
 	}
 	status = (status + 256) % 256;
 	env->_last_status = status;

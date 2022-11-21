@@ -21,7 +21,7 @@ int	preparing_fd_pipe(t_pidpes *pidpes, t_ast *ast)
 	{
 		if (pipe(pidpes->pipes) == -1)
 		{
-			return (perror("Minishell: pipe: "), 1);
+			return (perror("Minishell: pipe"), 1);
 			pidpes->exit_status = 1;
 			return (0);
 		}

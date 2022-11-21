@@ -16,14 +16,14 @@
 
 void	env_vec_new_error(t_env *env)
 {
-	perror("Minishell: vec_new: ");
+	perror("Minishell: vec_new");
 	env_free(env);
 	exit (1);
 }
 
 void	env_last_satus_error(t_env *env)
 {
-	perror("Minishell: malloc: ");
+	perror("Minishell: malloc");
 	env_free(env);
 	exit (1);
 }

@@ -174,7 +174,7 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	*tokens = vec_new(sizeof(t_token), 10, (void (*)(void *))token_free);
 	if (tokens->data == NULL)
 	{
-		perror("Minishell: vec_new: ");
+		perror("Minishell: vec_new");
 		return (0);
 	}
 	i = 0;

@@ -23,7 +23,7 @@ int	heredoc_open_fd(t_hd_fd *hd_fds, char *filename)
 	hd_fds->fdin_dup = dup(STDIN_FILENO);
 	if (hd_fds->fdin_dup == -1)
 	{
-		perror("Minishell: dup: ");
+		perror("Minishell: dup");
 		free(filename);
 		return (1);
 	}

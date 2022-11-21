@@ -70,11 +70,10 @@
 int	execute_line(char *line, t_env *env)
 {
 	t_vec	tokens;
-	t_ast	*ast;
+	t_ast	ast;
 	int		exit_status;
 
-	ast = NULL;
-	exit_status = 0;
+	exit_status = 1;
 	if (lexer(line, *env, &tokens) == 0)
 	{
 		vec_free(&tokens);
@@ -85,13 +84,18 @@ int	execute_line(char *line, t_env *env)
 		vec_free(&tokens);
 		return (exit_status);
 	}
-	ast = ast_init(tokens.data, tokens.len);
-	if (ast_open_heredocs(ast, env) == 1)
-		exit_status = ft_which_command(ast, env);
+	if (ast_init(tokens.data, tokens.len, &ast) == 0)
+	{
+		ast_free(&ast);
+		vec_free(&tokens);
+		return (exit_status);
+	}
+	if (ast_open_heredocs(&ast, env) == 1)
+		exit_status = ft_which_command(&ast, env);
 	else
 		exit_status = 130;
-	ast_close_heredocs(ast);
-	ast_free(ast);
+	ast_close_heredocs(&ast);
+	ast_free(&ast);
 	vec_free(&tokens);
 	return (exit_status);
 }

@@ -21,7 +21,7 @@ void	env_random_open_error(void)
 void	env_random_read_error(int *fd_urandom)
 {
 	close(*fd_urandom);
-	perror("Minishell: read: ");
+	perror("Minishell: read");
 	exit (1);
 }
 
@@ -38,7 +38,7 @@ int	env_set_random_str(t_env *env)
 		env_random_read_error(&fd_urandom);
 	if (close(fd_urandom) == -1)
 	{
-		perror("Minishell: close: ");
+		perror("Minishell: close");
 		exit (1);
 	}
 	env->random_str[0] = '\0';

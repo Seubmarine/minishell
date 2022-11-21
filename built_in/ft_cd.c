@@ -82,7 +82,7 @@ int	ft_change_dir(char *arg, t_env *env)
 		{
 			file = env_get_var(*env, "PWD");
 			if (file == NULL)
-				return (perror("Minishell: cd: "), 1);
+				return (perror("Minishell: cd"), 1);
 			if ((access(file, F_OK) == 0) && (access(file, X_OK) != 0))
 				return (ft_overpass_permission(file, arg, env));
 		}

@@ -18,21 +18,22 @@
 
 void	ft_getcwd_error(void)
 {
-	perror("Minishell: getcwd: ");
+	perror("Minishell: getcwd");
 	exit (1);
 }
 
 void	ft_vecnew_error(void)
 {
-	perror("Minishell: vec_new: ");
+	perror("Minishell: vec_new");
 	exit (1);
 }
 
 //TODO: return instead of exiting
 void	ft_env_set_random_error(t_env *env)
 {
-	perror("Minishell: env_set_random_str:");
+	perror("Minishell: env_set_random_str");
 	env_free(env);
+	exit (1);
 }
 
 void	ft_set_last_status(t_env *env)
