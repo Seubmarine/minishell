@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 03:36:34 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/20 17:19:49 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/21 14:18:42 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_token_info	is_token_string_or_space(char const *str)
 	t_token_info	next;
 
 	i = 0;
-	while (ft_isspace(str[i])) // TODO FLAG INTERDIT, A CHANGER
+	while (ft_isspace(str[i]))
 			i++;
 	if (i > 0)
 		return ((t_token_info){.type = TOKEN_SPACE, .len = i});
@@ -112,7 +112,5 @@ int	tokens_append(t_vec *tokens, t_token *current)
 			return (1);
 		}
 	}
-	if (vec_append(tokens, current) == 0)
-		return (0);
-	return (1);
+	return (vec_append(tokens, current));
 }
