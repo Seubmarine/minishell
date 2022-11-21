@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/21 18:51:04 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/21 19:42:53 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ It helps to see if an input is valid and ease the program job for later
 typedef struct s_lexer_context
 {
 	const char		*str;
-	size_t			i;
 	t_vec			*tokens;
 	t_token_info	info;
 	t_token			final;
@@ -72,13 +71,12 @@ int	lexer_case_token_single_quote(t_lexer_context *lctx)
 int	lexer_case_token_dollar(t_lexer_context *lctx, t_env env)
 {
 	t_token_info	next;
-	t_token			tok;
 	size_t			reminder;
 	char			*env_key;
 	char			*env_value;
 
 	next = is_token(&lctx->str[1]);
-	tok.type = TOKEN_STRING;
+	lctx->final.type = TOKEN_STRING;
 	if (lctx->should_expand == 1 && next.type == TOKEN_STRING)
 	{
 		env_key = ft_strndup((const char *)&lctx->str[1], next.len);
@@ -90,13 +88,13 @@ int	lexer_case_token_dollar(t_lexer_context *lctx, t_env env)
 			size_t j = 0;
 			while (env_value[j])
 			{
-				tok.type = TOKEN_SPACE;
-				tok.word = NULL;
+				lctx->final.type = TOKEN_SPACE;
+				lctx->final.word = NULL;
 				while (ft_isspace(env_value[j]))
 					j++;
 				if (j > 0)
 				{
-					if (tokens_append(lctx->tokens, &tok) == 0)
+					if (tokens_append(lctx->tokens, &lctx->final) == 0)
 						return (0);
 				}
 				if (env_value[j] == '\0')
@@ -104,9 +102,9 @@ int	lexer_case_token_dollar(t_lexer_context *lctx, t_env env)
 				reminder = j;
 				while (env_value[j] != '\0' && !ft_isspace(env_value[j]))
 					j++;
-				tok.type = TOKEN_STRING;
-				tok.word = ft_strndup((const char *)&env_value[reminder], j - reminder);
-				if (tok.word == NULL || tokens_append(lctx->tokens, &tok) == 0)
+				lctx->final.type = TOKEN_STRING;
+				lctx->final.word = ft_strndup((const char *)&env_value[reminder], j - reminder);
+				if (lctx->final.word == NULL || tokens_append(lctx->tokens, &lctx->final) == 0)
 					return (0);
 			}
 		}
@@ -116,9 +114,9 @@ int	lexer_case_token_dollar(t_lexer_context *lctx, t_env env)
 		;
 	else
 	{
-		tok.type = TOKEN_STRING;
-		tok.word = ft_strndup("$", 1);
-		tokens_append(lctx->tokens, &tok);
+		lctx->final.type = TOKEN_STRING;
+		lctx->final.word = ft_strndup("$", 1);
+		tokens_append(lctx->tokens, &lctx->final);
 	}
 	return (1);
 }
@@ -168,10 +166,9 @@ int lexer_case_token_double_quote(t_lexer_context *lctx, t_env env)
 		j++;
 	}
 	vec_append(&word, "\0");
-	t_token tok;
-	tok.type = TOKEN_STRING;
-	tok.word = word.data;
-	tokens_append(lctx->tokens, &tok);
+	lctx->final.type = TOKEN_STRING;
+	lctx->final.word = word.data;
+	tokens_append(lctx->tokens, &lctx->final);
 	lctx->info.len = j + 1;
 	return (1);
 }
@@ -189,7 +186,6 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	}
 	lctx.str = str;
 	lctx.tokens = tokens;
-	lctx.i = 0;
 	lctx.should_expand = 1;
 	while (lctx.str[0])
 	{
