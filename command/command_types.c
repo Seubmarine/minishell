@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_types.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/21 19:44:10 by mportrai          #+#    #+#             */
+/*   Updated: 2022/11/21 19:44:12 by mportrai         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "command.h"
 
 int	ft_is_builtin(t_ast_command *ast_cmd)
@@ -22,6 +34,24 @@ int	ft_is_builtin(t_ast_command *ast_cmd)
 	return (0);
 }
 
+int	ft_dup_error(t_command *cmd, int *fd_stdin, int *fd_stdout)
+{
+	perror("Minishell: dup");
+	if (*fd_stdin != -1)
+		close(*fd_stdin);
+	if (*fd_stdout != -1)
+		close(*fd_stdout);
+	command_free(cmd);
+	return (1);
+}
+
+int	ft_duptwo_error(t_env *env)
+{
+	perror("Minishell: dup2");
+	env->is_child = 1;
+	return (1);
+}
+
 int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
 {
 	int			exit_status;
@@ -32,18 +62,19 @@ int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
 	command_init(&cmd, *ast_cmd);
 	fd_stdin = dup(STDIN_FILENO);
 	fd_stdout = dup(STDIN_FILENO);
-	// if error
+	if (fd_stdin == -1 || fd_stdout == -1)
+		return (ft_dup_error(&cmd, &fd_stdin, &fd_stdout), 1);
 	exit_status = ft_exec_command(&cmd, env);
 	if (fd_stdin != STDIN_FILENO)
 	{
-		dup2(fd_stdin, STDIN_FILENO);
-		// if error
+		if (dup2(fd_stdin, STDIN_FILENO) == -1)
+			exit_status = ft_duptwo_error(env);
 		close(fd_stdin);
 	}
 	if (fd_stdout != STDOUT_FILENO)
 	{
-		dup2(fd_stdout, STDOUT_FILENO);
-		// if error
+		if (dup2(fd_stdout, STDOUT_FILENO) == -1)
+			exit_status = ft_duptwo_error(env);
 		close(fd_stdout);
 	}
 	command_free(&cmd);

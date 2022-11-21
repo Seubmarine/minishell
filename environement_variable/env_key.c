@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 21:30:01 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 19:56:33 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/21 17:28:24 by mportrai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	key_value_init(char *kv, t_env_key_value *var)
 		i++;
 	if (kv[i] != '=' || i == 0)
 		return (0);
-	var->key = ft_strndup((const char *)kv, i); // TODO CHANGER EN LIBFT
+	var->key = ft_strndup((const char *)kv, i);
 	if (var->key == NULL)
 		return (0);
 	var->value = ft_strdup(kv + i + 1);

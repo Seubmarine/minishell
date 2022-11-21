@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 19:39:24 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/15 18:19:52 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/21 17:32:25 by mportrai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ t_ast_command	ast_command_init(void)
 
 	command.args = vec_new(sizeof(t_token), 2, NULL);
 	command.redirection = vec_new(sizeof(t_ast_redirection), 2, NULL);
-	// if arg ou redir == NULL
+	if (command.args.data == NULL || command.redirection.data == NULL)
+	{
+		ft_putstr_fd("Minishell: vec_new: malloc error\n", 2);
+		ast_command_free(&command);
+	}
 	return (command);
 }
 
@@ -69,7 +73,7 @@ int	ast_push(t_ast *ast, t_token *tok)
 			token_string(command, tok, ast, i);
 		else if (tok[i].type == TOKEN_PIPE)
 		{
-			cmd = ast_command_init(); // TODO error malloc
+			cmd = ast_command_init();
 			if (cmd.args.data == NULL || cmd.redirection.data == NULL)
 			{
 				ast_command_free(&cmd);

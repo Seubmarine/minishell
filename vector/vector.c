@@ -89,7 +89,7 @@ void	*vec_get(t_vec *v, size_t index)
 }
 
 /*
-Free the vector and all of it's elements with the free_elem function
+Free the vector and allmak of it's elements with the free_elem function
 */
 void	vec_free(t_vec *v)
 {

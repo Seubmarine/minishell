@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast_init_free.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/21 19:42:32 by mportrai          #+#    #+#             */
+/*   Updated: 2022/11/21 19:42:34 by mportrai         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ast.h"
 
 void	ast_command_free(t_ast_command *command)
@@ -30,7 +42,7 @@ for example : "echo hello world | wc > out"
 		command[1].redirection = [.type = tok[5], .name = tok[6]]
 */
 
-int		ast_init(t_token *tok, size_t tok_size, t_ast *ast)
+int	ast_init(t_token *tok, size_t tok_size, t_ast *ast)
 {
 	t_ast_command	command;
 
