@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/21 18:20:13 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/21 18:51:04 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,7 @@ int	lexer_case_token_single_quote(t_lexer_context *lctx)
 	return (1);
 }
 
-int	lexer_case_token_dollar(t_vec *tokens, const char *str, \
-	t_token_info *current, t_env env)
+int	lexer_case_token_dollar(t_lexer_context *lctx, t_env env)
 {
 	t_token_info	next;
 	t_token			tok;
@@ -78,11 +77,11 @@ int	lexer_case_token_dollar(t_vec *tokens, const char *str, \
 	char			*env_key;
 	char			*env_value;
 
-	next = is_token(&str[1]);
+	next = is_token(&lctx->str[1]);
 	tok.type = TOKEN_STRING;
-	if (next.type == TOKEN_STRING)
+	if (lctx->should_expand == 1 && next.type == TOKEN_STRING)
 	{
-		env_key = ft_strndup((const char *)&str[1], next.len);
+		env_key = ft_strndup((const char *)&lctx->str[1], next.len);
 		env_value = env_get_var(env, env_key);
 		free(env_key);
 		env_key = NULL;
@@ -97,7 +96,7 @@ int	lexer_case_token_dollar(t_vec *tokens, const char *str, \
 					j++;
 				if (j > 0)
 				{
-					if (tokens_append(tokens, &tok) == 0)
+					if (tokens_append(lctx->tokens, &tok) == 0)
 						return (0);
 				}
 				if (env_value[j] == '\0')
@@ -107,11 +106,11 @@ int	lexer_case_token_dollar(t_vec *tokens, const char *str, \
 					j++;
 				tok.type = TOKEN_STRING;
 				tok.word = ft_strndup((const char *)&env_value[reminder], j - reminder);
-				if (tok.word == NULL || tokens_append(tokens, &tok) == 0)
+				if (tok.word == NULL || tokens_append(lctx->tokens, &tok) == 0)
 					return (0);
 			}
 		}
-		current->len = next.len + 1;
+		lctx->info.len = next.len + 1;
 	}
 	else if (next.type == TOKEN_DOUBLE_QUOTE || next.type == TOKEN_SINGLE_QUOTE)
 		;
@@ -119,12 +118,12 @@ int	lexer_case_token_dollar(t_vec *tokens, const char *str, \
 	{
 		tok.type = TOKEN_STRING;
 		tok.word = ft_strndup("$", 1);
-		tokens_append(tokens, &tok);
+		tokens_append(lctx->tokens, &tok);
 	}
 	return (1);
 }
 
-int lexer_case_token_double_quote(t_vec *tokens, const char *str, t_token_info *current, t_env env)
+int lexer_case_token_double_quote(t_lexer_context *lctx, t_env env)
 {
 	size_t			j;
 	t_vec			word;
@@ -134,22 +133,22 @@ int lexer_case_token_double_quote(t_vec *tokens, const char *str, t_token_info *
 	size_t			k;
 
 	j = 0;
-	while (str[j] != '\0' && str[j] != '\"')
+	while (lctx->str[j] != '\0' && lctx->str[j] != '\"')
 		j++;
-	if (str[j] == '\0')
+	if (lctx->str[j] == '\0')
 	{
 		ft_putstr_fd("Minishell: error unclosed double quote\n", STDERR_FILENO);
 		return (0);
 	}
 	word = vec_new(sizeof(char), j + 1, NULL);
 	j = 0;
-	while (str[j] != '\"')
+	while (lctx->str[j] != '\"')
 	{
-		if (str[j] == '$' && is_token(&str[j + 1]).type == \
-		TOKEN_STRING)
+		if (lctx->should_expand == 1 && lctx->str[j] == '$' && \
+			is_token(&lctx->str[j + 1]).type == TOKEN_STRING)
 		{
-			next = is_token(&str[j + 1]);
-			env_key = ft_strndup((const char *)&str[j + 1], next.len);
+			next = is_token(&lctx->str[j + 1]);
+			env_key = ft_strndup((const char *)&lctx->str[j + 1], next.len);
 			j += next.len;
 			env_value = env_get_var(env, env_key);
 			free(env_key);
@@ -165,15 +164,15 @@ int lexer_case_token_double_quote(t_vec *tokens, const char *str, t_token_info *
 			env_value = NULL;
 		}
 		else
-			vec_append(&word, (void *)&str[j]);
+			vec_append(&word, (void *)&lctx->str[j]);
 		j++;
 	}
 	vec_append(&word, "\0");
 	t_token tok;
 	tok.type = TOKEN_STRING;
 	tok.word = word.data;
-	tokens_append(tokens, &tok);
-	current->len = j + 1;
+	tokens_append(lctx->tokens, &tok);
+	lctx->info.len = j + 1;
 	return (1);
 }
 
@@ -192,45 +191,43 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	lctx.tokens = tokens;
 	lctx.i = 0;
 	lctx.should_expand = 1;
-	while (str[lctx.i])
+	while (lctx.str[0])
 	{
-		lctx.info = is_token(&str[lctx.i]);
+		lctx.info = is_token(lctx.str);
 		t_token	tok = {.type = lctx.info.type, .word = NULL};
 		if (lctx.info.type == TOKEN_SPACE)
 			tokens_append(tokens, &tok);
 		else if (lctx.info.type == TOKEN_STRING)
 		{
-			tok.word = ft_strndup((const char *)&str[lctx.i], lctx.info.len);
+			tok.word = ft_strndup((const char *)lctx.str, lctx.info.len);
 			tokens_append(tokens, &tok);
-		}
-		else if (lctx.info.type == TOKEN_HERE_DOCUMENT)
-		{
-			lctx.should_expand = 0;
-		}		
+		}	
 		else if (lctx.info.type == TOKEN_DOLLAR)
 		{
-			if (lexer_case_token_dollar(tokens, &str[lctx.i], &lctx.info, env) == 0)
+			if (lexer_case_token_dollar(&lctx, env) == 0)
 				return (0);
 		}
 		else if (lctx.info.type == TOKEN_DOUBLE_QUOTE)
 		{
-			lctx.i++;
-			if (lexer_case_token_double_quote(tokens, &str[lctx.i], &lctx.info, env) == 0)
+			lctx.str = &lctx.str[1];
+			if (lexer_case_token_double_quote(&lctx, env) == 0)
 				return (0);
 		}
 		else if (lctx.info.type == TOKEN_SINGLE_QUOTE)
 		{
-			lctx.i++;
+			lctx.str = &lctx.str[1];
 			if (lexer_case_token_single_quote(&lctx) == 0)
 				return (0);
 		}
 		else
 		{
 			lctx.should_expand = 1;
+			if (lctx.info.type == TOKEN_HERE_DOCUMENT)
+				lctx.should_expand = 0;
 			lctx.final = (t_token){.type = lctx.info.type, .word = NULL};
 			tokens_append(tokens, &lctx.final);
 		}
-		lctx.i += lctx.info.len;
+		lctx.str = &lctx.str[lctx.info.len];
 	}
 	t_token	tok = {.type = TOKEN_END, .word = NULL};
 	tokens_append(tokens, &tok);
