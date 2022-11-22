@@ -67,18 +67,3 @@ char	*find_exec(char *exec_name, char *path_array)
 	}
 	return (NULL);
 }
-
-// int main(int argc, char const *argv[])
-// {
-// 	char *path_array = getenv("PATH");
-// 	printf("%s\n", path_array);
-// 	if (!path_array)
-// 		return (EXIT_FAILURE);
-// 	char *exec_path = find_exec("ls", path_array);
-// 	if (exec_path)
-// 	{
-// 		printf("%s\n", exec_path);
-// 		free(exec_path);
-// 	}
-// 	return 0;
-// }

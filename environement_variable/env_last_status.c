@@ -12,8 +12,6 @@
 
 #include "environement_variable.h"
 
-//TODO: replace ft_itoa to ft_itoa_buf
-
 //set status as a string internally
 char	*env_set_last_status(t_env *env, int status)
 {

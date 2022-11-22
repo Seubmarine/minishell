@@ -62,6 +62,8 @@ typedef struct s_pidpes
 	int			exit_status;
 }	t_pidpes;
 
+int						execute_line(char *line, t_env *env);
+
 //return 0 on error 1 on success
 int						command_init(t_command *cmd, t_ast_command ast_command);
 void					command_free(t_command *command);

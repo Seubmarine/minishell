@@ -14,7 +14,6 @@
 # define LEXER_H
 # include <stdlib.h>
 # include <stdio.h>
-# include <ctype.h> //TODO: replace with libft for isspace
 # include "vector.h"
 # include "environement_variable.h"
 # include "libft.h"

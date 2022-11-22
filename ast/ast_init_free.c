@@ -46,6 +46,7 @@ t_ast_command	ast_command_init(void)
 	}
 	return (command);
 }
+
 /*
 Create an array of token by placing them in a command and their redirection
 for example : "echo hello world | wc > out"
@@ -55,7 +56,6 @@ for example : "echo hello world | wc > out"
 		detect a tok of redirection so create a redirection
 		command[1].redirection = [.type = tok[5], .name = tok[6]]
 */
-
 int	ast_init(t_token *tok, size_t tok_size, t_ast *ast)
 {
 	t_ast_command	command;
