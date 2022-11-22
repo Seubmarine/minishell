@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 15:13:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/19 06:56:16 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 19:45:10 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ t_env	env_init_null(char *argv)
 		ft_vecnew_error();
 	env_set_var(&env, "PWD", str);
 	env_set_var(&env, "SHLVL", "1");
-	env_set_var(&env, "_", argv);
+	env_init_null_set_undescore(&env, argv);
 	if (env_set_random_str(&env) == 0)
 		ft_env_set_random_error(&env);
 	ft_set_last_status(&env);

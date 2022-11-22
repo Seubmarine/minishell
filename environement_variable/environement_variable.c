@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 19:51:29 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 20:12:57 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,26 +28,23 @@ void	env_last_satus_error(t_env *env)
 	exit (1);
 }
 
-void	env_vec_append_error(t_env *env, t_env_key_value *key_value)
+t_env	env_collect_from_envp(char **envp, char *argv, t_env env)
 {
-	ft_putstr_fd("Minishell: vec_append: malloc error\n", 2);
-	env_key_value_free(key_value);
-	env_free(env);
-	exit (1);
-}
-
-t_env	env_collect_from_envp(char **envp, char *argv, t_env env, \
-t_env_key_value *key_value)
-{
-	size_t	i;
+	size_t			i;
+	t_env_key_value	key_value;
 
 	i = 0;
 	while (envp[i])
 	{
-		if (key_value_init(envp[i], key_value) != 0)
+		if (key_value_init(envp[i], &key_value) != 0)
 		{
-			if (vec_append(&env.v, key_value) == 0) // TODO free la key_value
-				env_vec_append_error(&env, key_value);
+			if (vec_append(&env.v, &key_value) == 0)
+			{
+				env_key_value_free(&key_value);
+				ft_putstr_fd("Minishell: vec_append: malloc error\n", 2);
+				env_free(&env);
+				exit (1);
+			}
 		}
 		i++;
 	}
@@ -59,7 +56,6 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 {
 	t_env			env;
 	size_t			i;
-	t_env_key_value	key_value;
 
 	i = 0;
 	while (envp[i])
@@ -69,7 +65,7 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	if (env_set_random_str(&env) == 0)
 		ft_env_set_random_error(&env);
 	env.is_child = 0;
-	// env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE);
+	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE);
 	if (env._last_status_str == NULL)
 		env_last_satus_error(&env);
 	env_set_last_status(&env, 0);
@@ -77,7 +73,7 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	(void (*)(void *))env_key_value_free);
 	if (env.v.data == NULL)
 		env_vec_new_error(&env);
-	env = env_collect_from_envp((char **)envp, argv, env, &key_value);
+	env = env_collect_from_envp((char **)envp, argv, env);
 	return (env);
 }
 

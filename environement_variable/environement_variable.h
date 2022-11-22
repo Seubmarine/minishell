@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 19:49:05 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 19:58:39 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ int				key_value_init(char *kv, t_env_key_value *var);
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
 t_env			env_init_from_envp(const char *envp[], char *argv);
-t_env			env_collect_from_envp(char **envp, char *argv, t_env env, \
-t_env_key_value *key_value);
+t_env			env_collect_from_envp(char **envp, char *argv, t_env env);
+int				env_init_null_set_undescore(t_env *env, char *argv);
 t_env			env_init_null(char *argv);
 
 //get an array of key_value, pass the size of the array in length
