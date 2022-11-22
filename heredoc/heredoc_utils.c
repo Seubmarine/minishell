@@ -6,11 +6,31 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:43:00 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/22 17:07:27 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 21:57:02 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "heredoc.h"
+
+void	handler_heredoc(int signum)
+{
+	if (signum == SIGINT)
+	{
+		close(STDIN_FILENO);
+		g_heredoc_ctrl_c = 1;
+	}
+}
+
+void	signal_handling_heredoc(void)
+{
+	struct sigaction	sa_child;
+
+	sigemptyset(&sa_child.sa_mask);
+	sa_child.sa_flags = SA_RESTART;
+	sa_child.sa_handler = handler_heredoc;
+	sigaction(SIGINT, &sa_child, NULL);
+	sigaction(SIGQUIT, &sa_child, NULL);
+}
 
 char	*heredoc_naming(int heredoc_number, char *random_str)
 {
@@ -56,12 +76,16 @@ int	heredoc_open_fd(t_hd_fd *hd_fds, char *filename)
 
 int	heredoc_null_line(t_hd_fd *hd_fds, char *filename)
 {
-	if (fcntl(STDIN_FILENO, F_GETFD) == -1) // TODO FONCTION INTERDITE A CHANGER
+	if (g_heredoc_ctrl_c == 1)
 	{
+		g_heredoc_ctrl_c = 0;
 		printf("\n");
-		dup2(hd_fds->fdin_dup, STDIN_FILENO);//TODO check error
-		close(hd_fds->heredoc_fd);
-		unlink(filename);
+		if (dup2(hd_fds->fdin_dup, STDIN_FILENO) == -1)
+			perror("Minishell: dup2 copy of stding for heredoc");
+		if (close(hd_fds->heredoc_fd) == -1)
+			perror("Minishell: close heredoc fd");
+		if (unlink(filename) == -1)
+			perror("Minishell: remove heredoc file");
 		free(filename);
 		return (1);
 	}

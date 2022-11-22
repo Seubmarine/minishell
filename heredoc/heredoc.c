@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 17:04:05 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 21:47:34 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int	heredoc_readline(t_hd_fd *hd_fds, char *eof, char *filename, t_env *env)
 
 	line = NULL;
 	line_size = 0;
+	g_heredoc_ctrl_c = 0;
 	while (1)
 	{
 		line = readline("> ");

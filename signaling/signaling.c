@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 19:09:02 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/18 21:28:59 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 21:50:28 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,4 @@ void	signal_handling(void)
 	sa.sa_handler = handler;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
-}
-
-void	handler_heredoc(int signum)
-{
-	if (signum == SIGINT)
-		close(STDIN_FILENO);
-}
-
-void	signal_handling_heredoc(void)
-{
-	struct sigaction	sa_child;
-
-	sigemptyset(&sa_child.sa_mask);
-	sa_child.sa_flags = SA_RESTART;
-	sa_child.sa_handler = handler_heredoc;
-	sigaction(SIGINT, &sa_child, NULL);
-	sigaction(SIGQUIT, &sa_child, NULL);
 }
