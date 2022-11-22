@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 06:52:59 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 06:52:59 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 20:18:45 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	env_set_new_var(t_env *env, char *key, char *value)
 	{
 		if (var.key != NULL)
 			free(var.key);
-		else
+		if (var.value != NULL)
 			free(var.value);
 		return (0);
 	}
