@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:43:00 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/21 19:43:03 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/22 17:07:27 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,14 @@
 
 char	*heredoc_naming(int heredoc_number, char *random_str)
 {
-	char	filename[HEREDOC_FILENAME_MAX_LEN] = HEREDOC_NAMING;
-	char	number_str[HEREDOC_NUMBER_LEN];
-	char	*new_filename;
+	char		filename[HEREDOC_FILENAME_MAX_LEN];
+	char		number_str[HEREDOC_NUMBER_LEN];
+	char		*new_filename;
 
+	filename[0] = '\0';
+	if (ft_strlcat(filename, HEREDOC_NAMING, \
+	sizeof(filename)) >= sizeof(filename))
+		return (NULL);
 	if (!ft_ullto_buf(heredoc_number, number_str, HEREDOC_NUMBER_LEN))
 		return (NULL);
 	if (ft_strlcat(filename, number_str, sizeof(filename)) >= sizeof(filename))

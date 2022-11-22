@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 01:39:38 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/19 06:49:53 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 17:04:05 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,34 +23,6 @@ int	put_in_buffer(char *buffer, char c, size_t *iterator, size_t buffer_size)
 	return (1);
 }
 
-// int	main(int argc, char const *argv[])
-// {
-// 	long long unsigned	seed;	
-// 	int					fd;
-// 	int					i;
-// 	char				*filename;
-
-// 	fd = open("/dev/urandom", O_RDONLY);
-// 	if (fd == -1)
-// 	{
-// 		perror("Minishell: /dev/urandom");
-// 		return (1);
-// 	}
-// 	i = 0;
-// 	while (i < 1000)
-// 	{
-// 		read(fd, &seed, sizeof(seed));
-// 		filename = heredoc_naming(i, seed);
-// 		if (filename == NULL)
-// 			break ;
-// 		printf("%s\n", filename);
-// 		free(filename);
-// 		i++;
-// 	}
-// 	close(fd);
-// 	return (0);
-// }
-
 void	heredoc_env_variable(int fd, char *line, size_t *line_pos, t_env *env)
 {
 	size_t	var_size;
@@ -59,8 +31,9 @@ void	heredoc_env_variable(int fd, char *line, size_t *line_pos, t_env *env)
 
 	var_size = 0;
 	*line_pos += 1;
-	while (line[*line_pos + var_size] && !ft_isspace(line[*line_pos + var_size]) \
-	&& line[*line_pos + var_size] != '$')
+	while (line[*line_pos + var_size] && \
+	!ft_isspace(line[*line_pos + var_size]) && \
+	line[*line_pos + var_size] != '$')
 		var_size++;
 	if (var_size == 0)
 		write(fd, "$", 1);
@@ -114,7 +87,7 @@ int	heredoc_readline(t_hd_fd *hd_fds, char *eof, char *filename, t_env *env)
 			break ;
 		}
 		line_size = ft_strlen(line);
-		if (line_size > 0 && ft_strncmp(line, eof, line_size) == 0) //TODO: use ft
+		if (line_size > 0 && ft_strncmp(line, eof, line_size) == 0)
 			break ;
 		heredoc_write(env, hd_fds->heredoc_fd, line);
 		write(hd_fds->heredoc_fd, "\n", 1);
@@ -141,78 +114,3 @@ char	*heredoc_open_routine(t_env *env, size_t heredoc_number, char *eof)
 	signal_handling();
 	return (filename);
 }
-
-// int	ast_command_heredoc_unlink(t_ast_command *cmd)
-// {
-// 	size_t	i;
-
-// 	i = 0;
-// 	while (i < cmd->redirection.len)
-// 	{
-// 		t_ast_redirection *redir = vec_get(&cmd->redirection, i);
-// 		if (redir->token.type == TOKEN_HERE_DOCUMENT)
-// 		{
-
-// 		}
-// 		i++;
-// 	}
-// }
-
-// int ast_heredoc_unlink(t_ast *ast)
-// {
-// 	size_t	i;
-// 	size_t	j;
-// 	t_ast_command		*cmds;
-// 	t_ast_redirection	*redir;
-
-// 	cmds = vec_get(&ast->pipeline, 0);
-// 	while (i < ast->pipeline.len)
-// 	{
-// 		ast
-// 	}
-
-// }
-
-// int ast_command_heredoc_open(t_ast_command *cmd, t_env *env, size_t *heredoc_number)
-// {
-// 	size_t i;
-// 	char	*filename;
-
-// 	i = 0;
-// 	while (i < cmd->redirection.len)
-// 	{
-// 		t_ast_redirection *redir = vec_get(&cmd->redirection, i);
-// 		if (redir->token.type == TOKEN_HERE_DOCUMENT)
-// 		{
-// 			filename = naming_heredoc(*heredoc_number);
-// 			if (filename == NULL)
-// 				return (0); // error trying to create heredoc name
-// 			if (read_in_heredoc(filename, redir->rhs.word) != 1) //opening error or ctrl+C happened
-// 			{
-// 				free(filename);
-// 				return (0);
-// 			}
-// 			free(redir->rhs.word);
-// 			redir->rhs.word = filename;
-// 			*heredoc_number += 1;
-// 		}
-// 		i++;
-// 	}
-// 	return (1);
-// }
-
-// int ast_open_heredoc(t_ast *ast, t_env *env)
-// {
-// 	size_t heredoc_number;
-// 	size_t i_cmd;
-// 	t_ast_command *cmd;
-
-// 	heredoc_number = 0;
-// 	i_cmd = 0;
-// 	while (i_cmd < ast->pipeline.len)
-// 	{
-// 		cmd = vec_get(&ast->pipeline, i_cmd);
-// 		ast_command_open_heredoc(cmd, env, &heredoc_number);
-// 		i_cmd++;
-// 	}
-// }
