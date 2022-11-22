@@ -79,6 +79,23 @@
 // }
 
 //return exit status
+
+int	prepare_arguments(char *line, t_env *env, t_vec *tokens)
+{
+	if (lexer(line, *env, tokens) == 0)
+	{
+		vec_free(tokens);
+		return (1);
+	}
+	if (tokens->len <= 1 || \
+	(((t_token *)tokens->data)[tokens->len - 1].type) != TOKEN_END)
+	{
+		vec_free(tokens);
+		return (1);
+	}
+	return (0);
+}
+
 int	execute_line(char *line, t_env *env)
 {
 	t_vec	tokens;
@@ -86,16 +103,8 @@ int	execute_line(char *line, t_env *env)
 	int		exit_status;
 
 	exit_status = 1;
-	if (lexer(line, *env, &tokens) == 0)
-	{
-		vec_free(&tokens);
+	if (prepare_arguments(line, env, &tokens) == 1)
 		return (exit_status);
-	}
-	if (tokens.len <= 1 || (((t_token *)tokens.data)[tokens.len - 1].type) != TOKEN_END)
-	{
-		vec_free(&tokens);
-		return (exit_status);
-	}
 	if (ast_init(tokens.data, tokens.len, &ast) == 0)
 	{
 		ast_free(&ast);
