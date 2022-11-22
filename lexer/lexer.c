@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 16:28:54 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 17:35:38 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,15 @@ char	*lexh_env(t_env env, char *env_key)
 	return (env_value);
 }
 
+int	lexer_case_token_heredocument(t_lexer_context *lctx)
+{
+	lctx->should_expand = 0;
+	lctx->next = is_token(&lctx->str[2]);
+	if (lctx->next.type == TOKEN_SPACE)
+		lctx->info.len += lctx->next.len;
+	return (1);
+}
+
 int	lexer_case_next(t_lexer_context *lctx)
 {
 	if (lctx->info.type == TOKEN_SINGLE_QUOTE)
@@ -59,10 +68,13 @@ int	lexer_case_next(t_lexer_context *lctx)
 		if (lexer_case_token_single_quote(lctx) == 0)
 			return (0);
 	}
-	else if (lctx->info.type != TOKEN_SPACE \
-		&& lctx->info.type != TOKEN_STRING \
-		&& lctx->info.type != TOKEN_DOLLAR \
-		&& lctx->info.type != TOKEN_SPACE \
+	else if (lctx->info.type == TOKEN_HERE_DOCUMENT)
+	{
+		if (lexer_case_token_heredocument(lctx) == 0)
+			return (0);
+	}
+	if (lctx->info.type != TOKEN_SPACE && lctx->info.type != TOKEN_STRING \
+		&& lctx->info.type != TOKEN_DOLLAR && lctx->info.type != TOKEN_SPACE \
 		&& lctx->info.type != TOKEN_DOUBLE_QUOTE \
 		&& lctx->info.type != TOKEN_SINGLE_QUOTE)
 	{
@@ -80,6 +92,7 @@ int	lexer_case(t_lexer_context *lctx, t_env env)
 {
 	if (lctx->info.type == TOKEN_SPACE)
 	{
+		lctx->should_expand = 1;
 		if (tokens_append(lctx->tokens, &lctx->final) == 0)
 			return (0);
 	}
