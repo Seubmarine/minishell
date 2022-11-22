@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 15:58:01 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 16:05:51 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,6 @@ Token: (type: TOKEN_END) Span : (begin: 24, end: 24)
 It helps to see if an input is valid and ease the program job for later
 */
 
-typedef struct s_lexer_context
-{
-	const char		*str;
-	char			*env_value;
-	t_vec			*tokens;
-	t_token_info	info;
-	t_token_info	next;
-	t_token			final;
-	int				should_expand;
-}	t_lexer_context;
-
 //pass the value of a key and free it's key
 char	*lexh_env(t_env env, char *env_key)
 {
@@ -60,169 +49,6 @@ char	*lexh_env(t_env env, char *env_key)
 	env_value = env_get_var(env, env_key);
 	free(env_key);
 	return (env_value);
-}
-
-int	lexer_case_token_single_quote(t_lexer_context *lctx)
-{
-	size_t	j;
-
-	j = 0;
-	while (lctx->str[j] != '\0' && lctx->str[j] != '\'')
-		j++;
-	if (lctx->str[j] == '\0')
-	{
-		write(STDERR_FILENO, "Minishell: error unclosed single quote\n", 39);
-		return (0);
-	}
-	lctx->info.len = j + 1;
-	lctx->final.type = TOKEN_STRING;
-	lctx->final.word = ft_strndup(lctx->str, j);
-	if (lctx->final.word == NULL || \
-	tokens_append(lctx->tokens, &lctx->final) == 0)
-		return (0);
-	return (1);
-}
-
-int	lexer_token_dollar_expand_word(t_lexer_context *lctx, \
-	char *env_value, size_t *current)
-{
-	size_t	i;
-
-	i = 0;
-	while (env_value[i] != '\0' && !ft_isspace(env_value[i]))
-		i++;
-	*current += i;
-	lctx->final = (t_token){TOKEN_STRING, \
-		ft_strndup((const char *)env_value, i)};
-	if (lctx->final.word == NULL || \
-	tokens_append(lctx->tokens, &lctx->final) == 0)
-		return (0);
-	return (1);
-}
-
-int	lexer_token_dollar_expand(t_lexer_context *lctx, char *env_value)
-{
-	size_t	i;
-
-	i = 0;
-	while (env_value && env_value[i])
-	{
-		lctx->final = (t_token){.type = TOKEN_SPACE, .word = NULL};
-		while (ft_isspace(env_value[i]))
-			i++;
-		if (i > 0)
-		{
-			if (tokens_append(lctx->tokens, &lctx->final) == 0)
-				return (0);
-		}
-		if (env_value[i] == '\0')
-			break ;
-		if (lexer_token_dollar_expand_word(lctx, &env_value[i], &i) == 0)
-			return (0);
-	}
-	return (1);
-}
-
-int	lexer_case_token_dollar(t_lexer_context *lctx, t_env env)
-{
-	lctx->next = is_token(&lctx->str[1]);
-	lctx->final.type = TOKEN_STRING;
-	if (lctx->should_expand == 1 && lctx->next.type == TOKEN_STRING)
-	{
-		lctx->env_value = lexh_env(env, \
-			ft_strndup((const char *)&lctx->str[1], lctx->next.len));
-		if (lctx->env_value != NULL)
-		{
-			if (lexer_token_dollar_expand(lctx, lctx->env_value) == 0)
-				return (0);
-		}
-		lctx->info.len = lctx->next.len + 1;
-	}
-	else if (lctx->next.type == TOKEN_DOUBLE_QUOTE || \
-		lctx->next.type == TOKEN_SINGLE_QUOTE)
-		;
-	else
-	{
-		lctx->final = (t_token){TOKEN_STRING, ft_strndup("$", 1)};
-		if (lctx->final.word == NULL || \
-		tokens_append(lctx->tokens, &lctx->final) == 0)
-			return (0);
-	}
-	return (1);
-}
-
-int	lexer_double_quote_expand(t_lexer_context *lctx, t_vec *word, \
-	size_t *j, t_env env)
-{
-	size_t	k;
-
-	lctx->next = is_token(&lctx->str[*j + 1]);
-	lctx->env_value = NULL;
-	lctx->env_value = lexh_env(env, \
-		ft_strndup(&lctx->str[*j + 1], lctx->next.len));
-	*j += lctx->next.len;
-	if (lctx->env_value)
-	{
-		k = 0;
-		while (lctx->env_value[k])
-		{
-			if (vec_append(word, &lctx->env_value[k]) == 0)
-				return (0);
-			k++;
-		}
-		lctx->env_value = NULL;
-	}
-	return (1);
-}
-
-int	lexer_token_double_quote_loop(t_lexer_context *lctx, \
-	size_t *j, t_env env)
-{
-	t_vec	word;
-
-	word = vec_new(sizeof(char), *j + 1, NULL);
-	if (word.data == NULL)
-		return (0);
-	*j = 0;
-	while (lctx->str[*j] != '\"')
-	{
-		if (lctx->should_expand == 1 && lctx->str[*j] == '$' && \
-			is_token(&lctx->str[*j + 1]).type == TOKEN_STRING)
-		{
-			if (lexer_double_quote_expand(lctx, &word, j, env) == 0)
-				return (0);
-		}
-		else
-		{
-			if (vec_append(&word, (void *)&lctx->str[*j]) == 0)
-				return (0);
-		}
-		*j += 1;
-	}
-	if (vec_append(&word, "\0") == 0)
-		return (0);
-	lctx->final = (t_token){TOKEN_STRING, word.data};
-	return (1);
-}
-
-int	lexer_case_token_double_quote(t_lexer_context *lctx, t_env env)
-{
-	size_t			j;
-
-	j = 0;
-	while (lctx->str[j] != '\0' && lctx->str[j] != '\"')
-		j++;
-	if (lctx->str[j] == '\0')
-	{
-		ft_putstr_fd("Minishell: error unclosed double quote\n", STDERR_FILENO);
-		return (0);
-	}
-	if (lexer_token_double_quote_loop(lctx, &j, env) == 0)
-		return (0);
-	if (tokens_append(lctx->tokens, &lctx->final) == 0)
-		return (0);
-	lctx->info.len = j + 1;
-	return (1);
 }
 
 //return 0 on failure, 1 on success
