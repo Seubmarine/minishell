@@ -28,7 +28,6 @@ void	ft_vecnew_error(void)
 	exit (1);
 }
 
-//TODO: return instead of exiting
 void	ft_env_set_random_error(t_env *env)
 {
 	perror("Minishell: env_set_random_str");

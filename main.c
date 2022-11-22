@@ -85,15 +85,15 @@ int	prepare_arguments(char *line, t_env *env, t_vec *tokens)
 	if (lexer(line, *env, tokens) == 0)
 	{
 		vec_free(tokens);
-		return (1);
+		return (0);
 	}
 	if (tokens->len <= 1 || \
 	(((t_token *)tokens->data)[tokens->len - 1].type) != TOKEN_END)
 	{
 		vec_free(tokens);
-		return (1);
+		return (0);
 	}
-	return (0);
+	return (1);
 }
 
 int	execute_line(char *line, t_env *env)
@@ -103,7 +103,7 @@ int	execute_line(char *line, t_env *env)
 	int		exit_status;
 
 	exit_status = 1;
-	if (prepare_arguments(line, env, &tokens) == 1)
+	if (prepare_arguments(line, env, &tokens) == 0)
 		return (exit_status);
 	if (ast_init(tokens.data, tokens.len, &ast) == 0)
 	{

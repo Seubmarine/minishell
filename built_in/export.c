@@ -49,9 +49,16 @@ int	builtin_export(char **argv, t_env *env)
 		if ((is_non_alphanum(argv[i]) == 0) && \
 		(key_value_init(argv[i], &kv) == 1))
 		{	
-			env_set_var(env, kv.key, kv.value);
+			if (env_set_var(env, kv.key, kv.value) == 0)
+			{
+				perror("Minishell: export");
+				env_key_value_free(&kv);
+				return (1);
+			}
 			env_key_value_free(&kv);
 		}
+		else if (key_value_init(argv[i], &kv) == 0)
+			return (perror("Minishell: key_value_init"), 1);
 		i++;
 	}
 	return (0);

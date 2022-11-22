@@ -35,6 +35,8 @@ int	key_value_init(char *kv, t_env_key_value *var)
 	if (var->key == NULL)
 		return (0);
 	var->value = ft_strdup(kv + i + 1);
+	if (var->value == NULL)
+		return (0);
 	return (1);
 }
 

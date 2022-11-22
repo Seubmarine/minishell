@@ -54,9 +54,9 @@ long long int	ft_atolli(char *str, t_env *env)
 	while ((str[i] >= '0' && str[i] <= '9') && (res < 9223372036854775807))
 		res = res * 10 + (str[i++] - '0');
 	if ((res > 9223372036854775807) && (sign == 1))
-		ft_exit_error(str, 2, env);
+		return (ft_exit_error(str, 2, env));
 	if ((res > 9223372036854775807) && (sign == -1))
-		ft_exit_error(str, 2, env);
+		return (ft_exit_error(str, 2, env));
 	return (res * sign);
 }
 

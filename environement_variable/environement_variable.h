@@ -63,7 +63,7 @@ t_env_key_value	*env_get_vars(t_env	env, size_t *length);
 void			env_remove_var(t_env *env, char *key);
 
 //if key already exist overwrite value
-void			env_set_var(t_env *env, char *key, char *value);
+int				env_set_var(t_env *env, char *key, char *value);
 
 //set and get special variable $?
 char			*env_set_last_status(t_env *env, int status);

@@ -12,27 +12,51 @@
 
 #include "environement_variable.h"
 
+int	env_set_new_var(t_env *env, char *key, char *value)
+{
+	t_env_key_value	var;
+
+	var = (t_env_key_value){.key = ft_strdup(key), \
+	.value = ft_strdup(value)};
+	if (var.key == NULL || var.value == NULL)
+	{
+		if (var.key != NULL)
+			free(var.key);
+		else
+			free(var.value);
+		return (0);
+	}
+	if (vec_append(&env->v, &var) == 0)
+	{
+		free(var.key);
+		free(var.value);
+		return (0);
+	}
+	return (1);
+}
+
 /*
 if key already exist overwrite value
 key and value will be duplicated
 */
-void	env_set_var(t_env *env, char *key, char *value)
+int	env_set_var(t_env *env, char *key, char *value)
 {
 	t_env_key_value	*kv;
-	t_env_key_value	var;
 
 	kv = env_get_key_value_ptr(*env, key);
 	if (kv)
 	{
 		free(kv->value);
 		kv->value = ft_strdup(value);
+		if (kv->value == NULL)
+			return (0);
 	}
 	else
 	{
-		var = (t_env_key_value){.key = ft_strdup(key), \
-		.value = ft_strdup(value)};
-		vec_append(&env->v, &var);
+		if (env_set_new_var(env, key, value) == 0)
+			return (0);
 	}
+	return (1);
 }
 
 //remove the variable from this key in the env
