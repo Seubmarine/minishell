@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 16:05:51 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 16:28:54 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,59 @@ char	*lexh_env(t_env env, char *env_key)
 	return (env_value);
 }
 
+int	lexer_case_next(t_lexer_context *lctx)
+{
+	if (lctx->info.type == TOKEN_SINGLE_QUOTE)
+	{
+		lctx->str = &lctx->str[1];
+		if (lexer_case_token_single_quote(lctx) == 0)
+			return (0);
+	}
+	else if (lctx->info.type != TOKEN_SPACE \
+		&& lctx->info.type != TOKEN_STRING \
+		&& lctx->info.type != TOKEN_DOLLAR \
+		&& lctx->info.type != TOKEN_SPACE \
+		&& lctx->info.type != TOKEN_DOUBLE_QUOTE \
+		&& lctx->info.type != TOKEN_SINGLE_QUOTE)
+	{
+		lctx->should_expand = 1;
+		if (lctx->info.type == TOKEN_HERE_DOCUMENT)
+			lctx->should_expand = 0;
+		lctx->final = (t_token){.type = lctx->info.type, .word = NULL};
+		if (tokens_append(lctx->tokens, &lctx->final) == 0)
+			return (0);
+	}
+	return (1);
+}
+
+int	lexer_case(t_lexer_context *lctx, t_env env)
+{
+	if (lctx->info.type == TOKEN_SPACE)
+	{
+		if (tokens_append(lctx->tokens, &lctx->final) == 0)
+			return (0);
+	}
+	else if (lctx->info.type == TOKEN_STRING)
+	{
+		lctx->final.word = ft_strndup((const char *)lctx->str, lctx->info.len);
+		if (lctx->final.word == NULL || \
+			tokens_append(lctx->tokens, &lctx->final) == 0)
+			return (0);
+	}	
+	else if (lctx->info.type == TOKEN_DOLLAR)
+	{
+		if (lexer_case_token_dollar(lctx, env) == 0)
+			return (0);
+	}
+	else if (lctx->info.type == TOKEN_DOUBLE_QUOTE)
+	{
+		lctx->str = &lctx->str[1];
+		if (lexer_case_token_double_quote(lctx, env) == 0)
+			return (0);
+	}
+	return (lexer_case_next(lctx));
+}
+
 //return 0 on failure, 1 on success
 int	lexer(char *str, t_env env, t_vec *tokens)
 {
@@ -67,44 +120,8 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	{
 		lctx.info = is_token(lctx.str);
 		lctx.final = (t_token){.type = lctx.info.type, .word = NULL};
-		if (lctx.info.type == TOKEN_SPACE)
-		{
-			if (tokens_append(tokens, &lctx.final) == 0)
-				return (0);
-		}
-		else if (lctx.info.type == TOKEN_STRING)
-		{
-			lctx.final.word = ft_strndup((const char *)lctx.str, lctx.info.len);
-			if (lctx.final.word == NULL || \
-				tokens_append(tokens, &lctx.final) == 0)
-				return (0);
-		}	
-		else if (lctx.info.type == TOKEN_DOLLAR)
-		{
-			if (lexer_case_token_dollar(&lctx, env) == 0)
-				return (0);
-		}
-		else if (lctx.info.type == TOKEN_DOUBLE_QUOTE)
-		{
-			lctx.str = &lctx.str[1];
-			if (lexer_case_token_double_quote(&lctx, env) == 0)
-				return (0);
-		}
-		else if (lctx.info.type == TOKEN_SINGLE_QUOTE)
-		{
-			lctx.str = &lctx.str[1];
-			if (lexer_case_token_single_quote(&lctx) == 0)
-				return (0);
-		}
-		else
-		{
-			lctx.should_expand = 1;
-			if (lctx.info.type == TOKEN_HERE_DOCUMENT)
-				lctx.should_expand = 0;
-			lctx.final = (t_token){.type = lctx.info.type, .word = NULL};
-			if (tokens_append(tokens, &lctx.final) == 0)
-				return (0);
-		}
+		if (lexer_case(&lctx, env) == 0)
+			return (0);
 		lctx.str = &lctx.str[lctx.info.len];
 	}
 	lctx.final = (t_token){.type = TOKEN_END, .word = NULL};
