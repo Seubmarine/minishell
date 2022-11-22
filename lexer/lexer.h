@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:03:31 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 16:06:33 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:20:14 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,6 @@ void			lexer_debug(t_vec	tokens);
 t_token_info	is_token(char const *str);
 int				tokens_append(t_vec *tokens, t_token *current);
 void			token_free(t_token *token);
+int				lexer_validate(t_token *tokens, size_t tokens_len);
 
 #endif

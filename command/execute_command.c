@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 21:24:28 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/22 21:24:29 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:23:54 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,12 @@ int	prepare_arguments(char *line, t_env *env, t_vec *tokens)
 	(((t_token *)tokens->data)[tokens->len - 1].type) != TOKEN_END)
 	{
 		vec_free(tokens);
+		return (0);
+	}
+	if (lexer_validate(tokens->data, tokens->len) == 0)
+	{
+		ft_putstr_fd("Minishell: invalid syntax\n", STDERR_FILENO);
+		env_set_last_status(env, 2);
 		return (0);
 	}
 	return (1);
