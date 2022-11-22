@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:19:00 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/20 02:22:35 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 15:57:34 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,13 @@ t_vec	vec_new(size_t element_size, size_t capacity, void (*free_elem)(void *))
 	v.capacity = 0;
 	v.elem_size = 0;
 	v.data = malloc(element_size * capacity);
-	v.free_elem = free_elem;
+	v.free_elem = NULL;
 	if (v.data == NULL)
+	{
+		ft_putstr_fd("Minishell: vec_new\n", STDERR_FILENO);
 		return (v);
+	}
+	v.free_elem = free_elem;
 	v.capacity = capacity;
 	v.elem_size = element_size;
 	return (v);
