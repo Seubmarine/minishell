@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 02:52:43 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 21:51:08 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:03:44 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # define HEREDOC_RANDOM_NUMBER_LEN 32
 # define HEREDOC_NUMBER_LEN 32
 
-static volatile sig_atomic_t	g_heredoc_ctrl_c;
+static volatile sig_atomic_t	g_heredoc_ctrl_c = 0;
 
 typedef struct s_hd_fd
 {
