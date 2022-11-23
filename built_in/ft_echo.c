@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 18:08:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/10 18:08:41 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/23 20:25:13 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,21 +53,30 @@ char	*ft_add_next_word(char *sentence, char *arg)
 	return (s2);
 }
 
-void	ft_print_sentence(char *sentence, int flag)
+int	ft_print_sentence(char *sentence, int flag)
 {
+	int	print_return;
+
+	print_return = 0;
 	if (sentence != NULL)
 	{
 		if (flag == 1)
-			printf("%s", sentence);
+			print_return = printf("%s", sentence);
 		else
-			printf("%s\n", sentence);
+			print_return = printf("%s\n", sentence);
 		free (sentence);
 	}
 	else
 	{
 		if (flag == 0)
-			printf("\n");
+			print_return = printf("\n");
 	}
+	if (print_return < 0)
+	{	
+		perror("Minishell: echo");
+		return (1);
+	}
+	return (0);
 }
 
 char	*ft_prepare_sentence(char **argv, char *sentence, int i)
@@ -94,7 +103,11 @@ int	ft_echo(char **argv)
 	flag = 0;
 	sentence = NULL;
 	if (ft_strlen_l(argv) == 1)
-		return (printf("\n"), 0);
+	{
+		if (printf("\n") < 0)
+			return (perror("Minishell: echo"), 1);
+		return (0);
+	}
 	flag = ft_is_flag_echo(argv[1]);
 	if (flag == 1)
 		i++;
@@ -105,6 +118,5 @@ int	ft_echo(char **argv)
 		if (sentence == NULL)
 			return (1);
 	}
-	ft_print_sentence(sentence, flag);
-	return (0);
+	return (ft_print_sentence(sentence, flag));
 }
