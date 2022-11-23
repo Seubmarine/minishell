@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 16:34:02 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/23 14:24:21 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/24 00:14:51 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void	handler_child(int signum)
 	if (signum == SIGINT)
 	{
 		rl_replace_line("", 0);
-		printf("\n");
 		rl_on_new_line();
 	}
 	return ;
