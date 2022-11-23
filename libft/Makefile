@@ -6,7 +6,7 @@
 #    By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 12:32:56 by mportrai          #+#    #+#              #
-#    Updated: 2022/11/19 06:46:22 by tbousque         ###   ########.fr        #
+#    Updated: 2022/11/23 04:54:08 by tbousque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,13 +20,13 @@ OBJSB	= ${SRCSB:.c=.o}
 
 NAME	= libft.a
 
-CC		= cc
+CC		= clang #TODO: use cc
 RM		= rm -f
 
 CFLAGS	= -Wall -Wextra -Werror -g3
 
 .c.o:
-	${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -I includes
+	${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 all:		${NAME}
 

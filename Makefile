@@ -1,5 +1,5 @@
 NAME = minishell
-CC=gcc
+CC=clang #TODO: use cc
 CFLAGS= -Wall -Wextra -Werror -g3
 
 VECTOR_SRCS = vector.c
@@ -43,13 +43,16 @@ OBJ = $(SRCS:.c=.o)
 all: $(NAME)
 
 INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE) -I $(SIGNAL_INCLUDE) -I $(HEREDOC_INCLUDE) -I $(LIBFT_INCLUDE)
-LDFLAGS = -L/usr/lib -lreadline -lbsd
+LDFLAGS = -L/usr/lib -lreadline
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
 
 $(NAME) : lib $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME) $(LDFLAGS) ./libft/libft.a
+
+malloc_test: lib $(OBJ)
+	$(CC) $(CFLAGS) $(INCLUDE) -fsanitize=undefined -rdynamic -o $@ ${OBJ} ./libft/libft.a -ldl $(LDFLAGS) -L. -lmallocator
 
 lib:
 	@make -C libft
