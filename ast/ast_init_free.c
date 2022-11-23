@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast_init_free.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:42:32 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/21 19:42:34 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:11:26 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	ast_init(t_token *tok, size_t tok_size, t_ast *ast)
 		return (0);
 	}
 	if (vec_append(&ast->pipeline, &command) == 0)
-		return (0);
+		return (ast_command_free(&command), 0);
 	if (ast_push(ast, tok) == 0)
 		return (0);
 	return (1);
