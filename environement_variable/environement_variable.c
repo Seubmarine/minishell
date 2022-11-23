@@ -14,19 +14,6 @@
 #include "built_in.h"
 #include <stdio.h>
 
-void	env_vec_new_error(t_env *env)
-{
-	perror("Minishell: vec_new");
-	env_free(env);
-	exit (1);
-}
-
-void	env_last_status_error(void)
-{
-	perror("Minishell: malloc");
-	exit (1);
-}
-
 int	env_collect_from_envp(char **envp, char *argv, t_env *env)
 {
 	size_t			i;

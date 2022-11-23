@@ -45,6 +45,11 @@ t_env_key_value	*env_get_key_value_ptr(t_env env, char *key);
 char			*env_key_value_to_string(t_env_key_value kv);
 void			env_key_value_free(t_env_key_value *kv);
 void			ft_env_set_random_error(t_env *env);
+void			env_vec_new_error(t_env *env);
+void			env_last_status_error(void);
+void			ft_shl_shlvl_cwd_error(t_env *env);
+void			ft_shl_shlvl_join_error(t_env *env);
+void			ft_shl_shlvl_itoa_error(t_env *env);
 
 //create a key value from a string "key=value"
 int				key_value_init(char *kv, t_env_key_value *var);

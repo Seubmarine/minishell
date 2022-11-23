@@ -17,7 +17,7 @@ COMMAND_INCLUDE = command/
 PATH_FINDER_SRCS = path_finder.c
 PATH_FINDER_INCLUDE = path_finder/
 
-ENV_SRCS = environement_variable.c env_null.c env_free.c env_key.c env_last_status.c env_set_random.c env_set_shl_shlvl.c env_vars.c env_null_set_underscore.c
+ENV_SRCS = environement_variable.c env_null.c env_free.c env_key.c env_last_status.c env_set_random.c env_set_shl_shlvl.c env_vars.c env_null_set_underscore.c env_error.c
 ENV_INCLUDE = environement_variable/
 
 BUILTIN_SRCS = built_in.c export.c unset.c env.c pwd.c ft_echo.c ft_exit.c ft_cd.c

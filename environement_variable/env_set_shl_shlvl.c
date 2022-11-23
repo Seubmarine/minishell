@@ -16,23 +16,9 @@
 #include <fcntl.h>
 #include <heredoc.h>
 
-void	ft_shl_shlvl_cwd_error(t_env *env)
+void	env_set_var_error(t_env *env, char *str)
 {
-	perror("Minishell: getcwd");
-	env_free(env);
-	exit (1);
-}
-
-void	ft_shl_shlvl_join_error(t_env *env)
-{
-	perror("Minishell: ft_strjoin");
-	env_free(env);
-	exit(1);
-}
-
-void	ft_shl_shlvl_itoa_error(t_env *env)
-{
-	perror("Minishell: ft_itoa");
+	free(str);
 	env_free(env);
 	exit (1);
 }
@@ -51,11 +37,7 @@ void	ft_prepare_shl_shlvl(t_env *env, char *argv)
 	if (shl == NULL)
 		ft_shl_shlvl_join_error(env);
 	if (env_set_var(env, "SHELL", shl) == 0)
-	{
-		free(shl);
-		env_free(env);
-		exit (1);
-	}
+		env_set_var_error(env, shl);
 	free(shl);
 	buff = env_get_var(*env, "SHLVL");
 	if (buff == NULL)
@@ -66,10 +48,6 @@ void	ft_prepare_shl_shlvl(t_env *env, char *argv)
 	if (buff == NULL)
 		ft_shl_shlvl_itoa_error(env);
 	if (env_set_var(env, "SHLVL", buff) == 0)
-	{
-		free(buff);
-		env_free(env);
-		exit(1);
-	}
+		env_set_var_error(env, buff);
 	free(buff);
 }
