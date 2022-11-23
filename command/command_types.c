@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_types.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:44:10 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/21 19:44:12 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/23 14:22:44 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,12 @@ int	ft_which_command(t_ast *ast, t_env *env)
 	if (ast->pipeline.len == 0)
 		return (0);
 	ast_cmd = vec_get(&ast->pipeline, 0);
+	add_echo_ctrl();
 	if (ast->pipeline.len == 1 && ft_is_builtin(ast_cmd))
 		exit_status = builtin_no_pipe(ast_cmd, env);
 	else
 		exit_status = execute_command(ast, env);
+	remove_echo_ctrl();
 	env_set_last_status(env, exit_status);
 	last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
 	last_args = "";

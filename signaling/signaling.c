@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 19:09:02 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 21:50:28 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 14:21:58 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,26 @@ void	signal_handling(void)
 	sa.sa_handler = handler;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void	remove_echo_ctrl(void)
+{
+	struct termios	state;
+
+	if (!isatty(STDIN_FILENO))
+		return ;
+	tcgetattr(STDIN_FILENO, &state);
+	state.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &state);
+}
+
+void	add_echo_ctrl(void)
+{
+	struct termios	state;
+
+	if (!isatty(STDIN_FILENO))
+		return ;
+	tcgetattr(STDIN_FILENO, &state);
+	state.c_lflag |= ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &state);
 }
