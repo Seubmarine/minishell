@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 06:52:59 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/23 16:51:02 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/24 00:11:35 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	env_set_var(t_env *env, char *key, char *value)
 	t_env_key_value	*kv;
 	char			*tmp_value;
 
-	if (key == NULL | value == NULL)
+	if (key == NULL || value == NULL)
 		return (0);
 	kv = env_get_key_value_ptr(*env, key);
 	if (kv)
