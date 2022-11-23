@@ -40,15 +40,13 @@ typedef struct s_env
 }	t_env;
 
 int				env_set_random_str(t_env *env);
-void			ft_prepare_shl_shlvl(t_env *env, char *argv);
+void			ft_prepare_shl_shlvl(t_env *env);
 t_env_key_value	*env_get_key_value_ptr(t_env env, char *key);
 char			*env_key_value_to_string(t_env_key_value kv);
 void			env_key_value_free(t_env_key_value *kv);
 void			ft_env_set_random_error(t_env *env);
 void			env_vec_new_error(t_env *env);
 void			env_last_status_error(void);
-void			ft_shl_shlvl_cwd_error(t_env *env);
-void			ft_shl_shlvl_join_error(t_env *env);
 void			ft_shl_shlvl_itoa_error(t_env *env);
 
 //create a key value from a string "key=value"
@@ -56,8 +54,8 @@ int				key_value_init(char *kv, t_env_key_value *var);
 
 //create an environement using an array of KEY=value
 //envp must be terminated by NULL
-t_env			env_init_from_envp(const char *envp[], char *argv);
-int				env_collect_from_envp(char **envp, char *argv, t_env *env);
+t_env			env_init_from_envp(const char *envp[]);
+int				env_collect_from_envp(char **envp, t_env *env);
 int				env_init_null_set_undescore(t_env *env, char *argv);
 t_env			env_init_null(char *argv);
 

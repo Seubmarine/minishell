@@ -14,7 +14,7 @@
 #include "built_in.h"
 #include <stdio.h>
 
-int	env_collect_from_envp(char **envp, char *argv, t_env *env)
+int	env_collect_from_envp(char **envp, t_env *env)
 {
 	size_t			i;
 	t_env_key_value	key_value;
@@ -39,11 +39,11 @@ int	env_collect_from_envp(char **envp, char *argv, t_env *env)
 			exit(1);
 		}
 	}
-	ft_prepare_shl_shlvl(env, argv);
+	ft_prepare_shl_shlvl(env);
 	return (1);
 }
 
-t_env	env_init_from_envp(const char *envp[], char *argv)
+t_env	env_init_from_envp(const char *envp[])
 {
 	t_env			env;
 	size_t			i;
@@ -65,7 +65,7 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	(void (*)(void *))env_key_value_free);
 	if (env.v.data == NULL)
 		env_vec_new_error(&env);
-	env_collect_from_envp((char **)envp, argv, &env);
+	env_collect_from_envp((char **)envp, &env);
 	return (env);
 }
 

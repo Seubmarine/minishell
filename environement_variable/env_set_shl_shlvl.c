@@ -23,22 +23,11 @@ void	env_set_var_error(t_env *env, char *str)
 	exit (1);
 }
 
-void	ft_prepare_shl_shlvl(t_env *env, char *argv)
+void	ft_prepare_shl_shlvl(t_env *env)
 {
 	int		lvl;
 	char	*buff;
-	char	*shl;
 
-	buff = getcwd(NULL, 0);
-	if (buff == NULL)
-		ft_shl_shlvl_cwd_error(env);
-	shl = ft_strjoin(buff, &argv[2]);
-	free(buff);
-	if (shl == NULL)
-		ft_shl_shlvl_join_error(env);
-	if (env_set_var(env, "SHELL", shl) == 0)
-		env_set_var_error(env, shl);
-	free(shl);
 	buff = env_get_var(*env, "SHLVL");
 	if (buff == NULL)
 		lvl = 0;

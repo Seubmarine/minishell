@@ -25,20 +25,6 @@ void	env_last_status_error(void)
 	exit (1);
 }
 
-void	ft_shl_shlvl_cwd_error(t_env *env)
-{
-	perror("Minishell: getcwd");
-	env_free(env);
-	exit (1);
-}
-
-void	ft_shl_shlvl_join_error(t_env *env)
-{
-	perror("Minishell: ft_strjoin");
-	env_free(env);
-	exit(1);
-}
-
 void	ft_shl_shlvl_itoa_error(t_env *env)
 {
 	perror("Minishell: ft_itoa");
