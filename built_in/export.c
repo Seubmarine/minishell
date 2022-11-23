@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:45:11 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/21 19:45:12 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/24 00:32:23 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "built_in.h"
+
+int	ft_isalnum_underscore(char c)
+{
+	if (c == '_')
+		return (1);
+	return (ft_isalnum(c));
+}
 
 int	is_non_alphanum(char *argv)
 {
@@ -26,7 +33,8 @@ int	is_non_alphanum(char *argv)
 	}
 	while (argv[i] && argv[i] != '=')
 	{
-		if ((argv[0] >= '0' && argv[0] <= '9') || (ft_isalnum(argv[i]) == 0))
+		if ((argv[0] >= '0' && argv[0] <= '9') || \
+		(ft_isalnum_underscore(argv[i]) == 0))
 		{
 			ft_putstr_fd("Minishell: ", 2);
 			ft_putstr_fd(argv, 2);
