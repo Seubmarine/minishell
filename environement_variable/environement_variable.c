@@ -32,8 +32,8 @@ int	env_collect_from_envp(char **envp, char *argv, t_env *env)
 	size_t			i;
 	t_env_key_value	key_value;
 
-	i = 0;
-	while (envp[i])
+	i = -1;
+	while (envp[++i])
 	{
 		if (key_value_init(envp[i], &key_value) != 0)
 		{
@@ -51,7 +51,6 @@ int	env_collect_from_envp(char **envp, char *argv, t_env *env)
 			env_free(env);
 			exit(1);
 		}
-		i++;
 	}
 	ft_prepare_shl_shlvl(env, argv);
 	return (1);
@@ -105,23 +104,16 @@ char	**env_to_envp(t_env env)
 
 	envp = malloc(sizeof(*envp) * (env.v.len + 1));
 	if (envp == NULL)
-	{
-		perror("Minishell: malloc error: env_to_envp");
-		return (NULL);
-	}
-	i = 0;
-	while (i < env.v.len)
+		return (perror("Minishell: malloc error: env_to_envp"), NULL);
+	i = -1;
+	while (++i < env.v.len)
 	{
 		kv = *(t_env_key_value *)vec_get(&env.v, i);
 		if (kv.key == NULL || kv.value == NULL)
-		{
-			env_to_envp_error(envp, i);
-			return (NULL);
-		}
+			return (env_to_envp_error(envp, i), NULL);
 		envp[i] = env_key_value_to_string(kv);
 		if (envp[i] == NULL)
-			break;
-		i++;
+			break ;
 	}
 	envp[i] = NULL;
 	return (envp);

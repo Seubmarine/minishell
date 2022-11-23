@@ -15,7 +15,8 @@
 void	env_key_value_free(t_env_key_value *kv)
 {
 	if (kv->key != NULL)
-	{	free(kv->key);
+	{	
+		free(kv->key);
 		kv->key = NULL;
 	}
 	if (kv->value != NULL)

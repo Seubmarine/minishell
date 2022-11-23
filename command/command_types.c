@@ -78,8 +78,7 @@ int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
 			exit_status = ft_duptwo_error(env);
 		close(fd_stdout);
 	}
-	command_free(&cmd);
-	return (exit_status);
+	return (command_free(&cmd), exit_status);
 }
 
 int	ft_which_command(t_ast *ast, t_env *env)

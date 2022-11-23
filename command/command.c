@@ -93,19 +93,13 @@ int	command_init(t_command *cmd, t_ast_command ast_command)
 	}
 	cmd->arguments[i] = NULL;
 	if (!command_redirection_init(cmd, ast_command))
-	{
-		command_free(cmd);
-		return (0);
-	}
+		return (command_free(cmd), 0);
 	cmd->path = NULL;
 	if (cmd->arguments[0] != NULL)
 	{
 		cmd->path = ft_strdup(cmd->arguments[0]);
 		if (cmd->path == NULL)
-		{
-			command_free(cmd);
-			return (0);
-		}
+			return (command_free(cmd), 0);
 	}
 	return (1);
 }
