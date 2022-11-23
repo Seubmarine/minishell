@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:42:43 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/23 16:27:17 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 18:03:10 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 	env = ft_prepare_env(envp, (char *)argv[0]);
 	remove_echo_ctrl();
 	exit_status = prompt(&env);
-	clear_history();
+	rl_clear_history();
 	env_free(&env);
 	add_echo_ctrl();
 	return (exit_status);
