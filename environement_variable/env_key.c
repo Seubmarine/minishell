@@ -14,10 +14,15 @@
 
 void	env_key_value_free(t_env_key_value *kv)
 {
-	free(kv->key);
-	kv->key = NULL;
-	free(kv->value);
-	kv->value = NULL;
+	if (kv->key != NULL)
+	{	free(kv->key);
+		kv->key = NULL;
+	}
+	if (kv->value != NULL)
+	{
+		free(kv->value);
+		kv->value = NULL;
+	}
 }
 
 int	key_value_init(char *kv, t_env_key_value *var)

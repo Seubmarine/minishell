@@ -39,7 +39,10 @@ int	token_pipe(t_ast_command *cmd, t_ast *ast)
 		return (0);
 	}
 	if (vec_append(&ast->pipeline, cmd) == 0)
+	{
+		ast_command_free(cmd);
 		return (0);
+	}
 	return (1);
 }
 

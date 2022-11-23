@@ -25,7 +25,10 @@ int	lexer_token_dollar_expand_word(t_lexer_context *lctx, \
 		ft_strndup((const char *)env_value, i)};
 	if (lctx->final.word == NULL || \
 	tokens_append(lctx->tokens, &lctx->final) == 0)
+	{
+		token_free(&lctx->final);
 		return (0);
+	}
 	return (1);
 }
 

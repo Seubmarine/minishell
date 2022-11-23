@@ -24,7 +24,7 @@ int	ft_exit_error(char *str, int code, t_env *env)
 {
 	if (code == 1)
 		return (ft_putstr_fd("exit: too many arguments\n", 2), 1);
-	ft_putstr_fd("Minishel: exit: ", 2);
+	ft_putstr_fd("Minishell: exit: ", 2);
 	ft_putstr_fd(str, 2);
 	ft_putstr_fd(": numeric argument required\n", 2);
 	env->is_child = 1;
