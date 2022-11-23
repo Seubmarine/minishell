@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:44:10 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/23 14:22:44 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:36:54 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ int	ft_which_command(t_ast *ast, t_env *env)
 	else
 		exit_status = execute_command(ast, env);
 	remove_echo_ctrl();
-	env_set_last_status(env, exit_status);
 	last_cmd = vec_get(&ast->pipeline, ast->pipeline.len - 1);
 	last_args = "";
 	if (last_cmd->args.len > 0)

@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 21:24:28 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/22 22:23:54 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:37:11 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	execute_line(char *line, t_env *env)
 		exit_status = ft_which_command(&ast, env);
 	else
 		exit_status = 130;
+	env_set_last_status(env, exit_status);
 	ast_close_heredocs(&ast);
 	ast_free(&ast);
 	vec_free(&tokens);
