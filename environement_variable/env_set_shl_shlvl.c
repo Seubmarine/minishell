@@ -50,16 +50,26 @@ void	ft_prepare_shl_shlvl(t_env *env, char *argv)
 	free(buff);
 	if (shl == NULL)
 		ft_shl_shlvl_join_error(env);
-	env_set_var(env, "SHELL", shl);
+	if (env_set_var(env, "SHELL", shl) == 0)
+	{
+		free(shl);
+		env_free(env);
+		exit (1);
+	}
 	free(shl);
 	buff = env_get_var(*env, "SHLVL");
 	if (buff == NULL)
 		lvl = 0;
-	else	
+	else
 		lvl = ft_atoi(buff);
 	buff = ft_itoa(lvl + 1);
 	if (buff == NULL)
 		ft_shl_shlvl_itoa_error(env);
-	env_set_var(env, "SHLVL", buff);
+	if (env_set_var(env, "SHLVL", buff) == 0)
+	{
+		free(buff);
+		env_free(env);
+		exit(1);
+	}
 	free(buff);
 }

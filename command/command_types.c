@@ -59,7 +59,8 @@ int	builtin_no_pipe(t_ast_command *ast_cmd, t_env *env)
 	int			fd_stdin;
 	int			fd_stdout;
 
-	command_init(&cmd, *ast_cmd);
+	if (command_init(&cmd, *ast_cmd) == 0)
+		return (1);
 	fd_stdin = dup(STDIN_FILENO);
 	fd_stdout = dup(STDIN_FILENO);
 	if (fd_stdin == -1 || fd_stdout == -1)

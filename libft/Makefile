@@ -20,10 +20,10 @@ OBJSB	= ${SRCSB:.c=.o}
 
 NAME	= libft.a
 
-CC		= clang #TODO: use cc
+CC		= cc #TODO: use cc
 RM		= rm -f
 
-CFLAGS	= -Wall -Wextra -Werror -g3
+CFLAGS	= -Wall -Wextra -Werror -g
 
 .c.o:
 	${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
@@ -32,11 +32,9 @@ all:		${NAME}
 
 ${NAME}: ${OBJS}
 		ar rc ${NAME} ${OBJS}
-		ranlib ${NAME}
 
 bonus:	${OBJSB}
 		ar rc ${NAME} ${OBJSB}
-		ranlib ${NAME}
 clean:
 			${RM} ${OBJS} ${OBJSB}
 

@@ -1,6 +1,6 @@
 NAME = minishell
-CC=clang #TODO: use cc
-CFLAGS= -Wall -Wextra -Werror -g3
+CC=cc #TODO: use cc
+CFLAGS= -Wall -Wextra -Werror -g
 
 VECTOR_SRCS = vector.c
 VECTOR_INCLUDE = vector/
@@ -32,26 +32,26 @@ HEREDOC_INCLUDE = heredoc/
 CURRENT_SRCS = main.c
 LIBFT_INCLUDE = libft/
 
-SRCS = $(addprefix vector/, $(VECTOR_SRCS)) $(CURRENT_SRCS) \
-		$(addprefix lexer/, $(LEXER_SRCS)) $(addprefix ast/, $(AST_SRCS)) \
-		$(addprefix command/, $(COMMAND_SRCS)) $(addprefix path_finder/, $(PATH_FINDER_SRCS)) \
+SRCS = $(addprefix $(VECTOR_INCLUDE), $(VECTOR_SRCS)) $(CURRENT_SRCS) \
+		$(addprefix $(LEXER_INCLUDE), $(LEXER_SRCS)) $(addprefix $(AST_INCLUDE), $(AST_SRCS)) \
+		$(addprefix $(COMMAND_INCLUDE), $(COMMAND_SRCS)) $(addprefix $(PATH_FINDER_INCLUDE), $(PATH_FINDER_SRCS)) \
 		$(addprefix $(ENV_INCLUDE), $(ENV_SRCS)) $(addprefix $(BUILTIN_INCLUDE), $(BUILTIN_SRCS)) \
 		$(addprefix $(SIGNAL_INCLUDE), $(SIGNAL_SRCS)) $(addprefix $(HEREDOC_INCLUDE), $(HEREDOC_SRCS))
 
 OBJ = $(SRCS:.c=.o)
 
-all: $(NAME)
+all: lib $(NAME)
 
 INCLUDE = -I $(ENV_INCLUDE) -I $(PATH_FINDER_INCLUDE) -I $(VECTOR_INCLUDE) -I $(LEXER_INCLUDE) -I $(AST_INCLUDE) -I $(COMMAND_INCLUDE) -I $(BUILTIN_INCLUDE) -I $(SIGNAL_INCLUDE) -I $(HEREDOC_INCLUDE) -I $(LIBFT_INCLUDE)
 LDFLAGS = -L/usr/lib -lreadline
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
+.c.o:
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o ${<:.c=.o}
 
-$(NAME) : lib $(OBJ)
-	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o $(NAME) $(LDFLAGS) ./libft/libft.a
+$(NAME) : $(OBJ)
+	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) $(LDFLAGS) ./libft/libft.a -o $(NAME)
 
-malloc_test: lib $(OBJ)
+malloc_test: $(OBJ) lib #TODO REMOVE RULE
 	$(CC) $(CFLAGS) $(INCLUDE) -fsanitize=undefined -rdynamic -o $@ ${OBJ} ./libft/libft.a -ldl $(LDFLAGS) -L. -lmallocator
 
 lib:

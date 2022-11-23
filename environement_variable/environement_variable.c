@@ -21,10 +21,9 @@ void	env_vec_new_error(t_env *env)
 	exit (1);
 }
 
-void	env_last_satus_error(t_env *env)
+void	env_last_status_error(void)
 {
 	perror("Minishell: malloc");
-	env_free(env);
 	exit (1);
 }
 
@@ -60,6 +59,7 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	size_t			i;
 
 	i = 0;
+	env._last_status_str = NULL;
 	while (envp[i])
 		i++;
 	if (i <= 0)
@@ -69,7 +69,7 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	env.is_child = 0;
 	env._last_status_str = malloc(sizeof(char) * ENV_LAST_STATUS_SIZE);
 	if (env._last_status_str == NULL)
-		env_last_satus_error(&env);
+		env_last_status_error();
 	env_set_last_status(&env, 0);
 	env.v = vec_new(sizeof(t_env_key_value), i, \
 	(void (*)(void *))env_key_value_free);
