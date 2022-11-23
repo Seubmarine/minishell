@@ -27,7 +27,7 @@ void	env_last_status_error(void)
 	exit (1);
 }
 
-t_env	env_collect_from_envp(char **envp, char *argv, t_env env)
+int	env_collect_from_envp(char **envp, char *argv, t_env *env)
 {
 	size_t			i;
 	t_env_key_value	key_value;
@@ -37,20 +37,24 @@ t_env	env_collect_from_envp(char **envp, char *argv, t_env env)
 	{
 		if (key_value_init(envp[i], &key_value) != 0)
 		{
-			if (vec_append(&env.v, &key_value) == 0)
+			if (vec_append(&env->v, &key_value) == 0)
 			{
 				env_key_value_free(&key_value);
 				ft_putstr_fd("Minishell: vec_append: malloc error\n", 2);
-				env_free(&env);
+				env_free(env);
 				exit (1);
 			}
 		}
 		else
+		{
 			env_key_value_free(&key_value);
+			env_free(env);
+			exit(1);
+		}
 		i++;
 	}
-	ft_prepare_shl_shlvl(&env, argv);
-	return (env);
+	ft_prepare_shl_shlvl(env, argv);
+	return (1);
 }
 
 t_env	env_init_from_envp(const char *envp[], char *argv)
@@ -75,8 +79,22 @@ t_env	env_init_from_envp(const char *envp[], char *argv)
 	(void (*)(void *))env_key_value_free);
 	if (env.v.data == NULL)
 		env_vec_new_error(&env);
-	env = env_collect_from_envp((char **)envp, argv, env);
+	env_collect_from_envp((char **)envp, argv, &env);
 	return (env);
+}
+
+void	env_to_envp_error(char **envp, size_t count)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < count)
+	{
+		free(envp[i]);
+		envp[i] = NULL;
+		i++;
+	}
+	free(envp);
 }
 
 char	**env_to_envp(t_env env)
@@ -95,7 +113,14 @@ char	**env_to_envp(t_env env)
 	while (i < env.v.len)
 	{
 		kv = *(t_env_key_value *)vec_get(&env.v, i);
+		if (kv.key == NULL || kv.value == NULL)
+		{
+			env_to_envp_error(envp, i);
+			return (NULL);
+		}
 		envp[i] = env_key_value_to_string(kv);
+		if (envp[i] == NULL)
+			break;
 		i++;
 	}
 	envp[i] = NULL;

@@ -69,6 +69,8 @@ char	*env_key_value_to_string(t_env_key_value kv)
 	const size_t	value_len = ft_strlen(kv.value);
 
 	str = malloc(ft_strlen(kv.key) + ft_strlen(kv.value) + 2);
+	if (str == NULL)
+		return (NULL);
 	ft_memcpy(str, kv.key, key_len);
 	str[key_len] = '=';
 	ft_memcpy(str + key_len + 1, kv.value, value_len);

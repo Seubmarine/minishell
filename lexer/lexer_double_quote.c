@@ -51,12 +51,18 @@ int	lexer_token_double_quote_loop(t_lexer_context *lctx, \
 			is_token(&lctx->str[*j + 1]).type == TOKEN_STRING)
 		{
 			if (lexer_double_quote_expand(lctx, &word, j, env) == 0)
+			{
+				vec_free(&word);
 				return (0);
+			}
 		}
 		else
 		{
 			if (vec_append(&word, (void *)&lctx->str[*j]) == 0)
+			{
+				vec_free(&word);
 				return (0);
+			}
 		}
 		*j += 1;
 	}
@@ -81,7 +87,10 @@ int	lexer_case_token_double_quote(t_lexer_context *lctx, t_env env)
 	if (lexer_token_double_quote_loop(lctx, &j, env) == 0)
 		return (0);
 	if (tokens_append(lctx->tokens, &lctx->final) == 0)
+	{
+		token_free(&lctx->final);
 		return (0);
+	}
 	lctx->info.len = j + 1;
 	return (1);
 }

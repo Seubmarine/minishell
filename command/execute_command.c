@@ -30,6 +30,7 @@ int	prepare_arguments(char *line, t_env *env, t_vec *tokens)
 	{
 		ft_putstr_fd("Minishell: invalid syntax\n", STDERR_FILENO);
 		env_set_last_status(env, 2);
+		vec_free(tokens);
 		return (0);
 	}
 	return (1);

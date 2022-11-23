@@ -42,14 +42,16 @@ key and value will be duplicated
 int	env_set_var(t_env *env, char *key, char *value)
 {
 	t_env_key_value	*kv;
+	char			*tmp_value;
 
 	kv = env_get_key_value_ptr(*env, key);
 	if (kv)
 	{
-		free(kv->value);
-		kv->value = ft_strdup(value);
-		if (kv->value == NULL)
+		tmp_value = ft_strdup(value);
+		if (tmp_value == NULL)
 			return (0);
+		free(kv->value);
+		kv->value = tmp_value;
 	}
 	else
 	{

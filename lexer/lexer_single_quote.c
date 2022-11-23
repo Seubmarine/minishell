@@ -29,6 +29,9 @@ int	lexer_case_token_single_quote(t_lexer_context *lctx)
 	lctx->final.word = ft_strndup(lctx->str, j);
 	if (lctx->final.word == NULL || \
 	tokens_append(lctx->tokens, &lctx->final) == 0)
+	{
+		token_free(&lctx->final);
 		return (0);
+	}
 	return (1);
 }
