@@ -51,18 +51,12 @@ int	lexer_token_double_quote_loop(t_lexer_context *lctx, \
 			is_token(&lctx->str[*j + 1]).type == TOKEN_STRING)
 		{
 			if (lexer_double_quote_expand(lctx, &word, j, env) == 0)
-			{
-				vec_free(&word);
-				return (0);
-			}
+				return (vec_free(&word), 0);
 		}
 		else
 		{
 			if (vec_append(&word, (void *)&lctx->str[*j]) == 0)
-			{
-				vec_free(&word);
-				return (0);
-			}
+				return (vec_free(&word), 0);
 		}
 		*j += 1;
 	}
