@@ -17,24 +17,9 @@
 #include "command.h"
 #include "environement_variable.h"
 #include "signaling.h"
-#include <termios.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "libft.h"
-
-void	remove_echo_ctrl(void)
-{
-	struct termios	state;
-
-	if (!isatty(STDIN_FILENO))
-	{
-		perror("Not a tty");
-		return ;
-	}
-	tcgetattr(STDIN_FILENO, &state);
-	state.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &state);
-}
 
 t_env	ft_prepare_env(const char **envp, char *argv)
 {
