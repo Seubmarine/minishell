@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 18:06:06 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/10 18:06:08 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/24 00:48:07 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	ft_exit(char **argv, t_env *env)
 	i = 0;
 	errnum = 256;
 	if (ft_strlen_l(argv) == 1)
-		return (ft_write_exit(env), 0);
+		return (ft_write_exit(env), env->_last_status);
 	if (ft_only_num(argv[1]) != 0)
 		return (ft_exit_error(argv[1], 2, env));
 	while (argv[i])
