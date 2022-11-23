@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 17:35:38 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:09:03 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	lexer_case_next(t_lexer_context *lctx)
 			lctx->should_expand = 0;
 		lctx->final = (t_token){.type = lctx->info.type, .word = NULL};
 		if (tokens_append(lctx->tokens, &lctx->final) == 0)
-			return (0);
+			return (token_free(&lctx->final), 0);
 	}
 	return (1);
 }
@@ -101,7 +101,7 @@ int	lexer_case(t_lexer_context *lctx, t_env env)
 		lctx->final.word = ft_strndup((const char *)lctx->str, lctx->info.len);
 		if (lctx->final.word == NULL || \
 			tokens_append(lctx->tokens, &lctx->final) == 0)
-			return (0);
+			return (token_free(&lctx->final), 0);
 	}	
 	else if (lctx->info.type == TOKEN_DOLLAR)
 	{
@@ -139,7 +139,7 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	}
 	lctx.final = (t_token){.type = TOKEN_END, .word = NULL};
 	if (tokens_append(tokens, &lctx.final) == 0)
-		return (0);
+		return (token_free(&lctx.final), 0);
 	lexer_debug(*tokens);
 	return (1);
 }

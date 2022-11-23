@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:02:57 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 16:03:50 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:08:07 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	lexer_token_dollar_expand(t_lexer_context *lctx, char *env_value)
 		if (i > 0)
 		{
 			if (tokens_append(lctx->tokens, &lctx->final) == 0)
-				return (0);
+				return (token_free(&lctx->final), 0);
 		}
 		if (env_value[i] == '\0')
 			break ;
