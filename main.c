@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mportrai <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:42:43 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/21 19:42:44 by mportrai         ###   ########.fr       */
+/*   Updated: 2022/11/23 16:27:17 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,12 @@ int	main(int argc, char const *argv[], char const *envp[])
 
 	(void) argc;
 	exit_status = 0;
-	remove_echo_ctrl();
 	signal_handling();
 	env = ft_prepare_env(envp, (char *)argv[0]);
+	remove_echo_ctrl();
 	exit_status = prompt(&env);
 	clear_history();
 	env_free(&env);
+	add_echo_ctrl();
 	return (exit_status);
 }
