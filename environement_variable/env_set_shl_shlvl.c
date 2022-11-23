@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 12:50:49 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/22 19:29:08 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 04:28:18 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,10 @@ void	ft_prepare_shl_shlvl(t_env *env, char *argv)
 	env_set_var(env, "SHELL", shl);
 	free(shl);
 	buff = env_get_var(*env, "SHLVL");
-	lvl = ft_atoi(buff);
+	if (buff == NULL)
+		lvl = 0;
+	else	
+		lvl = ft_atoi(buff);
 	buff = ft_itoa(lvl + 1);
 	if (buff == NULL)
 		ft_shl_shlvl_itoa_error(env);

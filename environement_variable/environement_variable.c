@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 01:43:37 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/22 20:12:57 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/23 04:32:51 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ t_env	env_collect_from_envp(char **envp, char *argv, t_env env)
 				exit (1);
 			}
 		}
+		else
+			env_key_value_free(&key_value);
 		i++;
 	}
 	ft_prepare_shl_shlvl(&env, argv);
