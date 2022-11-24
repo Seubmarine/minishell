@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 20:02:16 by tbousque          #+#    #+#             */
-/*   Updated: 2022/11/23 17:09:03 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/24 01:15:34 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,5 @@ int	lexer(char *str, t_env env, t_vec *tokens)
 	lctx.final = (t_token){.type = TOKEN_END, .word = NULL};
 	if (tokens_append(tokens, &lctx.final) == 0)
 		return (token_free(&lctx.final), 0);
-	lexer_debug(*tokens);
 	return (1);
 }
