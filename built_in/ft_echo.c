@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 18:08:41 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/23 20:25:13 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/24 00:58:24 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,9 @@ int	ft_echo(char **argv)
 			return (perror("Minishell: echo"), 1);
 		return (0);
 	}
-	flag = ft_is_flag_echo(argv[1]);
-	if (flag == 1)
+	while (argv[i] && ft_is_flag_echo(argv[i]))
 		i++;
+	flag = (i != 1);
 	if ((flag == 1 && (ft_strlen_l(argv) > 2)) \
 	|| (flag == 0 && (ft_strlen_l(argv) > 1)))
 	{
