@@ -6,7 +6,7 @@
 /*   By: tbousque <tbousque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 19:42:43 by mportrai          #+#    #+#             */
-/*   Updated: 2022/11/23 18:03:10 by tbousque         ###   ########.fr       */
+/*   Updated: 2022/11/24 01:09:51 by tbousque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ int	prompt(t_env *env)
 		if (line == NULL)
 		{
 			is_running = 0;
-			exit_status = 0;
 			write(2, "\nexit\n", 6);
 		}
 		else
